@@ -4,13 +4,16 @@
   "description": "Start a project that is born to professional standards — without building the foundation by hand.",
   "type": "module",
   "bin": {
-    "keystone": "./dist/index.js"
+    "keystone": "./src/index.ts"
   },
   "scripts": {
-    "dev": "tsx src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "node --test"
+    "start": "node src/index.ts",
+    "test": "node --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
   },
   "keywords": [
     "scaffold",
@@ -21,8 +24,14 @@
   "author": "Paulo de Lucca",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
     "@types/node": "^20.11.0",
-    "tsx": "^4.7.0",
-    "typescript": "^5.4.0"
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "eslint": "^9.10.0",
+    "eslint-plugin-import": "^2.30.0",
+    "globals": "^15.9.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0"
   }
 }

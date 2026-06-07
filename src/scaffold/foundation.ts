@@ -2,12 +2,12 @@
 // locale-aware formatting. Generated in the project's starting language.
 // See docs/fundacao.md (items 3 and 4).
 
-import type { ProductBriefing } from '../types.ts';
+import type { ProductBriefing } from '../types.ts'
 
 export interface ScaffoldFile {
   /** Path relative to the project root. Subfolders are created as needed. */
-  path: string;
-  content: string;
+  path: string
+  content: string
 }
 
 /**
@@ -15,14 +15,24 @@ export interface ScaffoldFile {
  * These drive the locale-aware formatting and the first translated message.
  * Unknown languages fall back to English so generation never fails.
  */
-const LOCALE_BY_LANGUAGE: Record<string, { locale: string; currency: string; greeting: string }> = {
-  pt: { locale: 'pt-BR', currency: 'BRL', greeting: 'Olá' },
-  en: { locale: 'en-US', currency: 'USD', greeting: 'Hello' },
-  es: { locale: 'es-ES', currency: 'EUR', greeting: 'Hola' },
-};
+interface Locale {
+  locale: string
+  currency: string
+  greeting: string
+}
 
-export function localeFor(language: string): { locale: string; currency: string; greeting: string } {
-  return LOCALE_BY_LANGUAGE[language] ?? LOCALE_BY_LANGUAGE.en;
+// English is the guaranteed fallback, kept as its own const so it is never
+// possibly-undefined (which an index lookup would be).
+const EN: Locale = { locale: 'en-US', currency: 'USD', greeting: 'Hello' }
+
+const LOCALE_BY_LANGUAGE: Record<string, Locale> = {
+  pt: { locale: 'pt-BR', currency: 'BRL', greeting: 'Olá' },
+  en: EN,
+  es: { locale: 'es-ES', currency: 'EUR', greeting: 'Hola' },
+}
+
+export function localeFor(language: string): Locale {
+  return LOCALE_BY_LANGUAGE[language] ?? EN
 }
 
 function formatModule(locale: string, currency: string): string {
@@ -44,7 +54,7 @@ export function formatMoney(value: number, currency: string = DEFAULT_CURRENCY):
 export function formatNumber(value: number): string {
   return new Intl.NumberFormat(LOCALE).format(value);
 }
-`;
+`
 }
 
 function i18nModule(language: string, greeting: string): string {
@@ -71,14 +81,14 @@ export function setLanguage(language: string): void {
 export function t(key: string): string {
   return messages[current]?.[key] ?? key;
 }
-`;
+`
 }
 
 /** The foundation files for a project, in its starting language. */
 export function foundationFiles(product: ProductBriefing): ScaffoldFile[] {
-  const { locale, currency, greeting } = localeFor(product.language);
+  const { locale, currency, greeting } = localeFor(product.language)
   return [
     { path: 'src/lib/format.ts', content: formatModule(locale, currency) },
     { path: 'src/lib/i18n.ts', content: i18nModule(product.language, greeting) },
-  ];
+  ]
 }

@@ -10,18 +10,19 @@
 ---
 
 ## Princípio
+
 Todo bom padrão precisa de duas coisas: **nascer certo** (o criador) e **medir/consertar o que já
 existe** (este comando). Ele **só observa e reporta** — não mexe em nada. A atualização de fato é uma
 decisão separada do dono, depois.
 
 ## O que ele faz e o que NÃO faz
 
-| Faz | Não faz |
-|-----|---------|
+| Faz                                    | Não faz                          |
+| -------------------------------------- | -------------------------------- |
 | Observa o projeto (só lê, não executa) | Não roda o projeto nem os testes |
-| Passa os guardas automáticos por cima | Não altera nenhum arquivo |
-| Compara contra os 8 pilares | Não cria conta em serviço nenhum |
-| Entrega um relatório | Não decide nada pelo dono |
+| Passa os guardas automáticos por cima  | Não altera nenhum arquivo        |
+| Compara contra os 8 pilares            | Não cria conta em serviço nenhum |
+| Entrega um relatório                   | Não decide nada pelo dono        |
 
 ## Como funciona
 
@@ -34,13 +35,16 @@ decisão separada do dono, depois.
 ## O relatório (três partes)
 
 ### 1. Onde está hoje × o padrão
+
 Pilar por pilar (os 8), o que já cumpre e o que falta. A **distância pro padrão**, clara.
 
 ### 2. Plano de atualização — **priorizado**
+
 O que fazer pra chegar lá, **na ordem certa**: o mais crítico e de maior retorno primeiro
 (segurança e separação de clientes na frente; capricho estético depois).
 
 ### 3. Custo e risco de cada item
+
 - **Esforço** em escala simples: **pequeno / médio / grande** (sem fingir precisão de horas).
 - **Risco** de mexer: **baixo / médio / alto** (mudança que pode quebrar coisa em volta pesa mais).
 
@@ -53,6 +57,7 @@ O que fazer pra chegar lá, **na ordem certa**: o mais crítico e de maior retor
   [alma-skill.md](alma-skill.md).
 
 ## Conexões
+
 - Mede contra os mesmos [8 pilares](pilares.md) que o criador aplica.
 - A separação de clientes e os segredos expostos (os achados mais graves) vêm da
   [Segurança](seguranca.md).

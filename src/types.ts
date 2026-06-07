@@ -4,39 +4,39 @@
 // never asked. See docs/wizard-inicial.md.
 
 /** What kind of project is being created. Drives deduced choices downstream. */
-export type ProjectType = 'site' | 'system' | 'service' | 'mobile';
+export type ProjectType = 'site' | 'system' | 'service' | 'mobile'
 
 /** Which screen the project should favor when nothing else is said. */
-export type ScreenPriority = 'mobile' | 'desktop' | 'both';
+export type ScreenPriority = 'mobile' | 'desktop' | 'both'
 
 /** How the project's visual identity is decided. */
-export type LookChoice = 'generate' | 'import' | 'later';
+export type LookChoice = 'generate' | 'import' | 'later'
 
 /** Where the project's code will be versioned. */
-export type VersionTarget = 'github' | 'gitlab' | 'local';
+export type VersionTarget = 'github' | 'gitlab' | 'local'
 
 /** Round A — the product briefing (the minimal wizard). */
 export interface ProductBriefing {
-  name: string;
-  type: ProjectType;
+  name: string
+  type: ProjectType
   /** Starting language, e.g. 'pt', 'en', 'es'. */
-  language: string;
-  screen: ScreenPriority;
-  look: LookChoice;
+  language: string
+  screen: ScreenPriority
+  look: LookChoice
   /** Whether the project handles sensitive data or money — feeds the security level. */
-  sensitive: boolean;
+  sensitive: boolean
 }
 
 /** Round B — the technical setup (where the project lives). */
 export interface TechnicalSetup {
-  versionTarget: VersionTarget;
-  isPrivate: boolean;
+  versionTarget: VersionTarget
+  isPrivate: boolean
   /** Parent folder on the machine; Keystone creates the project folder inside it. */
-  parentDir: string;
+  parentDir: string
 }
 
 /** Everything Keystone needs to create a project. */
 export interface KeystoneAnswers {
-  product: ProductBriefing;
-  setup: TechnicalSetup;
+  product: ProductBriefing
+  setup: TechnicalSetup
 }

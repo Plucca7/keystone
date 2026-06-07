@@ -9,10 +9,13 @@
 ---
 
 ## Etapa 0 — Início
+
 O usuário roda a skill de qualquer lugar. **Não precisa criar pasta nem repositório antes.**
 
 ## Etapa 1 — Rodada A: briefing de produto (wizard mínimo)
+
 Perguntas, uma de cada vez:
+
 1. Nome do projeto
 2. Tipo de projeto
 3. Idioma de partida
@@ -21,16 +24,19 @@ Perguntas, uma de cada vez:
 6. Lida com dado sensível ou dinheiro?
 
 ## Etapa 2 — Rodada B: setup técnico
+
 - Onde versionar (com nuvem ou só na máquina)
 - Visibilidade (público / privado)
 - Pasta-mãe (onde, na máquina, criar a pasta do projeto)
 
 ## Etapa 3 — Deduções (a skill decide sozinha, não pergunta)
+
 - **Precisa de banco?** — do tipo + sensibilidade
 - **Nível de segurança** — essencial ou reforçado (se sensível)
 - **Fundação visual** — fontes, espaçamento, acessibilidade, formatação local: sempre aplicadas
 
 ## Etapa 4 — Criação (a skill monta tudo)
+
 1. **Cria a pasta** do projeto na pasta-mãe (cópia do modelo oficial).
 2. **Cria o repositório** no serviço escolhido (ou só local).
 3. **Três níveis de versionamento** (oficial / preparação / trabalho) + porta de revisão + proteção
@@ -48,12 +54,14 @@ Perguntas, uma de cada vez:
 9. **Primeira gravação registrada** + sobe pro repositório (se houver nuvem).
 
 ## Etapa 5 — Confirmação final
+
 Resumo do que foi criado: pasta local, repositório, banco (ou pendente), identidade visual, quadro
 de tarefas, três níveis, conferentes ativos. Mais os próximos passos pro usuário.
 
 ---
 
 ## Princípios que o fluxo respeita
+
 - **Só pergunta o tipo 3** (gosto do usuário); deduz o tipo 2; entrega pronto o tipo 1. Ver
   [wizard-inicial.md](wizard-inicial.md).
 - **Roda sozinho, custo zero de IA.** A IA entra só onde é genuinamente útil (a skill de design, se

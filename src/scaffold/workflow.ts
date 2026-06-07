@@ -1,8 +1,8 @@
 // Workflow files every project is born with: a task board and a contributing
 // guide describing the three levels and the review gate. See docs/fluxo-trabalho.md.
 
-import type { ProductBriefing } from '../types.ts';
-import type { ScaffoldFile } from './foundation.ts';
+import type { ProductBriefing } from '../types.ts'
+import type { ScaffoldFile } from './foundation.ts'
 
 function taskBoard(name: string): string {
   return `# ${name} — Tasks
@@ -14,7 +14,7 @@ A simple board. Move items down as they progress.
 ## Doing
 
 ## Done
-`;
+`
 }
 
 function contributing(name: string): string {
@@ -37,12 +37,12 @@ a contribution is made on a separate copy, runs through the guards, and only wha
 passes reaches a maintainer, who has the final say. Nothing lands unreviewed.
 
 Every delivery records its author.
-`;
+`
 }
 
 export function workflowFiles(product: ProductBriefing): ScaffoldFile[] {
   return [
     { path: 'TASKS.md', content: taskBoard(product.name) },
     { path: 'CONTRIBUTING.md', content: contributing(product.name) },
-  ];
+  ]
 }

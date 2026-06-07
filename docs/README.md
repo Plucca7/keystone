@@ -2,7 +2,7 @@
 
 > Start a project that is born to professional standards — without building the foundation by hand.
 
-*Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one.*
+_Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
 
 **Status: in development — a stage, not a permanent state.** The scope is fully specified (8 quality
 pillars, command flow, behavior, identity), and implementation is underway toward a finished release.
@@ -30,16 +30,16 @@ A project created with it is born covering, end to end:
 - **Foundation** — one consistent structure; accessible by default; locale-aware dates and money;
   starting language and screen priority asked up front, never assumed.
 - **Code quality** — auto-formatting on save; blocks any error or warning before it ships; flags
-  files that grew too large; comments the *why*, not the obvious.
+  files that grew too large; comments the _why_, not the obvious.
 - **Database** — created/updated timestamps on everything; soft delete (nothing truly disappears);
   versioned, repeatable migrations; unguessable identifiers.
-- **Tests** — born with each feature; cover the happy path *and* the failures; a failing test
+- **Tests** — born with each feature; cover the happy path _and_ the failures; a failing test
   blocks shipping; focus on what matters, not a coverage number.
 - **Workflow** — three branch levels (official / staging / working); a review gate; a task board and
   session hand-off out of the box; authorship recorded on every delivery.
 - **Ship it** — auto-deploy after the checks pass; a staging copy before production; one-gesture
   rollback; secrets kept out of the code.
-- **Security** — essential at birth, reinforced when needed; checks on the dev machine *and* before
+- **Security** — essential at birth, reinforced when needed; checks on the dev machine _and_ before
   shipping; abuse protection on by default; the AI-driven layer optional and off.
 - **Documentation** — decisions become short records; docs generated from code where possible; born
   with the project; entry points get a clear manual.
@@ -47,7 +47,7 @@ A project created with it is born covering, end to end:
 ## The commands (the family)
 
 - **`new-project`** — scaffold a new project, ready to work.
-- **`analyze-project`** *(designed, not built)* — measure an existing, living project against the
+- **`analyze-project`** _(designed, not built)_ — measure an existing, living project against the
   pillars: distance to the standard, an upgrade plan, and an estimate of cost and risk.
 - **session hand-off** — pick up where you left off; reads the project's own journal.
 - **ship help** — assist going live once hosting is chosen.

@@ -2,8 +2,8 @@
 // (deduced from type + sensitivity). The first migration already encodes the
 // conventions every table must follow. See docs/banco-dados.md.
 
-import type { ProductBriefing } from '../types.ts';
-import type { ScaffoldFile } from './foundation.ts';
+import type { ProductBriefing } from '../types.ts'
+import type { ScaffoldFile } from './foundation.ts'
 
 function initMigration(): string {
   return `-- Migration 0001 — initial structure.
@@ -31,7 +31,7 @@ create table example (
 -- Separation lives in the database, not only in app code: every query must
 -- filter by owner_id. Enable row-level security and add an owner policy when
 -- your platform supports it.
-`;
+`
 }
 
 function dbReadme(): string {
@@ -46,14 +46,14 @@ Every table follows four conventions, enforced from day one:
 
 Structure changes are numbered, repeatable migrations under \`db/migrations/\` — never
 made by hand. Run them with your database's official tooling (no AI, zero cost).
-`;
+`
 }
 
 /** The database files, or none if the project does not need a database. */
 export function databaseFiles(_product: ProductBriefing, needsDatabase: boolean): ScaffoldFile[] {
-  if (!needsDatabase) return [];
+  if (!needsDatabase) return []
   return [
     { path: 'db/migrations/0001_init.sql', content: initMigration() },
     { path: 'db/README.md', content: dbReadme() },
-  ];
+  ]
 }

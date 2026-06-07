@@ -26,17 +26,24 @@
 Mínimo essencial. 6 perguntas; a 5ª é opcional e ramifica.
 
 ### 1. Nome do projeto · _resposta livre_
+
 ### 2. Tipo de projeto · _escolha uma_
+
 - Site / página (vitrine, institucional)
 - Sistema com login e dados (painel, área logada)
 - Serviço que conversa com outros sistemas (a "porta de entrada")
 - Aplicativo de celular
+
 ### 3. Idioma de partida · _pt · en · es · outro_
+
 ### 4. Prioridade de tela · _celular · computador · os dois_
+
 ### 5. A cara do projeto · _escolha um caminho_
+
 - **Nossa skill de design cria** (padrão) → aciona o **briefing fundo** (abaixo) → identidade sob medida, sem visual genérico de IA
 - **Importar a minha** → usuário traz identidade pronta (marca existente, design feito fora); a skill aplica
 - **Decidir depois** → começa com visual padrão neutro
+
 ### 6. Lida com dado sensível ou dinheiro? · _sim · não_ → alimenta a dedução de segurança e de banco
 
 ---
@@ -53,6 +60,7 @@ skill de design, que deriva paleta, tipografia, tom e densidade da essência do 
 ## Rodada B — Setup técnico (onde o projeto mora)
 
 Perguntas do tipo 3 sobre infraestrutura:
+
 - **Onde versionar** · _escolha um_ → GitHub · GitLab · só na máquina (sem nuvem)
 - **Visibilidade** · _público · privado_
 - **Pasta-mãe** · _onde, na máquina, a pasta do projeto será criada_
@@ -94,11 +102,11 @@ Perguntas do tipo 3 sobre infraestrutura:
 
 ## Caminhos da cara do projeto (resumo)
 
-| Caminho | O que acontece | Briefing fundo? |
-|---------|----------------|-----------------|
-| Nossa skill de design cria (padrão) | Deriva identidade da essência; foge do visual genérico de IA | Sim |
-| Importar a minha | Usuário traz marca/design pronto; a skill aplica | Não |
-| Decidir depois | Visual padrão neutro; personaliza mais tarde | Não |
+| Caminho                             | O que acontece                                               | Briefing fundo? |
+| ----------------------------------- | ------------------------------------------------------------ | --------------- |
+| Nossa skill de design cria (padrão) | Deriva identidade da essência; foge do visual genérico de IA | Sim             |
+| Importar a minha                    | Usuário traz marca/design pronto; a skill aplica             | Não             |
+| Decidir depois                      | Visual padrão neutro; personaliza mais tarde                 | Não             |
 
 ---
 

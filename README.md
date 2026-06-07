@@ -2,7 +2,7 @@
 
 > Start a project that is born to professional standards — without building the foundation by hand.
 
-*Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one.*
+_Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
 
 **Status: in development.** The design is complete, and the core already works: `new` scaffolds a
 project, `check` runs the automated guards, and `analyze` measures an existing project against the

@@ -5,23 +5,23 @@
 // would match its own definitions and flag itself. Split, the detector never
 // recognizes itself — yet still catches real secrets. No exceptions needed.
 
-import type { Finding, Guard } from './types.ts';
+import type { Finding, Guard } from './types.ts'
 
-const AWS_KEY = new RegExp('AKIA' + '[0-9A-Z]{16}');
+const AWS_KEY = new RegExp('AKIA' + '[0-9A-Z]{16}')
 const API_ASSIGNMENT = new RegExp(
   '(?:api[_-]?key|secret|token)\\s*[:=]\\s*[\'"][^\'"]{12,}[\'"]',
   'i',
-);
-const PRIVATE_KEY = new RegExp('-----BEGIN (?:RSA |EC )?PRIVATE ' + 'KEY-----');
+)
+const PRIVATE_KEY = new RegExp('-----BEGIN (?:RSA |EC )?PRIVATE ' + 'KEY-----')
 
 const SECRET_PATTERNS: { name: string; re: RegExp }[] = [
   { name: 'AWS access key', re: AWS_KEY },
   { name: 'API key / token assignment', re: API_ASSIGNMENT },
   { name: 'Private key block', re: PRIVATE_KEY },
-];
+]
 
 export const scanSecrets: Guard = (file, content) => {
-  const findings: Finding[] = [];
+  const findings: Finding[] = []
   content.split('\n').forEach((text, index) => {
     for (const { name, re } of SECRET_PATTERNS) {
       if (re.test(text)) {
@@ -30,9 +30,9 @@ export const scanSecrets: Guard = (file, content) => {
           file,
           line: index + 1,
           message: `Possible exposed secret (${name})`,
-        });
+        })
       }
     }
-  });
-  return findings;
-};
+  })
+  return findings
+}

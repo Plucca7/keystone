@@ -2,35 +2,35 @@
 // 1) where the project stands, 2) a prioritized plan, 3) cost and risk per item.
 // See docs/analyze-project.md.
 
-import type { CheckResult, Severity } from './checks.ts';
+import type { CheckResult, Severity } from './checks.ts'
 
-const SEVERITY_ORDER: Record<Severity, number> = { high: 0, medium: 1, low: 2 };
+const SEVERITY_ORDER: Record<Severity, number> = { high: 0, medium: 1, low: 2 }
 
 export function formatReport(results: CheckResult[]): string {
-  const passed = results.filter((r) => r.passed);
+  const passed = results.filter((r) => r.passed)
   const failed = results
     .filter((r) => !r.passed)
-    .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
+    .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
 
-  const lines: string[] = ['Keystone — project analysis', ''];
+  const lines: string[] = ['Keystone — project analysis', '']
 
   // Part 1 — where it stands
-  lines.push(`1) Where it stands — ${passed.length}/${results.length} checks pass`, '');
+  lines.push(`1) Where it stands — ${passed.length}/${results.length} checks pass`, '')
   for (const r of results) {
-    const mark = r.passed ? '✓' : '✗';
-    lines.push(`   ${mark} [${r.pillar}] ${r.title}${r.passed ? '' : ` — ${r.detail}`}`);
+    const mark = r.passed ? '✓' : '✗'
+    lines.push(`   ${mark} [${r.pillar}] ${r.title}${r.passed ? '' : ` — ${r.detail}`}`)
   }
 
   // Parts 2 & 3 — prioritized plan with cost/risk
   if (failed.length === 0) {
-    lines.push('', 'Nothing to fix — the project meets the checked standards.');
+    lines.push('', 'Nothing to fix — the project meets the checked standards.')
   } else {
-    lines.push('', '2) Upgrade plan (most critical first), with cost and risk', '');
+    lines.push('', '2) Upgrade plan (most critical first), with cost and risk', '')
     failed.forEach((r, index) => {
-      lines.push(`   ${index + 1}. [${r.pillar}] ${r.title} — ${r.detail}`);
-      lines.push(`      effort: ${r.effort} · risk: ${r.risk} · severity: ${r.severity}`);
-    });
+      lines.push(`   ${index + 1}. [${r.pillar}] ${r.title} — ${r.detail}`)
+      lines.push(`      effort: ${r.effort} · risk: ${r.risk} · severity: ${r.severity}`)
+    })
   }
 
-  return `${lines.join('\n')}\n`;
+  return `${lines.join('\n')}\n`
 }

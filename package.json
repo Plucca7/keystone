@@ -1,0 +1,28 @@
+{
+  "name": "keystone",
+  "version": "0.1.0",
+  "description": "Start a project that is born to professional standards — without building the foundation by hand.",
+  "type": "module",
+  "bin": {
+    "keystone": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "scaffold",
+    "project-generator",
+    "boilerplate",
+    "starter"
+  ],
+  "author": "Paulo de Lucca",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

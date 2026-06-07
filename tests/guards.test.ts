@@ -8,18 +8,18 @@ import { runGuardsOnContent } from '../src/guards/runner.ts';
 import { checkProject } from '../src/guards/runner.ts';
 
 test('scanSecrets: flags an AWS access key', () => {
-  const findings = scanSecrets('a.ts', 'const k = "AKIAABCDEFGHIJKLMNOP";');
+  const findings = scanSecrets('a.ts', 'const k = "AKIAABCDEFGHIJKLMNOP";'); // allow-secret
   assert.equal(findings.length, 1);
   assert.match(findings[0].message, /AWS/);
 });
 
 test('scanSecrets: flags an api key assignment', () => {
-  const findings = scanSecrets('a.ts', 'const apiKey = "abcdef1234567890";');
+  const findings = scanSecrets('a.ts', 'const apiKey = "abcdef1234567890";'); // allow-secret
   assert.equal(findings.length, 1);
 });
 
 test('scanSecrets: flags a private key block', () => {
-  const findings = scanSecrets('a.ts', '-----BEGIN PRIVATE KEY-----');
+  const findings = scanSecrets('a.ts', '-----BEGIN PRIVATE KEY-----'); // allow-secret
   assert.equal(findings.length, 1);
 });
 
@@ -40,7 +40,7 @@ test('scanSize: flags an oversized file', () => {
 });
 
 test('runGuardsOnContent: combines all guards', () => {
-  const findings = runGuardsOnContent('a.ts', 'const k = "AKIAABCDEFGHIJKLMNOP";');
+  const findings = runGuardsOnContent('a.ts', 'const k = "AKIAABCDEFGHIJKLMNOP";'); // allow-secret
   assert.ok(findings.some((f) => f.guard === 'secrets'));
 });
 

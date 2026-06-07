@@ -6,6 +6,8 @@ import { runWizard } from './wizard.ts';
 import { createProject } from './create.ts';
 import { ReadlinePrompter } from './prompter.ts';
 import { checkProject } from './guards/runner.ts';
+import { analyzeProject } from './analyze/checks.ts';
+import { formatReport } from './analyze/report.ts';
 
 function printHelp(): void {
   console.log(`
@@ -14,7 +16,7 @@ Keystone — start a project born to professional standards.
 Usage:
   keystone new [name]    Create a new project (asks a few questions)
   keystone check [dir]   Run the automated guards over a project (defaults to .)
-  keystone analyze       Measure an existing project against the standard (coming soon)
+  keystone analyze [dir] Measure an existing project against the standard (read-only)
   keystone help          Show this help
 `);
 }
@@ -55,9 +57,12 @@ async function main(): Promise<void> {
       }
       break;
     }
-    case 'analyze':
-      console.log('analyze — coming soon (see docs/analyze-project.md).');
+    case 'analyze': {
+      const dir = resolve(rest[0] ?? '.');
+      const results = await analyzeProject(dir);
+      console.log(formatReport(results));
       break;
+    }
     case 'help':
     case undefined:
       printHelp();

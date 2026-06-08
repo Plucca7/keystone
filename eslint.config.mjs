@@ -8,7 +8,10 @@ import importPlugin from 'eslint-plugin-import'
 import globals from 'globals'
 
 export default [
-  { ignores: ['node_modules/', 'dist/', 'docs/'] },
+  // templates/ are the real moulds — they carry their own configs and are
+  // checked by their own tooling (proven separately). Keystone's lint, types
+  // and formatting do not apply to them.
+  { ignores: ['node_modules/', 'dist/', 'docs/', 'templates/'] },
   js.configs.recommended,
   {
     files: ['**/*.ts'],

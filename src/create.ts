@@ -1,14 +1,22 @@
-// Creating the project: the deterministic part. Runs on its own, no AI, zero cost.
-// Step 2 lays down the base mould — the standard folder layout plus the foundation
-// files (translation hub + locale-aware formatting). Later steps add the other
-// pillars. See docs/plano-construcao.md and docs/fundacao.md.
+// Creating a project: copy the real mould (web or api) into place, then adjust
+// the few variable points (the name). No more hand-made scaffold — the project
+// is born as the actual template, byte-for-byte, only renamed.
+// See docs/plano-construcao.md and docs/fluxo-skill.md.
 
-import { mkdir, writeFile } from 'node:fs/promises'
+import { cp, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { KeystoneAnswers, ProjectType } from './types.ts'
-import { foundationFiles, type ScaffoldFile } from './scaffold/foundation.ts'
-import { databaseFiles } from './scaffold/database.ts'
-import { workflowFiles } from './scaffold/workflow.ts'
+
+const TEMPLATES_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'templates')
+
+/** Which mould serves each project type. Mobile has no mould yet. */
+const MOULD_BY_TYPE: Record<ProjectType, 'web' | 'api' | null> = {
+  site: 'web',
+  system: 'web',
+  service: 'api',
+  mobile: null,
+}
 
 export interface DeducedChoices {
   needsDatabase: boolean
@@ -17,8 +25,7 @@ export interface DeducedChoices {
 
 /**
  * Decide what the skill can figure out from what the user already said —
- * never asked. A site needs no database; a system/service does; mobile only
- * when it also handles sensitive data. Sensitive data raises the security level.
+ * never asked. Recorded in keystone.json so the choice is visible.
  * See docs/wizard-inicial.md ("type 2" decisions) and docs/banco-dados.md.
  */
 export function deduce(answers: KeystoneAnswers): DeducedChoices {
@@ -31,53 +38,53 @@ export function deduce(answers: KeystoneAnswers): DeducedChoices {
   }
 }
 
-/** The base files every project gets, regardless of type. */
-function baseFiles(answers: KeystoneAnswers, deduced: DeducedChoices): ScaffoldFile[] {
-  const { product, setup } = answers
-
-  // Records answers + deductions so later steps (and re-runs) know how this
-  // project was set up, instead of guessing.
-  const config = { keystoneVersion: '0.1.0', product, setup, deduced }
-
-  // A minimal manifest for the generated project; the real stack is layered later.
-  const manifest = { name: product.name, version: '0.1.0', private: true, type: 'module' }
-
-  return [
-    { path: 'keystone.json', content: `${JSON.stringify(config, null, 2)}\n` },
-    { path: 'package.json', content: `${JSON.stringify(manifest, null, 2)}\n` },
-    { path: 'README.md', content: `# ${product.name}\n\nCreated with Keystone.\n` },
-    { path: '.gitignore', content: 'node_modules/\ndist/\n.env\n.env.local\n' },
-  ]
-}
-
-/** Write a list of scaffold files under the project dir, creating subfolders. */
-async function writeFiles(projectDir: string, files: ScaffoldFile[]): Promise<void> {
-  for (const file of files) {
-    const full = join(projectDir, file.path)
-    await mkdir(dirname(full), { recursive: true })
-    await writeFile(full, file.content)
-  }
-}
-
 export interface CreateResult {
   projectDir: string
+  mould: 'web' | 'api'
   deduced: DeducedChoices
-  /** Paths written, relative to the project root — useful for the confirmation. */
-  files: string[]
 }
 
-/** Create the project folder and its base mould from the collected answers. */
+/** True when this path segment is build noise that must never be copied. */
+function isCopyableSegment(source: string): boolean {
+  const segments = source.split(/[\\/]/)
+  return !segments.includes('node_modules')
+}
+
+/** Create the project by copying the real mould and renaming it. */
 export async function createProject(answers: KeystoneAnswers): Promise<CreateResult> {
+  const mould = MOULD_BY_TYPE[answers.product.type]
+  if (!mould) {
+    throw new Error(
+      `No mould yet for project type "${answers.product.type}" — only site/system/service.`,
+    )
+  }
+
   const deduced = deduce(answers)
   const projectDir = resolve(answers.setup.parentDir, answers.product.name)
+  const source = join(TEMPLATES_DIR, mould)
 
-  const files = [
-    ...baseFiles(answers, deduced),
-    ...foundationFiles(answers.product),
-    ...databaseFiles(answers.product, deduced.needsDatabase),
-    ...workflowFiles(answers.product),
-  ]
-  await writeFiles(projectDir, files)
+  // Copy the actual mould, skipping installed dependencies.
+  await cp(source, projectDir, { recursive: true, filter: isCopyableSegment })
 
-  return { projectDir, deduced, files: files.map((f) => f.path) }
+  // Change only the name, by text substitution, so the rest of the manifest
+  // keeps the mould's exact formatting (no JSON reflow).
+  const pkgPath = join(projectDir, 'package.json')
+  const manifest = await readFile(pkgPath, 'utf8')
+  const renamed = manifest.replace(
+    /("name"\s*:\s*)"[^"]*"/,
+    (_match, prefix: string) => `${prefix}"${answers.product.name}"`,
+  )
+  await writeFile(pkgPath, renamed)
+
+  // Record how this project was created, next to the mould it came from.
+  const record = {
+    keystoneVersion: '0.1.0',
+    mould,
+    product: answers.product,
+    setup: answers.setup,
+    deduced,
+  }
+  await writeFile(join(projectDir, 'keystone.json'), `${JSON.stringify(record, null, 2)}\n`)
+
+  return { projectDir, mould, deduced }
 }

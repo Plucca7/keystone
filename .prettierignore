@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# the moulds carry their own formatting config and are checked separately
+templates/

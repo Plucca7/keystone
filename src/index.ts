@@ -27,9 +27,9 @@ async function runNew(presetName?: string): Promise<void> {
   try {
     print('\nKeystone — let’s set up your project.\n')
     const answers = await runWizard(prompter, presetName)
-    const { projectDir, deduced, files } = await createProject(answers)
+    const { projectDir, mould, deduced } = await createProject(answers)
     print(`\n✓ Project created at ${projectDir}`)
-    print(`  ${files.length} files written (folder layout + foundation)`)
+    print(`  From the ${mould} mould`)
     print(`  Database: ${deduced.needsDatabase ? 'yes (deduced)' : 'not needed'}`)
     print(`  Security: ${deduced.securityLevel}`)
   } finally {

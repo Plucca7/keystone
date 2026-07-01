@@ -7,10 +7,10 @@
 >
 > **Status:** the create-a-new-project command is one of three commands that are actually built
 > today — alongside running the automatic checks and analyzing an existing project read-only.
-> Those three are the whole of what is implemented; the broader family of capabilities this template
-> aims for (automatic deploy, staging, rollback, review gate, task board, and the agent harness) is
-> still planned, not built. This document describes the setup flow the implemented
-> create-a-new-project command runs.
+> Those three are the whole of what is implemented (plus the Layer B agent harness, which `new` lays
+> into every project); the broader family of capabilities this template aims for (automatic deploy,
+> staging, rollback, review gate, task board) is still planned, not built. This document describes the
+> setup flow the implemented create-a-new-project command runs.
 >
 > **What "create" actually does today (ground truth):** it copies the official mould (web or api)
 > into a new project folder, renames the package to the project's name, writes a `keystone.json`

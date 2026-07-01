@@ -7,6 +7,14 @@
 - **SEMPRE** responder em português brasileiro (pt-BR)
 - Código e nomes de variáveis em inglês
 
+## Arreio do agente (Camada B)
+
+Este projeto nasce com um arreio para a IA que o constrói. Detalhe em [docs/agent-harness.md](docs/agent-harness.md).
+
+- **Ritual (B2):** toda funcionalidade abre com `specs/<slug>/spec.md` — o pedido reformulado + um **alvo de "pronto" verificável**, aprovado antes de qualquer código. Ao concluir, confere-se item a item contra esse alvo; lacuna se declara, não se esconde. Código e especificação divergem → a especificação vence.
+- **Revisores (B3):** `.claude/agents/` — revisor de especificação, revisor de código, auditor de segurança, cada um em contexto isolado.
+- **Vigias que travam (B4):** `.claude/hooks/` bloqueia registrar segredo e mexer na branch protegida. Travas reais do sistema, não avisos.
+
 ## Referências autoritativas
 
 | Documento | URL | O que define |

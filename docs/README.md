@@ -18,8 +18,9 @@ Keystone is built as **two complementary layers**:
 - **Layer A — Product Foundation.** Deterministic, zero AI cost: the eight quality pillars a
   scaffolded project is born with, plus the checks that hold them. This is where the three
   implemented commands live.
-- **Layer B — Agent Harness.** Planned, not built. When intelligence is genuinely useful, it runs on
-  the developer's own AI assistant — never a separate paid service.
+- **Layer B — Agent Harness.** Built: `new` lays it into every project (reviewers, guardrail hooks,
+  the spec ritual, layered context — distilled from the house's own practice). It runs on the
+  developer's own AI assistant — never a separate paid service.
 
 See [pillars.md](pillars.md) for the blueprint that ties both layers together.
 

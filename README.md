@@ -4,9 +4,11 @@
 
 _Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
 
-**Status: in development.** Three commands work today: `new` scaffolds a project, `check` runs the
-automated checks over a project, and `analyze` measures an existing project against the standard
-(read-only). Everything beyond these three is planned and not yet built.
+**Status: in development.** Three commands work today: `new` scaffolds a project (and lays the
+**Layer B agent harness** into it), `check` runs the automated checks over a project (three
+deterministic guards: exposed secrets, oversized files, dangerous patterns), and `analyze` measures
+an existing project against the standard (read-only). Most of Layer A's pillars are still the target;
+this document says which.
 
 ## What it is
 
@@ -28,11 +30,12 @@ Keystone is two complementary layers — one for _what_ gets built, one for _who
 - **Layer A — Product Foundation** _(deterministic, zero-cost)_. The product is born solid without
   depending on AI: the 8 pillars ship as deterministic verification — formatters, linters,
   type-checkers, tests, and CI/CD gates.
-- **Layer B — Agent Harness** _(planned)_. The project is built by an AI coding agent — the
-  assistant you already use. Layer B is the harness planned for that agent: context engineering,
-  spec-driven development, subagents (isolated-context reviewers — spec, code, security), and
-  guardrails (lifecycle hooks that block off-standard behavior). This layer is in development and
-  not yet part of the three shipping commands.
+- **Layer B — Agent Harness** _(built)_. The project is built by an AI coding agent — the assistant
+  you already use. `new` lays this harness into every project: context in layers, spec-driven
+  development (a verifiable "done" target), subagents (isolated-context reviewers — spec, code,
+  security), and guardrails (lifecycle hooks that **block**, proven by test: `block-secret`,
+  `block-protected-branch`). Distilled from the house's own working practice. See
+  [templates/agent-harness/docs/agent-harness.md](templates/agent-harness/docs/agent-harness.md).
 
 The line is drawn deliberately: product quality (A) is deterministic and free, while the building
 agent (B) is designed to get a first-class harness that runs on your own AI. The harness applies to

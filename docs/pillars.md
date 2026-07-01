@@ -10,17 +10,16 @@
 > interpolation) — nothing else. `analyze` is read-only
 > (reports only) and runs exactly **six** checks: exposed secrets, `.gitignore` completeness,
 > presence of tests, presence of a README, basic database-convention text checks (plain string
-> matching over `.sql` files), and oversized files. **Everything else in this document — every other
-> pillar behavior, the whole publish/CI gate, the edge protection, and all of Layer B — is the
-> target, not yet delivered.** Where a capability is planned, this document says so; it is never
-> described as running today.
+> matching over `.sql` files), and oversized files. **Layer B — the agent harness — is built and ships
+> in every scaffolded project (see below).** Everything else in this document — every other pillar
+> behavior, the whole publish/CI gate, and the edge protection — is the target, not yet delivered.
+> Where a capability is planned, this document says so; it is never described as running today.
 
 ---
 
 ## The DNA — two complementary layers
 
-Keystone is planned as **two complementary layers** — one for _what_ gets built, one for _who_
-builds it.
+Keystone is **two complementary layers** — one for _what_ gets built, one for _who_ builds it.
 
 **Layer A — Product Foundation (deterministic, zero-cost).** The design goal is that none of the
 quality pillars depend on AI inference: the deterministic parts should work for free — checks,
@@ -28,16 +27,17 @@ written rules, configuration. The aim is a project that is secure, tested, and w
 without using any AI at all. Today only a small slice of Layer A exists (see the status line above);
 the rest is the target.
 
-**Layer B — Agent Harness (planned, not built).** The intent is that the project is built by an AI
-coding agent — the assistant the developer already uses — and that Layer B is that agent's harness:
-what shapes its context, the spec it follows, the specialists it consults, and the guardrails that
-stop it from going wrong. It is designed to run entirely on the developer's own AI, with no external
-paid service required. **None of Layer B is implemented yet.**
+**Layer B — Agent Harness (built).** The project is built by an AI coding agent — the assistant the
+developer already uses — and Layer B is that agent's harness: what shapes its context, the spec it
+follows, the specialists it consults, and the guardrails that stop it from going wrong. It runs
+entirely on the developer's own AI, with no external paid service required. **Layer B ships today:
+every scaffolded project is born with it** (see the four parts below), distilled from the house's own
+working practice rather than copied from elsewhere.
 
-The two layers are meant to keep AI in its place: Layer A's quality guarantees are deterministic and
-run at zero AI cost, so AI is never the basis of the quality guarantee; Layer B is meant to give the
-coding agent a first-class harness that runs on the developer's own AI. In short, the planned AI
-harness applies to _building_ the code, not to _guaranteeing_ its quality.
+The two layers keep AI in its place: Layer A's quality guarantees are deterministic and run at zero
+AI cost, so AI is never the basis of the quality guarantee; Layer B gives the coding agent a
+first-class harness that runs on the developer's own AI. In short, the AI harness applies to
+_building_ the code, not to _guaranteeing_ its quality.
 
 ---
 
@@ -164,64 +164,66 @@ _Target — not enforced by any command. `analyze` today only checks that a READ
 
 ---
 
-## Layer B — the agent harness (planned, not built)
+## Layer B — the agent harness (built)
 
-The intent is that the project is built by an AI coding agent, with Layer B as the scaffolding around
-that agent — four parts. Like Layer A, it is meant to run on the developer's own AI, with no external
-paid service required. **None of the four parts below is implemented today; all are the target.**
+The project is built by an AI coding agent, with Layer B as the scaffolding around that agent — four
+parts. Like Layer A, it runs on the developer's own AI, with no external paid service required. **All
+four parts ship today**, copied into every scaffolded project (`templates/agent-harness/`, laid on
+top of the mould by `new`), and each is distilled from a working house practice, not invented.
 
-> Note: there are **no** deterministic hooks behind any Layer B part yet. The only checks that run
-> today are the two file guards in `check` and the six checks in `analyze` (Layer A). The 🔧 symbol is
-> reserved for those and is not used in this section.
+> How it lands: `new` copies the shared harness on top of the chosen mould, so a fresh project is
+> born with `.claude/` (agents, hooks, settings, scoped rules), `specs/` (the spec ritual), and
+> `docs/agent-harness.md` (the map). The guardrail hooks are proven to block by an automated test.
 
-### B1. Context engineering — _planned_
+### B1. Context engineering — _built_
 
-The goal is that the agent works with the right context and its working memory stays focused.
+The agent works with the right context and its working memory stays focused.
 
-- The agent loads a lean set of always-on instructions and pulls deeper knowledge only when a task
-  needs it, so its context stays focused.
-- Rules activate only where they apply — a database rule under database files, not everywhere.
-- Working memory is actively managed, so long tasks don't drift as the context window fills with
-  noise.
-- Work-in-progress state persists between sessions: a new session resumes without re-explaining
-  context.
-- Planned: an automatic check that flags an always-on instruction set that has grown too large. (Not
-  built.)
+- The agent loads a lean set of always-on instructions (`CLAUDE.md`) and pulls deeper knowledge only
+  when a task needs it, so its context stays focused.
+- Rules activate only where they apply — a scoped rule under matching files (`.claude/rules/`), not
+  everywhere.
+- Docs (`docs/`, `.claude/`) are consulted on demand, never auto-loaded.
+- _Still the target:_ an automatic check that flags an always-on instruction set that has grown too
+  large, and cross-session working-memory persistence.
 
-### B2. Spec-driven development — _planned_
+### B2. Spec-driven development — _built_
 
-The intended model is that the spec is the source of truth and code derives from it.
+The spec is the source of truth and code derives from it.
 
-- Every feature opens with a **spec**: the request restated + a **verifiable "done" target**,
-  approved before any code is written.
-- The plan derives from the spec; the code derives from the plan.
+- Every feature opens with a **spec** (`specs/<slug>/spec.md`): the request restated + a **verifiable
+  "done" target**, approved before any code is written.
 - On completion, the delivered work is checked against the "done" target point by point, and any gap
   is reported explicitly rather than glossed over.
 - When code and spec diverge, the spec wins.
 
-### B3. Subagents — _planned_
+### B3. Subagents — _built_
 
-Isolated-context specialists.
+Isolated-context specialists, in `.claude/agents/`.
 
 - Reviewers and auditors that work in their own context window and return a focused verdict, keeping
   the main thread clean.
-- At minimum: a **spec reviewer**, a **code reviewer**, a **security auditor**.
+- Shipped: a **spec reviewer**, a **code reviewer** (the house review rubric), and a **security
+  auditor** (the house security pillars).
 - Division of labor with B2: spec-driven development defines _what_ to check (the "done" target); the
   subagents are _who_ checks it in isolation — the spec reviewer validates the target, the code
   reviewer validates the diff.
 - A failed verdict is meant to be **enforced by a guardrail** (B4), not left to the main agent's
   discretion.
 
-### B4. Guardrails — _planned_
+### B4. Guardrails — _built_
 
-Rails that block, not ones that merely warn.
+Rails that block, not ones that merely warn. Deterministic hooks in `.claude/hooks/`, registered in
+`.claude/settings.json`.
 
-- **Lifecycle hooks** that deterministically block off-standard behavior (before/after a tool runs,
-  or before a turn ends).
-- They are meant to be the harness's real teeth: a guarantee enforced by the system, not a promise by
-  the agent.
-- Planned examples (none built today): block committing a secret; block declaring work "done" that
-  isn't; block claiming a change is live in production when production hasn't actually received it.
+- **Lifecycle hooks** that deterministically block off-standard behavior before a tool runs.
+- They are the harness's real teeth: a guarantee enforced by the system, not a promise by the agent.
+- Shipped and proven by test: `block-secret` (blocks staging/reading a `.env` secret) and
+  `block-protected-branch` (blocks a commit/push straight onto a protected branch).
+- Deliberately **not** a hard hook: "block declaring work done that isn't". Whether a "done" claim is
+  honest is a judgment, not a regex — so it lives in the B2 ritual (the point-by-point check against
+  the done-target), not in a hook that would give false confidence. Being honest about which
+  guarantees are hard and which are judgment is itself part of the standard.
 
 ---
 
@@ -238,8 +240,9 @@ target._
 - The **same automatic-check mechanism is meant to recur across three pillars** — Code quality,
   Tests, and Security — as the deterministic teeth of Layer A. Today that mechanism exists only as
   the secret scan and the size check.
-- **Layer A's deterministic checks and Layer B's guardrails are meant to be the same idea at two
-  levels:** A guards the code, B guards the agent that writes it.
+- **Layer A's deterministic checks and Layer B's guardrails are the same idea at two levels:** A
+  guards the code, B guards the agent that writes it. Both ship today — A's secret/size/dangerous
+  scans, B's block-secret and block-protected-branch hooks.
 - The spec-driven **"done" target** (B2) is meant to feed the _Tests_ (A4) and the completion check.
 - **Session hand-off** (A5) is meant to be where the agent's cross-session memory (B1) persists.
 

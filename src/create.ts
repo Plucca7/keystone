@@ -10,6 +10,11 @@ import type { KeystoneAnswers, ProjectType } from './types.ts'
 
 const TEMPLATES_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'templates')
 
+// Layer B — the agent harness. Stack-agnostic (reviewers, guardrails, the spec ritual,
+// layered context), so it lives once and is copied on top of every mould rather than
+// duplicated inside each one.
+const HARNESS_DIR = join(TEMPLATES_DIR, 'agent-harness')
+
 /** Which mould serves each project type. Mobile has no mould yet. */
 const MOULD_BY_TYPE: Record<ProjectType, 'web' | 'api' | null> = {
   site: 'web',
@@ -65,6 +70,11 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
 
   // Copy the actual mould, skipping installed dependencies.
   await cp(source, projectDir, { recursive: true, filter: isCopyableSegment })
+
+  // Layer B — lay the agent harness on top of the mould, so every project is born with
+  // its reviewers, guardrails, spec ritual, and layered context. Copied after the mould
+  // (never overwrites a mould file: the harness only adds .claude/, specs/, and docs/).
+  await cp(HARNESS_DIR, projectDir, { recursive: true, filter: isCopyableSegment })
 
   // Change only the name, by text substitution, so the rest of the manifest
   // keeps the mould's exact formatting (no JSON reflow).

@@ -1,35 +1,35 @@
-## O que muda?
+## What changes?
 
-<!-- Descreva o que este PR faz em 1-3 frases -->
+<!-- Describe what this PR does in 1-3 sentences -->
 
-## Checklist de Qualidade (Engineering Handbook v2.2)
+## Quality Checklist (Engineering Handbook)
 
-### Código
-- [ ] JSDoc em todos os metodos publicos novos/modificados
-- [ ] Comentarios explicativos em decisoes nao obvias (trade-offs, workarounds, regras de negocio)
-- [ ] `tryCatch()` + `toast.error()` nos hooks (sem `console.error`)
-- [ ] aria-labels em componentes interativos novos
-- [ ] Paginacao em queries de listagem (`.range()` ou `.limit()`)
-- [ ] Testes para logica nova (services, hooks, libs)
-- [ ] `events.emit()` em operacoes de escrita (create/update/delete)
-- [ ] Endpoints backend com `require_scope()`
+### Code
+- [ ] JSDoc on all new/modified public methods
+- [ ] Explanatory comments on non-obvious decisions (trade-offs, workarounds, business rules)
+- [ ] `tryCatch()` + `toast.error()` in hooks (no `console.error`)
+- [ ] aria-labels on new interactive components
+- [ ] Pagination on listing queries (`.range()` or `.limit()`)
+- [ ] Tests for new logic (services, hooks, libs)
+- [ ] `events.emit()` on write operations (create/update/delete)
+- [ ] Backend endpoints with `require_scope()`
 
-### Design System (v1.3)
-- [ ] Tokens do DS usados (sem cores Tailwind hardcoded: `bg-emerald-600`, `text-blue-500`)
-- [ ] Sem prefixo `dark:` (CSS variables mudam automaticamente)
-- [ ] Toasts com Lucide icons (sem emojis)
-- [ ] Componentes de `@/components/ui/` (sem tags HTML diretas)
+### Design System
+- [ ] Design System tokens used (no hardcoded Tailwind colors: `bg-emerald-600`, `text-blue-500`)
+- [ ] No `dark:` prefix (CSS variables switch automatically)
+- [ ] Toasts with Lucide icons (no emojis)
+- [ ] Components from `@/components/ui/` (no raw HTML tags)
 
 ### Data Fetching
-- [ ] React Query para server data (sem `useState` + `useEffect` para fetch)
-- [ ] Query keys registradas em `query-keys.ts`
-- [ ] Mutations com `onMutate` otimista + `onError` rollback
+- [ ] React Query for server data (no `useState` + `useEffect` for fetching)
+- [ ] Query keys registered in `query-keys.ts`
+- [ ] Mutations with optimistic `onMutate` + `onError` rollback
 
-### Navegacao
-- [ ] Botoes de retroceder usam `router.back()` (nunca `router.push('/rota-fixa')`)
+### Navigation
+- [ ] Back buttons use `router.back()` (never `router.push('/fixed-route')`)
 
-### Validacao
-- [ ] `npm run design:audit` passa (0 errors)
-- [ ] `npm run build` passa (0 erros)
-- [ ] `npm run test` passa (90+ testes)
-- [ ] `npm run lint` sem erros novos
+### Validation
+- [ ] `npm run design:audit` passes (0 errors)
+- [ ] `npm run build` passes (0 errors)
+- [ ] `npm run test` passes
+- [ ] `npm run lint` with no new errors

@@ -27,7 +27,7 @@ export const base = [
       import: importPlugin,
     },
     rules: {
-      // === TypeScript Strict (Handbook: Zero any) ===
+      // === TypeScript Strict (Zero any) ===
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
@@ -39,7 +39,7 @@ export const base = [
       ],
       '@typescript-eslint/no-non-null-assertion': 'error',
 
-      // === Qualidade de código (Handbook) ===
+      // === Code quality ===
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'no-empty-catch': 'off',
@@ -48,22 +48,22 @@ export const base = [
       'prefer-const': 'error',
       'no-var': 'error',
 
-      // Why: a regra core no-unused-vars do ESLint vem via js.configs.recommended
-      // e ignora `argsIgnorePattern: ^_` que o @typescript-eslint configura.
-      // Como temos a regra TS-específica ativa (que respeita `^_`), desligamos
-      // a core para evitar duplicação e false positives em código tipado.
+      // Why: ESLint's core no-unused-vars rule comes from js.configs.recommended
+      // and ignores the `argsIgnorePattern: ^_` that @typescript-eslint sets up.
+      // Since the TS-specific rule (which respects `^_`) is active, we turn the
+      // core one off to avoid duplication and false positives in typed code.
       'no-unused-vars': 'off',
     },
   },
 ]
 
-/** Configuração extra para projetos React/Next.js */
+/** Extra configuration for React/Next.js projects */
 export const react = [
   ...base,
   {
-    // Why: globals.browser cobre window, document, fetch etc. (client side).
-    // globals.node cobre process, Buffer (server components / SSR).
-    // Sem isso, qualquer uso desses globais vira no-undef.
+    // Why: globals.browser covers window, document, fetch etc. (client side).
+    // globals.node covers process, Buffer (server components / SSR).
+    // Without this, any use of those globals triggers no-undef.
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -73,23 +73,23 @@ export const react = [
   },
   {
     files: ['**/*.{tsx,jsx}'],
-    // Why: as regras `react/*` abaixo exigem o plugin registrado. Sem isso,
-    // ESLint falha com "Could not find plugin 'react' in configuration".
+    // Why: the `react/*` rules below require the plugin to be registered. Without
+    // this, ESLint fails with "Could not find plugin 'react' in configuration".
     plugins: { react: reactPlugin },
     rules: {
-      // Handbook: Server Components por padrão
+      // Server Components by default
       'react/jsx-no-target-blank': 'error',
       'react/self-closing-comp': 'error',
     },
   },
 ]
 
-/** Configuração extra para projetos Node/API */
+/** Extra configuration for Node/API projects */
 export const node = [
   ...base,
   {
-    // Why: globals.node cobre process, Buffer, console etc. para que
-    // server-side code não dispare no-undef.
+    // Why: globals.node covers process, Buffer, console etc. so that
+    // server-side code does not trigger no-undef.
     languageOptions: {
       globals: {
         ...globals.node,
@@ -99,7 +99,7 @@ export const node = [
   {
     files: ['**/*.ts'],
     rules: {
-      // Handbook: No hardcoded values
+      // No hardcoded values
       'no-magic-numbers': [
         'warn',
         {

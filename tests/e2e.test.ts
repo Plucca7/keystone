@@ -45,9 +45,10 @@ test('e2e: a freshly created system project is born in the standard', async () =
     assert.equal(deduced.securityLevel, 'reinforced')
 
     const results = await analyzeProject(projectDir)
-    // A brand-new project meets everything it can; only its own tests are missing yet.
+    // A brand-new project meets everything the analysis can check — the mould now ships
+    // an example test too, so nothing is missing.
     const failing = results.filter((r) => !r.passed).map((r) => r.pillar)
-    assert.deepEqual(failing, ['Tests'])
+    assert.deepEqual(failing, [])
   } finally {
     await rm(parent, { recursive: true, force: true })
   }

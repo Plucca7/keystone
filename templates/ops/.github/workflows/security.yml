@@ -1,8 +1,8 @@
 # Security Scan
-# Verifica vulnerabilidades em dependências e código
+# Checks for vulnerabilities in dependencies and code
 # Ref: https://example.com/handbook (OWASP Top 10)
 #
-# Uso:
+# Usage:
 #   jobs:
 #     security:
 #       uses: your-org/github-ops/.github/workflows/security.yml@main

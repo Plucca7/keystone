@@ -3,8 +3,8 @@
  * CommitLint configuration
  * Project conventions
  *
- * Formato: <type>: <description>
- * Exemplos:
+ * Format: <type>: <description>
+ * Examples:
  *   feat: adds dashboard feature
  *   fix: corrects timeout bug
  *   docs: updates README
@@ -17,7 +17,7 @@
 module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    // Tipos permitidos (Handbook)
+    // Allowed types
     'type-enum': [
       2,
       'always',
@@ -36,18 +36,18 @@ module.exports = {
         'revert',
       ],
     ],
-    // Tipo obrigatório e em minúsculas
+    // Type is required and lowercase
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
 
-    // Subject obrigatório
+    // Subject is required
     'subject-empty': [2, 'never'],
     'subject-case': [2, 'never', ['start-case', 'pascal-case', 'upper-case']],
 
-    // Header máximo 100 caracteres
+    // Header maximum 100 characters
     'header-max-length': [2, 'always', 100],
 
-    // Body com wrap em 100 caracteres
+    // Body wrapped at 100 characters
     'body-max-line-length': [1, 'always', 100],
   },
 }

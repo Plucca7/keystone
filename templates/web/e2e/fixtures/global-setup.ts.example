@@ -3,40 +3,41 @@ import { mkdirSync } from 'node:fs'
 import path from 'node:path'
 
 /**
- * Global setup — faz login uma vez antes de toda a suite e salva storage state.
+ * Global setup — logs in once before the whole suite and saves the storage state.
  *
- * Por que: login via UI em cada teste é caro (2-5s × N tests) e flaky (toda
- * vez que o login UI muda, suite quebra). Storage state reuso resolve ambos.
+ * Why: logging in through the UI on every test is expensive (2-5s × N tests) and
+ * flaky (every time the login UI changes, the suite breaks). Reusing the storage
+ * state solves both.
  *
- * Specs em critical/ usam essa sessão via use.storageState no playwright.config.
- * Specs em smoke/ ignoram (cookies vazios).
+ * Specs in critical/ use this session via use.storageState in playwright.config.
+ * Specs in smoke/ ignore it (empty cookies).
  *
- * Credenciais vêm de env vars (E2E_USER_EMAIL / E2E_USER_PASSWORD).
- * Em CI, configurar em GitHub Secrets. Local, em .env.local.
+ * Credentials come from env vars (E2E_USER_EMAIL / E2E_USER_PASSWORD).
+ * In CI, configure them in GitHub Secrets. Locally, in .env.local.
  *
  * ─────────────────────────────────────────────────────────────────────────
- * COMO ADAPTAR PRO SEU PROJETO:
+ * HOW TO ADAPT IT FOR YOUR PROJECT:
  *
- * 1. Renomeie este arquivo: global-setup.ts.example → global-setup.ts
- * 2. Ajuste os seletores entre os marcadores [TODO] abaixo pra bater com
- *    a UI de login do seu app (path da rota, seletor dos inputs, botão).
- * 3. Ajuste o waitForURL pro padrão pós-login do seu app (/dashboard, /home, etc.)
+ * 1. Rename this file: global-setup.ts.example → global-setup.ts
+ * 2. Adjust the selectors between the [TODO] markers below to match your
+ *    app's login UI (route path, input selectors, button).
+ * 3. Adjust the waitForURL to your app's post-login pattern (/dashboard, /home, etc.)
  *
- * Exemplos de patterns comuns:
+ * Examples of common patterns:
  *
- *   // Login em rota dedicada /login:
+ *   // Login on a dedicated /login route:
  *   await page.goto(`${baseURL}/login`)
  *   await page.getByLabel(/e-?mail/i).fill(email)
  *
- *   // Login em modal acessado via CTA na landing (padrão Green Copilot):
+ *   // Login in a modal opened via a CTA on the landing page:
  *   await page.goto(`${baseURL}/`)
- *   await page.getByRole('button', { name: /acessar|entrar|sign in/i }).click()
+ *   await page.getByRole('button', { name: /sign in|log in/i }).click()
  *
- *   // Inputs com label semântico (htmlFor):
+ *   // Inputs with a semantic label (htmlFor):
  *   await page.getByLabel(/e-?mail/i).fill(email)
  *
- *   // Inputs sem htmlFor — use placeholder:
- *   await page.getByPlaceholder('seu@email.com').fill(email)
+ *   // Inputs without htmlFor — use the placeholder:
+ *   await page.getByPlaceholder('you@example.com').fill(email)
  * ─────────────────────────────────────────────────────────────────────────
  */
 export default async function globalSetup(_config: FullConfig) {
@@ -44,12 +45,12 @@ export default async function globalSetup(_config: FullConfig) {
   const password = process.env.E2E_USER_PASSWORD
   const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000'
 
-  // Sem credenciais: smoke tests ainda funcionam (não dependem de auth).
-  // Critical tests vão falhar com mensagem clara de env var faltando.
+  // Without credentials: smoke tests still work (they do not depend on auth).
+  // Critical tests will fail with a clear "missing env var" message.
   if (!email || !password) {
     console.warn(
-      '[e2e] E2E_USER_EMAIL / E2E_USER_PASSWORD não configurados. ' +
-        'Specs em critical/ vão pular ou falhar. Configure em .env.local ou GitHub Secrets.',
+      '[e2e] E2E_USER_EMAIL / E2E_USER_PASSWORD are not configured. ' +
+        'Specs in critical/ will skip or fail. Configure them in .env.local or GitHub Secrets.',
     )
     return
   }
@@ -62,13 +63,13 @@ export default async function globalSetup(_config: FullConfig) {
   const context = await browser.newContext()
   const page = await context.newPage()
 
-  // [TODO] Ajuste o fluxo de login pro seu projeto
+  // [TODO] Adjust the login flow for your project
   await page.goto(`${baseURL}/login`)
   await page.getByLabel(/e-?mail/i).fill(email)
-  await page.getByLabel(/senha|password/i).fill(password)
-  await page.getByRole('button', { name: /entrar|login|sign in/i }).click()
+  await page.getByLabel(/password/i).fill(password)
+  await page.getByRole('button', { name: /sign in|log in/i }).click()
 
-  // [TODO] Ajuste o padrão de URL pós-login do seu app
+  // [TODO] Adjust your app's post-login URL pattern
   await page.waitForURL(/\/(dashboard|home|app)/, { timeout: 30_000 })
 
   await context.storageState({ path: storagePath })

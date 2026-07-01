@@ -4,15 +4,15 @@ Shared Prettier configuration.
 
 
 
-## Instalação
+## Installation
 
 ```bash
 npm install -D github:your-org/prettier-config prettier prettier-plugin-tailwindcss
 ```
 
-## Uso
+## Usage
 
-No `package.json` do seu projeto:
+In your project's `package.json`:
 
 ```json
 {
@@ -20,19 +20,19 @@ No `package.json` do seu projeto:
 }
 ```
 
-## Regras
+## Rules
 
-- Sem ponto-e-vírgula (`semi: false`)
-- Aspas simples (`singleQuote: true`)
-- Trailing comma em tudo (`trailingComma: "all"`)
-- 100 caracteres por linha (`printWidth: 100`)
-- 2 espaços de indentação (`tabWidth: 2`)
-- Plugin `prettier-plugin-tailwindcss` para ordenação de classes
+- No semicolons (`semi: false`)
+- Single quotes (`singleQuote: true`)
+- Trailing comma everywhere (`trailingComma: "all"`)
+- 100 characters per line (`printWidth: 100`)
+- 2-space indentation (`tabWidth: 2`)
+- `prettier-plugin-tailwindcss` plugin for class sorting
 
-## Histórico
+## History
 
-Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originally part of the `your-org/shared-config` monorepo. Split out in 2026 to resolve import resolution issues when installed via `github:` deps.
 
-## Referência
+## Reference
 
 

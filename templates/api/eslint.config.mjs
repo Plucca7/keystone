@@ -3,9 +3,9 @@ import { node } from '@repo/eslint-config'
 export default [
   ...node,
   {
-    // Why: vitest.config.ts vive na raiz e não está no `tsconfig.include: ["src"]`,
-    // então o type-aware lint do @typescript-eslint não consegue parsear. Ignorar
-    // explicitamente evita erro de parse sem afetar o lint do código de produto.
+    // Why: vitest.config.ts lives at the root and is not in `tsconfig.include: ["src"]`,
+    // so @typescript-eslint's type-aware lint cannot parse it. Ignoring it explicitly
+    // avoids a parse error without affecting the lint of the product code.
     ignores: ['dist/', 'node_modules/', 'coverage/', 'vitest.config.ts'],
   },
 ]

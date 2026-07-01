@@ -29,7 +29,7 @@ export default function RootLayout({
   children: ReactNode
 }>) {
   return (
-    <html lang="pt-BR" className={`${jakarta.variable} ${dmMono.variable}`}>
+    <html lang="en" className={`${jakarta.variable} ${dmMono.variable}`}>
       <body>
         <Providers>{children}</Providers>
       </body>

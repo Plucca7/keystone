@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
-// Why: este módulo é o sink central de logs do app. A regra global
-// `no-console` proíbe console.* em código de produto justamente para
-// forçar o uso deste logger — então aqui é o único lugar onde
-// console.debug/info/warn/error são permitidos.
+// Why: this module is the app's central log sink. The global `no-console`
+// rule forbids console.* in product code precisely to force the use of this
+// logger — so this is the only place where console.debug/info/warn/error
+// are allowed.
 
 /**
- * Logger estruturado.
+ * Structured logger.
  *
- * Dev: console colorido com timestamp e módulo
- * Prod: JSON estruturado para ingestão (Sentry/Datadog)
+ * Dev: colored console with timestamp and module
+ * Prod: structured JSON for ingestion (Sentry/Datadog)
  *
- * Uso:
+ * Usage:
  *   import { createLogger } from '@/lib/logger';
  *   const log = createLogger('userService');
  *   log.info('User created', { userId: '123' });

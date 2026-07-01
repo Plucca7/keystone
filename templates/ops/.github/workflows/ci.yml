@@ -1,8 +1,8 @@
 # CI Pipeline
-# Workflow reutilizável para projetos TypeScript
+# Reusable workflow for TypeScript projects
 # Ref: https://example.com/handbook
 #
-# Uso em outro repo:
+# Usage in another repo:
 #   jobs:
 #     ci:
 #       uses: your-org/github-ops/.github/workflows/ci.yml@main
@@ -36,9 +36,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # pnpm precisa estar disponível ANTES do setup-node, porque o cache do
-      # setup-node valida o lockfile (pnpm-lock.yaml) e roda `pnpm` se for o
-      # gerenciador escolhido. A action oficial do pnpm é a forma idiomática.
+      # pnpm must be available BEFORE setup-node, because the setup-node cache
+      # validates the lockfile (pnpm-lock.yaml) and runs `pnpm` when it is the
+      # chosen package manager. The official pnpm action is the idiomatic way.
       - name: Setup pnpm
         if: inputs.package-manager == 'pnpm'
         uses: pnpm/action-setup@v4

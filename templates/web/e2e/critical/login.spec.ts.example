@@ -1,38 +1,38 @@
 import { test, expect } from '@playwright/test'
 
 /**
- * Login crítico — valida que a sessão criada pelo globalSetup funciona.
+ * Critical login — verifies that the session created by globalSetup works.
  *
- * Se este falhar, todas as outras specs críticas vão falhar também
- * (porque o storage state está inválido). Sirve como guard pra
- * detectar problema cedo no relatório de CI.
+ * If this fails, all other critical specs will fail too (because the storage
+ * state is invalid). It serves as a guard to catch the problem early in the
+ * CI report.
  *
  * ─────────────────────────────────────────────────────────────────────────
- * COMO ADAPTAR:
+ * HOW TO ADAPT:
  *
- * 1. Renomeie: login.spec.ts.example → login.spec.ts
- * 2. Ajuste rotas autenticadas pro seu app (/dashboard, /app, /home...)
- * 3. Garante que e2e/fixtures/global-setup.ts existe e está adaptado
- *    (ver e2e/fixtures/global-setup.ts.example)
+ * 1. Rename: login.spec.ts.example → login.spec.ts
+ * 2. Adjust the authenticated routes for your app (/dashboard, /app, /home...)
+ * 3. Make sure e2e/fixtures/global-setup.ts exists and is adapted
+ *    (see e2e/fixtures/global-setup.ts.example)
  * ─────────────────────────────────────────────────────────────────────────
  */
 
-test.describe('Login e sessão autenticada', () => {
-  test('user autenticado acessa rota protegida sem bounce', async ({ page }) => {
-    // [TODO] Troque '/dashboard' pela rota protegida principal do seu app.
+test.describe('Login and authenticated session', () => {
+  test('authenticated user reaches a protected route without a bounce', async ({ page }) => {
+    // [TODO] Replace '/dashboard' with your app's main protected route.
     await page.goto('/dashboard')
 
-    // Asserir URL final pra detectar bounce. Use toHaveURL com regex que match
-    // a rota protegida — se o middleware redirecionar pra landing, falha.
+    // Assert the final URL to detect a bounce. Use toHaveURL with a regex that
+    // matches the protected route — if the middleware redirects to the landing, it fails.
     await expect(page).toHaveURL(/\/dashboard/)
     await expect(page.locator('body')).not.toBeEmpty()
   })
 
-  test('navegação entre rotas autenticadas preserva sessão', async ({ page }) => {
-    // [TODO] Liste 2-3 rotas protegidas do seu app pra cobrir navegação.
+  test('navigation between authenticated routes preserves the session', async ({ page }) => {
+    // [TODO] List 2-3 protected routes of your app to cover navigation.
     await page.goto('/dashboard')
     await expect(page).toHaveURL(/\/dashboard/)
-    // Adicione mais rotas conforme implementar:
+    // Add more routes as you implement them:
     // await page.goto('/profile')
     // await expect(page).toHaveURL(/\/profile/)
   })

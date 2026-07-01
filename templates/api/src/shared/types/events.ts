@@ -1,8 +1,8 @@
-// Why: o EventMap começa vazio no template; cada feature deve estendê-lo
-// via declaration merging (interface EventMap { 'bid.created': BidCreatedPayload })
-// para registrar seus eventos.
+// Why: the EventMap starts empty in the template; each feature should extend it
+// via declaration merging (interface EventMap { 'user.created': UserCreatedPayload })
+// to register its events.
 export interface EventMap {
-  // Exemplo (descomente em features reais):
+  // Example (uncomment in real features):
   // 'health.checked': { timestamp: number }
 }
 
@@ -10,9 +10,10 @@ export type EventName = keyof EventMap
 
 type EventHandler<T extends EventName> = (payload: EventMap[T]) => void | Promise<void>
 
-// Why: armazenamos handlers como `EventHandler<EventName>` (não `any`) na Map
-// e fazemos cast nos pontos de leitura, porque a Map perde a relação entre key
-// e payload type. O contrato público (`on`/`emit`) preserva a inferência por evento.
+// Why: we store handlers as `EventHandler<EventName>` (not `any`) in the Map
+// and cast at the read points, because the Map loses the relationship between
+// key and payload type. The public contract (`on`/`emit`) preserves per-event
+// inference.
 class EventBus {
   private handlers = new Map<EventName, Set<EventHandler<EventName>>>()
 

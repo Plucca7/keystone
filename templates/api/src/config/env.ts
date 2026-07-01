@@ -3,8 +3,8 @@ import { z } from 'zod'
 const DEFAULT_PORT = 3000
 
 /**
- * Schema de validação das variáveis de ambiente.
- * Handbook: "Sem hardcoded values — tudo via env vars"
+ * Environment variable validation schema.
+ * Rule: no hardcoded values — everything via env vars.
  */
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),

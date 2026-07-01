@@ -1,17 +1,17 @@
-## O que muda?
+## What changes?
 
-<!-- Descreva o que este PR faz em 1-3 frases -->
+<!-- Describe what this PR does in 1-3 sentences -->
 
-## Checklist de Qualidade
+## Quality Checklist
 
-- [ ] JSDoc em todos os metodos publicos novos/modificados
-- [ ] Toasts via `messages.ts` (nenhum hardcoded)
-- [ ] `tryCatch()` + `toast.error()` nos hooks (sem `console.error`)
-- [ ] aria-labels em componentes interativos novos
-- [ ] Paginacao em queries de listagem (`.range()` ou `.limit()`)
-- [ ] Testes para logica nova (services, hooks, libs)
-- [ ] `events.emit()` em operacoes de escrita (create/update/delete)
-- [ ] Endpoints backend com `require_scope()`
-- [ ] `npm run build` passa (0 erros)
-- [ ] `npm run test` passa (48+ testes)
-- [ ] `npm run lint` sem erros novos
+- [ ] JSDoc on all new/modified public methods
+- [ ] Toasts via `messages.ts` (nothing hardcoded)
+- [ ] `tryCatch()` + `toast.error()` in hooks (no `console.error`)
+- [ ] aria-labels on new interactive components
+- [ ] Pagination on listing queries (`.range()` or `.limit()`)
+- [ ] Tests for new logic (services, hooks, libs)
+- [ ] `events.emit()` on write operations (create/update/delete)
+- [ ] Backend endpoints with `require_scope()`
+- [ ] `npm run build` passes (0 errors)
+- [ ] `npm run test` passes
+- [ ] `npm run lint` with no new errors

@@ -1,22 +1,22 @@
 /**
- * Result Pattern — Green Copilot
+ * Result Pattern
  *
- * Tipo para retornos de operações que podem falhar,
- * sem usar throw/catch para fluxo de controle.
+ * Type for the return of operations that may fail,
+ * without using throw/catch for control flow.
  *
- * Uso:
+ * Usage:
  *   import { Result, ok, err } from '@/types/result';
  *
- *   async function createBid(data: BidInsert): Promise<Result<Bid, string>> {
+ *   async function createItem(data: ItemInsert): Promise<Result<Item, string>> {
  *     try {
- *       const bid = await bidService.create(data);
- *       return ok(bid);
+ *       const item = await itemService.create(data);
+ *       return ok(item);
  *     } catch (e) {
- *       return err('Falha ao criar licitação');
+ *       return err('Failed to create item');
  *     }
  *   }
  *
- *   const result = await createBid(data);
+ *   const result = await createItem(data);
  *   if (result.ok) {
  *     console.log(result.value);
  *   } else {
@@ -55,7 +55,7 @@ export async function tryCatch<T>(
     const value = await fn()
     return ok(value)
   } catch (e) {
-    const message = mapError ? mapError(e) : e instanceof Error ? e.message : 'Erro desconhecido'
+    const message = mapError ? mapError(e) : e instanceof Error ? e.message : 'Unknown error'
     return err(message)
   }
 }

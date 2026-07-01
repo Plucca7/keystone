@@ -1,8 +1,8 @@
 # Project Router
-# Workflow reutilizável que roteia issues e PRs para um GitHub Project v2.
-# Cria colunas dinamicamente por coder e move itens conforme o ciclo de vida.
+# Reusable workflow that routes issues and PRs to a GitHub Project v2.
+# Dynamically creates columns per contributor and moves items along their lifecycle.
 #
-# Uso em outro repo:
+# Usage in another repo:
 #   jobs:
 #     route:
 #       uses: your-org/github-ops/.github/workflows/project-router.yml@main
@@ -12,18 +12,18 @@
 #         project-owner: your-org
 #         project-number: 1
 #
-# Pré-requisito (configurado pela skill /new-project):
-#   - Secret PROJECT_TOKEN no repo, com escopos `project` + `repo`.
-#   - Por padrão a skill copia o PAT do dev pro repo automaticamente.
+# Prerequisite (configured by the /new-project skill):
+#   - PROJECT_TOKEN secret in the repo, with `project` + `repo` scopes.
+#   - By default the skill copies the developer's PAT to the repo automatically.
 #
-# Comportamento:
-#   - issues.opened/reopened: cria coluna do criador (ou assignee) se não existir; move pra lá.
-#   - issues.assigned/unassigned: re-roteia só se ainda está em backlog (não bagunça fluxo).
-#   - issues.closed: move pra "Feito".
-#   - pull_request.opened/reopened: move PR pra "Em andamento".
-#   - pull_request.ready_for_review: move PR pra "Para revisão".
-#   - pull_request.closed (merged=true): move pra "Feito".
-#   - pull_request.closed (merged=false): volta pra coluna do autor.
+# Behavior:
+#   - issues.opened/reopened: creates the author's (or assignee's) column if missing; moves it there.
+#   - issues.assigned/unassigned: re-routes only if still in backlog (does not disrupt the flow).
+#   - issues.closed: moves to "Done".
+#   - pull_request.opened/reopened: moves the PR to "In progress".
+#   - pull_request.ready_for_review: moves the PR to "In review".
+#   - pull_request.closed (merged=true): moves to "Done".
+#   - pull_request.closed (merged=false): returns to the author's column.
 
 name: Project Router
 
@@ -31,16 +31,16 @@ on:
   workflow_call:
     inputs:
       project-owner:
-        description: 'Owner do GitHub Project (user ou org)'
+        description: 'GitHub Project owner (user or org)'
         required: true
         type: string
       project-number:
-        description: 'Número do GitHub Project v2'
+        description: 'GitHub Project v2 number'
         required: true
         type: number
     secrets:
       PROJECT_TOKEN:
-        description: 'PAT com escopo project + repo. Necessário porque GITHUB_TOKEN não acessa Projects v2.'
+        description: 'PAT with project + repo scope. Required because GITHUB_TOKEN cannot access Projects v2.'
         required: true
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
           script: |
             const PROJECT_OWNER = process.env.PROJECT_OWNER
             const PROJECT_NUMBER = parseInt(process.env.PROJECT_NUMBER, 10)
-            const FLOW_COLUMNS = ['Em andamento', 'Para revisão', 'Feito']
+            const FLOW_COLUMNS = ['In progress', 'In review', 'Done']
 
             const event = context.eventName
             const action = context.payload.action
@@ -67,7 +67,7 @@ jobs:
             const assignee = item.assignee ? item.assignee.login : null
             const merged = !isIssue && context.payload.pull_request.merged
 
-            // 1. Determinar coluna alvo
+            // 1. Determine the target column
             let targetColumn = null
             const key = `${event}-${action}`
             switch (key) {
@@ -78,25 +78,25 @@ jobs:
                 targetColumn = assignee || author
                 break
               case 'issues-closed':
-                targetColumn = 'Feito'
+                targetColumn = 'Done'
                 break
               case 'pull_request-opened':
               case 'pull_request-reopened':
-                targetColumn = 'Em andamento'
+                targetColumn = 'In progress'
                 break
               case 'pull_request-ready_for_review':
-                targetColumn = 'Para revisão'
+                targetColumn = 'In review'
                 break
               case 'pull_request-closed':
-                targetColumn = merged ? 'Feito' : author
+                targetColumn = merged ? 'Done' : author
                 break
               default:
-                core.info(`Evento ${key} ignorado.`)
+                core.info(`Event ${key} ignored.`)
                 return
             }
             core.info(`Target column: ${targetColumn}`)
 
-            // 2. Buscar Project (tenta user, depois org)
+            // 2. Fetch the Project (try user, then org)
             const fetchProject = async (ownerType) => {
               const queryUser = `
                 query($owner: String!, $number: Int!) {
@@ -132,39 +132,39 @@ jobs:
               } catch (_) {}
             }
             if (!project) {
-              core.setFailed(`Project ${PROJECT_OWNER}/${PROJECT_NUMBER} não encontrado.`)
+              core.setFailed(`Project ${PROJECT_OWNER}/${PROJECT_NUMBER} not found.`)
               return
             }
 
             const statusField = project.fields.nodes.find((f) => f && f.name === 'Status')
             if (!statusField) {
-              core.setFailed('Campo "Status" não encontrado no Project. Crie via skill /new-project.')
+              core.setFailed('"Status" field not found in the Project. Create it via the /new-project skill.')
               return
             }
 
-            // 3. Resolver display name (se for login de usuário, busca nome real)
+            // 3. Resolve the display name (if it is a user login, fetch the real name)
             let columnDisplayName = targetColumn
             if (!FLOW_COLUMNS.includes(targetColumn)) {
               try {
                 const { data: user } = await github.rest.users.getByUsername({ username: targetColumn })
                 if (user.name) columnDisplayName = user.name
               } catch (_) {
-                // Mantém login se não conseguir resolver (bots, conta deletada, etc.)
+                // Keep the login if it cannot be resolved (bots, deleted account, etc.)
               }
             }
 
-            // 4. Garantir que a coluna existe (cria se necessário, com cores semânticas)
-            const COLOR = { 'Em andamento': 'YELLOW', 'Para revisão': 'PURPLE', Feito: 'GREEN' }
+            // 4. Ensure the column exists (create it if needed, with semantic colors)
+            const COLOR = { 'In progress': 'YELLOW', 'In review': 'PURPLE', Done: 'GREEN' }
             let option = statusField.options.find((o) => o.name === columnDisplayName)
             if (!option) {
-              core.info(`Coluna '${columnDisplayName}' não existe — criando...`)
+              core.info(`Column '${columnDisplayName}' does not exist — creating...`)
               const personals = statusField.options.filter((o) => !FLOW_COLUMNS.includes(o.name))
               const newOptions = [
                 ...personals.map((o) => ({ name: o.name, color: 'GRAY', description: '' })),
                 { name: columnDisplayName, color: 'GRAY', description: '' },
-                { name: 'Em andamento', color: COLOR['Em andamento'], description: '' },
-                { name: 'Para revisão', color: COLOR['Para revisão'], description: '' },
-                { name: 'Feito', color: COLOR.Feito, description: '' },
+                { name: 'In progress', color: COLOR['In progress'], description: '' },
+                { name: 'In review', color: COLOR['In review'], description: '' },
+                { name: 'Done', color: COLOR.Done, description: '' },
               ]
               const result = await github.graphql(
                 `mutation($fieldId: ID!, $options: [ProjectV2SingleSelectFieldOptionInput!]!) {
@@ -180,12 +180,12 @@ jobs:
               )
               option = result.updateProjectV2Field.projectV2Field.options.find((o) => o.name === columnDisplayName)
               if (!option) {
-                core.setFailed(`Falha ao criar coluna '${columnDisplayName}'.`)
+                core.setFailed(`Failed to create column '${columnDisplayName}'.`)
                 return
               }
             }
 
-            // 5. Adicionar item ao Project (idempotente — retorna existente se já está)
+            // 5. Add the item to the Project (idempotent — returns the existing one if already there)
             const addResult = await github.graphql(
               `mutation($projectId: ID!, $contentId: ID!) {
                 addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
@@ -196,8 +196,8 @@ jobs:
             )
             const itemId = addResult.addProjectV2ItemById.item.id
 
-            // 6. Anti-bagunça: se issue está em fluxo (Em andamento/Para revisão/Feito) e o evento
-            //    é só reassign, não volta pra coluna pessoal.
+            // 6. Anti-mess: if the issue is already in the flow (In progress/In review/Done) and
+            //    the event is only a reassign, do not send it back to the personal column.
             if (key === 'issues-assigned' || key === 'issues-unassigned') {
               const currentResult = await github.graphql(
                 `query($projectId: ID!) {
@@ -224,12 +224,12 @@ jobs:
               const currentItem = currentResult.node.items.nodes.find((n) => n.id === itemId)
               const currentStatus = currentItem?.fieldValues.nodes.find((v) => v.field?.name === 'Status')?.name
               if (FLOW_COLUMNS.includes(currentStatus)) {
-                core.info(`Item já está em fluxo ('${currentStatus}'); reassign não move.`)
+                core.info(`Item is already in the flow ('${currentStatus}'); reassign does not move it.`)
                 return
               }
             }
 
-            // 7. Aplicar Status
+            // 7. Apply Status
             await github.graphql(
               `mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
                 updateProjectV2ItemFieldValue(input: {
@@ -243,4 +243,4 @@ jobs:
               }`,
               { projectId: project.id, itemId, fieldId: statusField.id, optionId: option.id },
             )
-            core.info(`Item movido para '${columnDisplayName}'.`)
+            core.info(`Item moved to '${columnDisplayName}'.`)

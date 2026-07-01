@@ -5,7 +5,7 @@ import { HTTP } from '../constants/http.js'
 import { AppError } from '../types/error.js'
 
 /**
- * Error handler global — retorna RFC 9457 Problem Details
+ * Global error handler — returns RFC 9457 Problem Details
  */
 export function errorHandler(
   error: FastifyError,
@@ -23,14 +23,14 @@ export function errorHandler(
     return
   }
 
-  // Erro inesperado — logar e retornar 500 genérico
+  // Unexpected error — log and return a generic 500
   logger.error({ err: error, trace_id: traceId }, 'Unhandled error')
 
   reply
     .status(HTTP.INTERNAL_SERVER_ERROR)
     .header('content-type', 'application/problem+json')
     .send({
-      type: 'https://api.lzr.com/errors/internal',
+      type: 'https://api.example.com/errors/internal',
       title: 'Internal Server Error',
       status: HTTP.INTERNAL_SERVER_ERROR,
       detail: 'An unexpected error occurred',

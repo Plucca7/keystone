@@ -1,16 +1,16 @@
 # @repo/commitlint-config
 
-Configuração CommitLint — Conventional Commits.
+CommitLint configuration — Conventional Commits.
 
 
 
-## Instalação
+## Installation
 
 ```bash
 npm install -D github:your-org/commitlint-config @commitlint/cli @commitlint/config-conventional
 ```
 
-## Uso
+## Usage
 
 `commitlint.config.js`:
 
@@ -18,17 +18,17 @@ npm install -D github:your-org/commitlint-config @commitlint/cli @commitlint/con
 module.exports = { extends: ['@repo/commitlint-config'] }
 ```
 
-## Tipos permitidos
+## Allowed types
 
 `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `security`, `style`, `perf`, `ci`, `build`, `revert`
 
-## Regras principais
+## Main rules
 
-- Header máximo: 100 caracteres
-- Tipo obrigatório e em minúsculas
-- Subject obrigatório (sem maiúsculas no início)
+- Header maximum: 100 characters
+- Type is required and lowercase
+- Subject is required (no leading uppercase)
 
-### Exemplos válidos
+### Valid examples
 
 ```
 feat: adds dashboard feature
@@ -36,11 +36,11 @@ fix: corrects timeout bug
 security: fixes SQL injection
 ```
 
-## Histórico
+## History
 
-Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originally part of the `your-org/shared-config` monorepo. Split out in 2026 to resolve import resolution issues when installed via `github:` deps.
 
-## Referência
+## Reference
 
 
 - [Conventional Commits](https://www.conventionalcommits.org/)

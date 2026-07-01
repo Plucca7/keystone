@@ -3,10 +3,9 @@ import pino from 'pino'
 import { env } from './env.js'
 
 /**
- * Logger estruturado — JSON em produção, pretty em dev.
- * Handbook: "Structured JSON logging obrigatório"
+ * Structured logger — JSON in production, pretty in dev.
  *
- * Formato:
+ * Format:
  * {
  *   "timestamp": "...",
  *   "level": "error",
@@ -15,7 +14,7 @@ import { env } from './env.js'
  *   "trace_id": "..."
  * }
  *
- * NUNCA logar: passwords, tokens, CPF/CNPJ completo, dados de cartão.
+ * NEVER log: passwords, tokens, full personal identifiers, card data.
  */
 export const logger = pino({
   level: env.LOG_LEVEL,

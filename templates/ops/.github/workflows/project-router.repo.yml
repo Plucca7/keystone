@@ -1,14 +1,14 @@
-# Project Router para o próprio lzr-github-ops.
-# Cola que escuta eventos de issues/PRs e delega ao workflow reutilizável
-# (definido neste mesmo repo, em .github/workflows/project-router.yml).
+# Project Router for github-ops itself.
+# Glue that listens to issue/PR events and delegates to the reusable workflow
+# (defined in this same repo, at .github/workflows/project-router.yml).
 #
-# Configuração:
-#   - Project oficial: https://github.com/your-org/projects/1 (Platform Roadmap)
-#   - Secret necessário: PROJECT_TOKEN (PAT com escopo project + repo)
+# Configuration:
+#   - Official Project: https://github.com/your-org/projects/1 (Platform Roadmap)
+#   - Required secret: PROJECT_TOKEN (PAT with project + repo scope)
 #
-# Por que o nome de arquivo é project-router.repo.yml e não project-router.yml:
-#   o workflow reutilizável já se chama project-router.yml; manter nome distinto
-#   evita confusão na UI do GitHub.
+# Why the file is named project-router.repo.yml and not project-router.yml:
+#   the reusable workflow is already named project-router.yml; keeping a distinct
+#   name avoids confusion in the GitHub UI.
 
 name: Project Router (this repo)
 

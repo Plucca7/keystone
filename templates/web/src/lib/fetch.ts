@@ -1,8 +1,8 @@
 import type { ProblemDetail } from './types'
 
 /**
- * Fetch wrapper com error handling RFC 9457
- * Handbook: Result Pattern para chamadas externas
+ * Fetch wrapper with RFC 9457 error handling.
+ * Uses the Result pattern for external calls.
  */
 export async function apiFetch<T>(
   url: string,
@@ -28,7 +28,7 @@ export async function apiFetch<T>(
     return {
       success: false,
       error: {
-        type: 'https://api.lzr.com/errors/network',
+        type: 'https://api.example.com/errors/network',
         title: 'Network Error',
         status: 0,
         detail: 'Failed to connect to the server',

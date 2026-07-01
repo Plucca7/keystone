@@ -6,25 +6,25 @@ import path from 'node:path'
  * Playwright config — web template.
  *
  * Principles:
- *   - Suite ENXUTA: smoke + critical do produto, sem cobertura ampla.
- *   - Anti-flakiness: retries em CI, locator-based, timeouts generosos.
- *   - Storage state reuso: login feito 1x no globalSetup; specs herdam sessão.
- *   - Chromium-only no MVP (Firefox/WebKit quando necessário pra economizar CI).
+ *   - LEAN suite: product smoke + critical, no broad coverage.
+ *   - Anti-flakiness: retries in CI, locator-based, generous timeouts.
+ *   - Storage state reuse: login done once in globalSetup; specs inherit the session.
+ *   - Chromium-only in the MVP (Firefox/WebKit when needed, to save CI time).
  *
- * Como rodar:
- *   pnpm test:e2e         — headless, paralelo
- *   pnpm test:e2e:ui      — UI interativa (debug visual)
- *   pnpm test:e2e:debug   — modo headed + debugger
- *   pnpm test:e2e:install — instala Chromium (uma vez)
+ * How to run:
+ *   pnpm test:e2e         — headless, parallel
+ *   pnpm test:e2e:ui      — interactive UI (visual debug)
+ *   pnpm test:e2e:debug   — headed mode + debugger
+ *   pnpm test:e2e:install — installs Chromium (once)
  *
- * Adapte:
- *   - globalSetup: copie e2e/fixtures/global-setup.ts.example → global-setup.ts
- *   - critical/login.spec: copie e2e/critical/login.spec.ts.example → login.spec.ts
- *   - Adicione critical/<sua-feature>.spec.ts pro fluxo crítico do seu produto
+ * Adapt:
+ *   - globalSetup: copy e2e/fixtures/global-setup.ts.example → global-setup.ts
+ *   - critical/login.spec: copy e2e/critical/login.spec.ts.example → login.spec.ts
+ *   - Add critical/<your-feature>.spec.ts for your product's critical flow
  */
 
-// Carrega .env.local manualmente (Next carrega só no webServer; processo do Playwright não veria
-// E2E_USER_EMAIL/E2E_USER_PASSWORD sem isso). Parser inline sem dep nova.
+// Loads .env.local manually (Next only loads it in the webServer; the Playwright process would not
+// see E2E_USER_EMAIL/E2E_USER_PASSWORD otherwise). Inline parser with no new dependency.
 function loadEnvLocal() {
   const envPath = path.join(__dirname, '.env.local')
   if (!existsSync(envPath)) return
@@ -47,34 +47,34 @@ function loadEnvLocal() {
 }
 loadEnvLocal()
 
-// Onde guardar a sessão autenticada reutilizada pelas specs.
+// Where to store the authenticated session reused by the specs.
 const STORAGE_STATE_PATH = path.join(__dirname, 'e2e', '.auth', 'storage-state.json')
 
 const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:3000'
 const isCI = !!process.env.CI
 
-// globalSetup só existe quando o consumidor adapta o .example.
-// Detectar dinamicamente evita erro "Cannot find file" antes da adaptação.
+// globalSetup only exists once the consumer adapts the .example file.
+// Detecting it dynamically avoids a "Cannot find file" error before adaptation.
 const GLOBAL_SETUP_PATH = path.join(__dirname, 'e2e', 'fixtures', 'global-setup.ts')
 const hasGlobalSetup = existsSync(GLOBAL_SETUP_PATH)
 
 export default defineConfig({
   testDir: './e2e',
-  // Apenas .spec.ts dentro de e2e/. Unit tests (vitest) ficam em src/.
+  // Only .spec.ts inside e2e/. Unit tests (vitest) live in src/.
   testMatch: /.*\.spec\.ts$/,
 
-  // Timeouts generosos pra absorver cold start de Next + APIs externas.
+  // Generous timeouts to absorb Next cold start + external APIs.
   timeout: 30_000,
   expect: { timeout: 10_000 },
 
-  // CI: paralelismo controlado pra não saturar runner; local: full speed.
+  // CI: controlled parallelism so the runner is not saturated; local: full speed.
   workers: isCI ? 2 : undefined,
   fullyParallel: true,
 
-  // CI retry 2 vezes em flake; local 0 pra detectar testes não-determinísticos cedo.
+  // CI retries flakes twice; local 0 to catch non-deterministic tests early.
   retries: isCI ? 2 : 0,
 
-  // Falha o build se houver .only commitado (não vaza foco entre PRs).
+  // Fails the build if a committed .only exists (no leaked focus between PRs).
   forbidOnly: isCI,
 
   reporter: isCI
@@ -83,7 +83,7 @@ export default defineConfig({
 
   use: {
     baseURL: BASE_URL,
-    // Captura trace só em retry — economiza tempo/espaço, mas debug é fácil quando precisa.
+    // Captures trace only on retry — saves time/space, while debugging stays easy when needed.
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -94,13 +94,13 @@ export default defineConfig({
   ...(hasGlobalSetup ? { globalSetup: './e2e/fixtures/global-setup.ts' } : {}),
 
   projects: [
-    // Specs de smoke rodam SEM autenticação (testa redirect, página pública).
+    // Smoke specs run WITHOUT authentication (test redirects, public pages).
     {
       name: 'smoke',
       testMatch: /smoke\/.*\.spec\.ts$/,
       use: { ...devices['Desktop Chrome'], storageState: { cookies: [], origins: [] } },
     },
-    // Specs críticas usam storage state autenticado (gerado pelo globalSetup quando existir).
+    // Critical specs use the authenticated storage state (generated by globalSetup when present).
     {
       name: 'critical',
       testMatch: /critical\/.*\.spec\.ts$/,
@@ -111,8 +111,8 @@ export default defineConfig({
     },
   ],
 
-  // Sobe o app automaticamente antes dos testes. CI usa build prod (mais rápido + realista);
-  // local usa dev pra hot-reload entre runs.
+  // Starts the app automatically before the tests. CI uses the prod build (faster + more realistic);
+  // local uses dev for hot-reload between runs.
   webServer: {
     command: isCI ? 'pnpm start' : 'pnpm dev',
     url: BASE_URL,

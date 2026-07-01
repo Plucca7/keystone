@@ -1,76 +1,65 @@
 # Platform Roadmap
 
-> Documento mestre das melhorias de **platform** — tudo que afeta como criamos código (templates, configs compartilhadas, CI reutilizável, skill `/new-project`, governança).
+> Master document for **platform** improvements — everything that affects how we build code (templates, shared configs, reusable CI, the `/new-project` skill, governance).
 >
-> Este NÃO é o backlog de produtos (Brand, Green Copilot, etc). Aqueles vivem em cada repo de produto.
+> This is NOT the product backlog. Those live in each product's own repo.
 
-## Filosofia
+## Philosophy
 
-A plataforma existe pra **acelerar o time, não atrasar**. Investimos em melhorias quando:
+The platform exists to **speed the team up, not slow it down**. We invest in improvements when:
 
-1. **Há dor real** — algum product sentiu o impacto da falta dela
-2. **O ROI é claro** — esforço de implementação << ganho operacional
-3. **A maturidade do produto pede** — não adianta ter Lighthouse CI antes de ter um cliente pagante
+1. **There is real pain** — some product has felt the impact of its absence
+2. **The ROI is clear** — implementation effort << operational gain
+3. **Product maturity calls for it** — there is no point in having Lighthouse CI before you have a paying customer
 
-> Cair em "platform engineering" antes do produto ter tração é antipattern clássico. Esse roadmap é deliberadamente **demand-driven**, não aspiracional.
+> Falling into "platform engineering" before the product has traction is a classic antipattern. This roadmap is deliberately **demand-driven**, not aspirational.
 
-## Categorização
+## Categorization
 
-Cada melhoria entra numa de 3 camadas:
+Each improvement lands in one of 3 layers:
 
-| Camada | Quando atacar | Critério |
+| Layer | When to tackle | Criterion |
 |--------|---------------|----------|
-| 🔴 **Crítico** | Quando primeiro product tiver 2-3 clientes pagantes | "Sem isso o produto pode quebrar em prod sem ninguém ver" |
-| 🟡 **Importante** | Quando primeiro produto tiver 10+ clientes ou segundo produto ativo | "Eleva muito a qualidade percebida e a velocidade do time" |
-| 🟢 **Refinos** | Quando houver dor específica ou time de plataforma dedicado | "Excelência opcional, custo-benefício varia muito" |
+| 🔴 **Critical** | When the first product has 2-3 paying customers | "Without this, the product can break in prod with nobody noticing" |
+| 🟡 **Important** | When the first product has 10+ customers or a second product is active | "Greatly raises perceived quality and team velocity" |
+| 🟢 **Refinements** | When there is specific pain or a dedicated platform team | "Optional excellence, cost-benefit varies a lot" |
 
-## Roadmap por camada
+## Roadmap by layer
 
-### 🔴 Crítico
+> The items below are placeholder examples. Replace them with your own, referencing each tracking issue as `#NUMBER`.
 
-- **#7** Dependabot + CodeQL + npm audit nos templates *(security baseline)*
-- **#8** Coverage threshold no `ci.yml` reutilizável (mínimo 80%, falha PR abaixo)
-- **#9** Setup de observabilidade padronizado — Sentry + structured logs (helper `@repo/observability`)
+### 🔴 Critical
 
-### 🟡 Importante
+- **#1** Security baseline in the templates — Dependabot + CodeQL + dependency audit
+- **#2** Coverage threshold in the reusable `ci.yml` (minimum 80%, fail PRs below it)
 
-- **#10** Bundle size tracking + Lighthouse CI — performance budget enforced
-- **#11** Axe-core no CI dos templates web — accessibility automatizada
-- **#12** Setup de feature flags — recomendação + helper (GrowthBook ou Unleash)
-- **#13** Preview deployments por PR — Vercel preview env documentado nos templates
-- **#14** Generate OpenAPI spec inicial em projetos API — passo extra na skill
-- **#15** Storybook setup no `lzr-template-web-next` — UI components com docs vivas
+### 🟡 Important
 
-### 🟢 Refinos
+- **#3** Bundle size tracking + Lighthouse CI — enforced performance budget
+- **#4** Preview deployments per PR — documented in the templates
 
-- **#16** Mutation testing opcional via Stryker — workflow reutilizável
-- **#17** Dev container (`.devcontainer.json`) nos templates — onboarding <10min
-- **#18** Secrets em vault (Doppler ou Infisical) — alternativa a `.env.local`
+### 🟢 Refinements
 
-## Bugs descobertos (não-roadmap, mas vivem aqui pra rastrear)
+- **#5** Dev container (`.devcontainer.json`) in the templates — onboarding in <10 min
 
-- **#19** [bug] CI dos templates falha com pnpm — alinhar com correções aplicadas no `lzr-brand`
-- **#20** [bug] `eslint.config.mjs` importa `globals` mas não declara em devDependencies
-- **#21** [bug] `package.json` dos templates sem `"packageManager"` declarado
+## How to use this document
 
-## Como usar este documento
+- **Add an item**: open an issue in `github-ops` with the label `platform` + `priority:critical|important|refinement` + the appropriate `area:*`. Update this doc with `#NUMBER`.
+- **Tackle an item**: move the issue to `In progress` on the platform roadmap board. The project-router workflow does this automatically when you open a linked PR.
+- **Reprioritize**: edit this doc + the issue label. The doc is the storyteller; the board is the operational tracker.
 
-- **Adicionar item**: abrir issue no `lzr-github-ops` com label `platform` + `priority:critical|important|refinement` + `area:*` apropriada. Atualizar este doc com `#NÚMERO`.
-- **Atacar item**: mover issue pra `Em andamento` no [platform roadmap board](https://github.com/your-org/projects/1). Workflow do project-router faz isso automaticamente quando você abre PR vinculado.
-- **Reordenar prioridade**: editar este doc + a label da issue. O doc é o storyteller; o board é o tracker operacional.
-
-## Convenções
+## Conventions
 
 ### Labels
 
-- `platform` — todas as issues de melhoria de plataforma (vs `bug`, `feat`, etc.)
+- `platform` — all platform improvement issues (vs `bug`, `feat`, etc.)
 - `priority:critical` / `priority:important` / `priority:refinement`
 - `area:ci` / `area:templates` / `area:skill` / `area:observability` / `area:security` / `area:testing` / `area:performance`
 
-### Definition of Done para item de plataforma
+### Definition of Done for a platform item
 
-1. Mudança propagada nos templates (web + api) onde aplicável
-2. Mudança propagada na skill `/new-project` se for setup-time
-3. Documentação no Engineering Handbook v2.X (ou ADR se for decisão arquitetural)
-4. Versão do Handbook incrementada (governance.md changelog)
-5. Issue fechada → automaticamente vai pra `Feito` no board
+1. Change propagated to the templates (web + api) where applicable
+2. Change propagated to the `/new-project` skill if it is a setup-time change
+3. Documentation in the Engineering Handbook (or an ADR if it is an architectural decision)
+4. Handbook version bumped (governance changelog)
+5. Issue closed → automatically moves to `Done` on the board

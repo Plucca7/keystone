@@ -1,9 +1,9 @@
 /**
- * HTTP status codes nomeados — evita magic numbers (Handbook Zero `any` + no-magic-numbers).
+ * Named HTTP status codes — avoids magic numbers (zero `any` + no-magic-numbers).
  *
- * Why: códigos HTTP repetidos em throws/replies viram magic numbers que o lint
- * rejeita. Constantes nomeadas tornam o intent explícito e centralizam a tabela
- * RFC 9110 num só lugar.
+ * Why: HTTP codes repeated across throws/replies become magic numbers that the
+ * linter rejects. Named constants make the intent explicit and centralize the
+ * RFC 9110 table in a single place.
  */
 export const HTTP = {
   OK: 200,

@@ -1,18 +1,18 @@
 # @repo/tsconfig
 
-Configurações TypeScript (shared).
+TypeScript configurations (shared).
 
 
 
-## Instalação
+## Installation
 
 ```bash
 npm install -D github:your-org/tsconfig
 ```
 
-## Uso
+## Usage
 
-### Projeto Next.js
+### Next.js project
 
 ```json
 {
@@ -25,7 +25,7 @@ npm install -D github:your-org/tsconfig
 }
 ```
 
-### Projeto Node/API
+### Node/API project
 
 ```json
 {
@@ -38,7 +38,7 @@ npm install -D github:your-org/tsconfig
 }
 ```
 
-### Projeto React Native / Expo
+### React Native / Expo project
 
 ```json
 {
@@ -46,19 +46,19 @@ npm install -D github:your-org/tsconfig
 }
 ```
 
-## Configs disponíveis
+## Available configs
 
-| Config | Stack | Quando usar |
+| Config | Stack | When to use |
 |--------|-------|-------------|
-| `tsconfig.base.json` | Base compartilhada | Não usar diretamente |
-| `tsconfig.node.json` | APIs Node.js | `extends: "@repo/tsconfig/tsconfig.node.json"` |
+| `tsconfig.base.json` | Shared base | Do not use directly |
+| `tsconfig.node.json` | Node.js APIs | `extends: "@repo/tsconfig/tsconfig.node.json"` |
 | `tsconfig.next.json` | Next.js App Router | `extends: "@repo/tsconfig/tsconfig.next.json"` |
 | `tsconfig.react-native.json` | Expo / React Native | `extends: "@repo/tsconfig/tsconfig.react-native.json"` |
 
-## Histórico
+## History
 
-Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originally part of the `your-org/shared-config` monorepo. Split out in 2026 to resolve import resolution issues when installed via `github:` deps.
 
-## Referência
+## Reference
 
 

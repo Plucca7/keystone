@@ -1,38 +1,38 @@
 name: Feature Request
-description: Sugira uma nova funcionalidade
+description: Suggest a new feature
 title: "[FEATURE] "
 labels: ["enhancement"]
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Problema
-      description: Qual problema esta feature resolve?
-      placeholder: "Hoje eu preciso fazer X manualmente e é lento..."
+      label: Problem
+      description: What problem does this feature solve?
+      placeholder: "Today I have to do X manually and it is slow..."
     validations:
       required: true
 
   - type: textarea
     id: solution
     attributes:
-      label: Solução proposta
-      description: Como você imagina a solução?
+      label: Proposed solution
+      description: How do you imagine the solution?
     validations:
       required: true
 
   - type: textarea
     id: acceptance
     attributes:
-      label: Critérios de aceite
-      description: Como saber que está pronto?
+      label: Acceptance criteria
+      description: How do we know it is done?
       placeholder: |
-        - [ ] Critério 1
-        - [ ] Critério 2
+        - [ ] Criterion 1
+        - [ ] Criterion 2
     validations:
       required: true
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternativas consideradas
-      description: Outras soluções que pensou?
+      label: Alternatives considered
+      description: Other solutions you thought about?

@@ -1,5 +1,5 @@
 {
-  "name": "lzr-api",
+  "name": "api-service",
   "version": "0.1.0",
   "private": true,
   "description": "Service (API) — TypeScript/Node",

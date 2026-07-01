@@ -1,20 +1,20 @@
 # @repo/eslint-config
 
-Configuração ESLint (shared, flat config, ESLint 9+).
+ESLint configuration (shared, flat config, ESLint 9+).
 
 
 
-## Instalação
+## Installation
 
 ```bash
 npm install -D github:your-org/eslint-config
-# Mais peer-deps que precisam estar no projeto:
+# Additional peer deps that must be present in the project:
 npm install -D eslint @eslint/js @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-import
 ```
 
-## Uso
+## Usage
 
-### Projeto Node/API
+### Node/API project
 
 `eslint.config.mjs`:
 
@@ -27,7 +27,7 @@ export default [
 ]
 ```
 
-### Projeto Next.js / React
+### Next.js / React project
 
 `eslint.config.mjs`:
 
@@ -40,18 +40,18 @@ export default [
 ]
 ```
 
-## Exports disponíveis
+## Available exports
 
-| Export | Stack | O que inclui |
+| Export | Stack | What it includes |
 |--------|-------|-------------|
-| `base` | Qualquer TypeScript | Zero `any`, imports organizados, naming conventions |
-| `node` | APIs Node.js | Base + `no-magic-numbers` (warning) |
+| `base` | Any TypeScript | Zero `any`, organized imports, naming conventions |
+| `node` | Node.js APIs | Base + `no-magic-numbers` (warning) |
 | `react` | React / Next.js | Base + JSX rules (`jsx-no-target-blank`, `self-closing-comp`) |
 
-## Histórico
+## History
 
-Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originally part of the `your-org/shared-config` monorepo. Split out in 2026 to resolve import resolution issues when installed via `github:` deps.
 
-## Referência
+## Reference
 
 

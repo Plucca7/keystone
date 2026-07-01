@@ -1,48 +1,47 @@
 import type { Page } from '@playwright/test'
 
 /**
- * Helpers de mock pra APIs externas — evita E2E batendo em serviços reais
- * (BrasilAPI, Resend, Hostinger, etc.) durante os testes.
+ * Mock helpers for external APIs — keeps E2E tests from hitting real services
+ * (third-party data providers, email senders, hosting APIs, etc.) during runs.
  *
- * Uso típico em specs:
- *   import { mockBrasilAPI } from '../fixtures/api-mocks'
- *   test('cria empresa', async ({ page }) => {
- *     await mockBrasilAPI(page, { razao_social: 'ACME LTDA' })
+ * Typical usage in specs:
+ *   import { mockExternalApi } from '../fixtures/api-mocks'
+ *   test('creates a record', async ({ page }) => {
+ *     await mockExternalApi(page, { name: 'ACME Inc' })
  *     // ...
  *   })
  *
- * Não mocka Supabase — esse SIM bate no projeto dev real (your-project-ref)
- * pra validar RLS e schema. Pra isolar, configurar projeto dedicado de teste no futuro.
+ * It does not mock the database — that one DOES hit the real dev project
+ * (your-project-ref) to validate access rules and schema. To isolate it,
+ * set up a dedicated test project in the future.
  */
 
-interface BrasilAPIData {
-  razao_social?: string
-  nome_fantasia?: string
+interface ExternalRecord {
+  id?: string
+  name?: string
   email?: string
-  telefone?: string
-  logradouro?: string
-  bairro?: string
-  cep?: string
-  municipio?: string
-  uf?: string
+  phone?: string
+  address?: string
+  city?: string
+  region?: string
+  postalCode?: string
+  status?: string
 }
 
 /**
- * Intercepta chamadas pra BrasilAPI CNPJ — retorna payload mockado.
- * Útil pra specs que cadastram empresa sem depender de CNPJ real ativo.
+ * Intercepts calls to an external data provider — returns a mocked payload.
+ * Useful for specs that create a record without depending on a live external lookup.
  */
-export async function mockBrasilAPI(page: Page, data: BrasilAPIData = {}): Promise<void> {
-  await page.route('**/brasilapi.com.br/api/cnpj/v1/**', async (route) => {
+export async function mockExternalApi(page: Page, data: ExternalRecord = {}): Promise<void> {
+  await page.route('**/api.example.com/lookup/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
-        cnpj: '00000000000191',
-        razao_social: 'ACME LTDA',
-        nome_fantasia: 'ACME',
-        situacao_cadastral: 2,
-        data_situacao_cadastral: '2020-01-01',
-        descricao_situacao_cadastral: 'ATIVA',
+        id: 'example-id',
+        name: 'ACME Inc',
+        email: 'contact@example.com',
+        status: 'active',
         ...data,
       }),
     })
@@ -50,11 +49,11 @@ export async function mockBrasilAPI(page: Page, data: BrasilAPIData = {}): Promi
 }
 
 /**
- * Intercepta envios de e-mail (Resend). Útil pra specs de signup/recovery
- * sem disparar e-mails reais.
+ * Intercepts outgoing email sends. Useful for signup/recovery specs
+ * without sending real emails.
  */
-export async function mockResend(page: Page, response: { id?: string } = {}): Promise<void> {
-  await page.route('**/api.resend.com/**', async (route) => {
+export async function mockEmailProvider(page: Page, response: { id?: string } = {}): Promise<void> {
+  await page.route('**/api.email-provider.example.com/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -64,11 +63,11 @@ export async function mockResend(page: Page, response: { id?: string } = {}): Pr
 }
 
 /**
- * Intercepta chamadas pra Hostinger (DNS, VPS). Mock genérico — adicionar
- * variantes conforme specs forem precisando.
+ * Intercepts calls to a hosting provider (DNS, servers). Generic mock — add
+ * variants as specs need them.
  */
-export async function mockHostinger(page: Page): Promise<void> {
-  await page.route('**/developers.hostinger.com/api/**', async (route) => {
+export async function mockHostingProvider(page: Page): Promise<void> {
+  await page.route('**/api.hosting-provider.example.com/**', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

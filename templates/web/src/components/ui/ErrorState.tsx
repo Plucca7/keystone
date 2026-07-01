@@ -8,7 +8,7 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  message = 'Ocorreu um erro ao carregar os dados.',
+  message = 'An error occurred while loading the data.',
   onRetry,
 }: ErrorStateProps) {
   return (
@@ -18,16 +18,16 @@ export function ErrorState({
       </div>
       <div className="space-y-1">
         <p className="text-text-primary text-sm font-medium">{message}</p>
-        <p className="text-text-secondary text-xs">Verifique sua conexão e tente novamente.</p>
+        <p className="text-text-secondary text-xs">Check your connection and try again.</p>
       </div>
       {onRetry && (
         <button
           onClick={onRetry}
           className="bg-surface text-text-primary border-border hover:border-border-hi inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors duration-[180ms]"
-          aria-label="Tentar novamente"
+          aria-label="Try again"
         >
           <RefreshCcw className="h-4 w-4" aria-hidden="true" />
-          Tentar novamente
+          Try again
         </button>
       )}
     </div>

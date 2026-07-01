@@ -7,7 +7,7 @@ import { errorHandler } from './shared/middleware/error-handler.js'
 
 async function bootstrap(): Promise<void> {
   const app = Fastify({
-    logger: false, // Usamos nosso próprio logger (pino)
+    logger: false, // We use our own logger (pino)
     requestIdHeader: 'x-trace-id',
     genReqId: () => crypto.randomUUID(),
   })
@@ -40,7 +40,7 @@ async function bootstrap(): Promise<void> {
     )
   })
 
-  // Security headers (Handbook: OWASP)
+  // Security headers (OWASP)
   app.addHook('onSend', async (_request, reply) => {
     reply.header('X-Content-Type-Options', 'nosniff')
     reply.header('X-Frame-Options', 'DENY')

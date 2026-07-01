@@ -1,17 +1,17 @@
-# lzr-github-ops
+# github-ops
 
-Workflows reutilizáveis do GitHub Actions e templates de governança .
+Reusable GitHub Actions workflows and governance templates.
 
 
 
-## Workflows Reutilizáveis
+## Reusable Workflows
 
 ### CI Pipeline (`ci.yml`)
 
-Pipeline completa: typecheck → lint → test → build
+Full pipeline: typecheck → lint → test → build
 
 ```yaml
-# No seu repo, crie .github/workflows/ci.yml:
+# In your repo, create .github/workflows/ci.yml:
 name: CI
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
 
 ### Security Scan (`security.yml`)
 
-Audit de dependências + CodeQL analysis
+Dependency audit + CodeQL analysis
 
 ```yaml
 name: Security
@@ -38,7 +38,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 9 * * 1'  # Toda segunda às 9h
+    - cron: '0 9 * * 1'  # Every Monday at 9am
 
 jobs:
   security:
@@ -47,7 +47,7 @@ jobs:
 
 ### Release (`release.yml`)
 
-Release automatizada com changelog
+Automated release with changelog
 
 ```yaml
 name: Release
@@ -62,30 +62,30 @@ jobs:
 
 ## Templates
 
-### Para copiar no seu repo
+### To copy into your repo
 
-| Template | Destino | Descrição |
+| Template | Destination | Description |
 |----------|---------|-----------|
-| `templates/repo-files/CODEOWNERS` | `.github/CODEOWNERS` | Ownership por área |
-| `templates/docs/ADR-000-template.md` | `docs/adrs/ADR-000-template.md` | Template de ADR |
-| `templates/docs/service-runbook.md` | `docs/runbooks/service-runbook.md` | Runbook operacional |
+| `templates/repo-files/CODEOWNERS` | `.github/CODEOWNERS` | Ownership by area |
+| `templates/docs/ADR-000-template.md` | `docs/adrs/ADR-000-template.md` | ADR template |
+| `templates/docs/service-runbook.md` | `docs/runbooks/service-runbook.md` | Operational runbook |
 
 ### Issue & PR Templates
 
-Já inclusos em `.github/`:
-- **Bug Report** — com severidade (SEV-1 a SEV-4)
-- **Feature Request** — com critérios de aceite
-- **Pull Request Template** — checklist baseado no handbook
+Already included in `.github/`:
+- **Bug Report** — with severity (SEV-1 to SEV-4)
+- **Feature Request** — with acceptance criteria
+- **Pull Request Template** — checklist based on the handbook
 
-## Como usar
+## How to use
 
-1. Copie os workflows para `.github/workflows/` do seu repo
-2. Copie o CODEOWNERS para `.github/CODEOWNERS`
-3. Copie os templates de docs para `docs/`
-4. Ajuste owners e configurações conforme o projeto
+1. Copy the workflows into your repo's `.github/workflows/`
+2. Copy the CODEOWNERS into `.github/CODEOWNERS`
+3. Copy the doc templates into `docs/`
+4. Adjust owners and settings per project
 
-Ou use os **templates oficiais** ([lzr-template-api-node](https://github.com/your-org/template-api), [lzr-template-web-next](https://github.com/your-org/template-web)) que já vêm com tudo configurado.
+Or use the **official templates** ([template-api](https://github.com/your-org/template-api), [template-web](https://github.com/your-org/template-web)) which come preconfigured.
 
-## Referência
+## Reference
 
 

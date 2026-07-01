@@ -6,8 +6,8 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 
 /**
- * Client-side providers wrapper
- * Handbook: React Query para client caching/polling
+ * Client-side providers wrapper.
+ * React Query handles client-side caching and polling.
  */
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -15,7 +15,7 @@ export function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 minuto
+            staleTime: 60 * 1000, // 1 minute
             retry: 1,
           },
         },

@@ -1,137 +1,137 @@
 # E2E — Playwright (standard)
 
-Fundação Playwright pronta pra adotar em qualquer project Next.js. Cobre setup, CI, padrões anti-flakiness, autenticação reusada via storage state.
+A ready-to-adopt Playwright foundation for any Next.js project. Covers setup, CI, anti-flakiness patterns, and reused authentication via storage state.
 
-## Filosofia
+## Philosophy
 
-**Suite enxuta, não pretensiosa.** Cobertura ampla é responsabilidade de testes unitários (Vitest). Aqui ficam só:
+**A lean, unpretentious suite.** Broad coverage is the job of unit tests (Vitest). Here we keep only:
 
-- **Smoke** (`e2e/smoke/`) — app sobe, landing renderiza, redirects básicos. Sem autenticação.
-- **Critical** (`e2e/critical/`) — fluxos principais do produto autenticado. Reusa sessão via `storageState`.
+- **Smoke** (`e2e/smoke/`) — the app boots, the landing renders, basic redirects. No authentication.
+- **Critical** (`e2e/critical/`) — the main authenticated product flows. Reuses the session via `storageState`.
 
-Cobertura ampla só quando uma feature **complexa** entra (signing flow, multi-step wizard). Não tentar cobrir 100% — mantém suite rodando rápido e sem flaky.
+Add broad coverage only when a **complex** feature lands (a signing flow, a multi-step wizard). Do not try to cover 100% — that keeps the suite fast and flake-free.
 
-## Estrutura
+## Structure
 
 ```
 e2e/
-├── README.md                              ← este arquivo
+├── README.md                              ← this file
 ├── fixtures/
-│   ├── api-mocks.ts                       ← helpers de mock de APIs externas (BrasilAPI, Resend, Hostinger)
-│   └── global-setup.ts.example            ← ADAPTAR: login flow do seu projeto
+│   ├── api-mocks.ts                       ← mock helpers for external APIs (data provider, email, hosting)
+│   └── global-setup.ts.example            ← ADAPT: your project's login flow
 ├── smoke/
-│   └── health.spec.ts                     ← landing /200 — adicione mais conforme implementa
+│   └── health.spec.ts                     ← landing /200 — add more as you implement
 └── critical/
-    └── login.spec.ts.example              ← ADAPTAR: rotas autenticadas do seu projeto
+    └── login.spec.ts.example              ← ADAPT: your project's authenticated routes
 ```
 
-## Adoção em projeto novo
+## Adopting it in a new project
 
-### 1. Já vem montado
+### 1. Already wired up
 
-Este template já inclui `playwright.config.ts`, `.github/workflows/e2e.yml`, scripts no `package.json`, `.gitignore` ajustado. Funciona out-of-the-box pro smoke (landing /200).
+This template already includes `playwright.config.ts`, `.github/workflows/e2e.yml`, scripts in `package.json`, and an adjusted `.gitignore`. It works out of the box for smoke (landing /200).
 
-### 2. Configurar credenciais (quando tiver auth)
+### 2. Configure credentials (once you have auth)
 
-Crie `.env.local` na raiz:
+Create `.env.local` at the root:
 
 ```bash
-E2E_USER_EMAIL=user-teste@example.com
-E2E_USER_PASSWORD=<senha do user de teste>
-# Opcional:
+E2E_USER_EMAIL=test-user@example.com
+E2E_USER_PASSWORD=<test user password>
+# Optional:
 # E2E_BASE_URL=http://localhost:3000
 ```
 
-E configure GitHub Secrets pra CI:
+And configure GitHub Secrets for CI:
 ```bash
 gh secret set E2E_USER_EMAIL --repo <owner>/<repo>
 gh secret set E2E_USER_PASSWORD --repo <owner>/<repo>
 ```
 
-### 3. Adaptar global-setup
+### 3. Adapt global-setup
 
 ```bash
 mv e2e/fixtures/global-setup.ts.example e2e/fixtures/global-setup.ts
 ```
 
-Edite o arquivo. Os marcadores `[TODO]` indicam onde ajustar:
-- `page.goto(...)` — rota do login
-- Seletores dos inputs (use `getByLabel` se tem `htmlFor`; `getByPlaceholder` se não)
-- `page.waitForURL(...)` — padrão de URL pós-login do seu app
+Edit the file. The `[TODO]` markers show where to adjust:
+- `page.goto(...)` — the login route
+- The input selectors (use `getByLabel` if there is an `htmlFor`; `getByPlaceholder` if not)
+- `page.waitForURL(...)` — your app's post-login URL pattern
 
-> O `playwright.config.ts` detecta se o `global-setup.ts` existe e ativa `globalSetup` automaticamente. Sem ele, só smoke roda.
+> `playwright.config.ts` detects whether `global-setup.ts` exists and enables `globalSetup` automatically. Without it, only smoke runs.
 
-### 4. Adaptar login.spec
+### 4. Adapt login.spec
 
 ```bash
 mv e2e/critical/login.spec.ts.example e2e/critical/login.spec.ts
 ```
 
-Ajuste as rotas protegidas. Se ainda não tem auth, mantenha como `.example` (Playwright ignora).
+Adjust the protected routes. If you do not have auth yet, keep it as `.example` (Playwright ignores it).
 
-### 5. Adicionar specs do fluxo crítico do seu produto
+### 5. Add specs for your product's critical flow
 
-Crie `e2e/critical/<feature>.spec.ts` cobrindo o caminho mais usado. Exemplo (Green Copilot):
+Create `e2e/critical/<feature>.spec.ts` covering the most-used path. Example:
 
 ```ts
-test('lista renderiza com items', async ({ page }) => {
+test('the list renders with items', async ({ page }) => {
   await page.goto('/items')
   await expect(page.locator('a[href*="/items/"]').first()).toBeVisible()
 })
 ```
 
-## Como rodar
+## How to run
 
 ```bash
-# Headless, todos os projects
+# Headless, all projects
 pnpm test:e2e
 
-# UI interativa pra debug (recomendado pra dev)
+# Interactive UI for debugging (recommended for dev)
 pnpm test:e2e:ui
 
-# Modo headed + debugger
+# Headed mode + debugger
 pnpm test:e2e:debug
 
-# Instala Chromium (uma vez)
+# Install Chromium (once)
 pnpm test:e2e:install
 
-# Só smoke (sem auth)
+# Smoke only (no auth)
 pnpm test:e2e --project=smoke
 
-# Só critical (autenticado)
+# Critical only (authenticated)
 pnpm test:e2e --project=critical
 ```
 
-## Em CI
+## In CI
 
-GitHub Actions roda automaticamente em PRs (`.github/workflows/e2e.yml`):
-- Cache do Chromium (~2min economizado por run)
-- Build prod do app (mais rápido + realista que dev)
-- HTML report como artifact em falha
-- Retry 2x em flake
-- Falha bloqueia merge (configure como **required check** no branch protection)
+GitHub Actions runs automatically on PRs (`.github/workflows/e2e.yml`):
+- Chromium cache (~2min saved per run)
+- Prod build of the app (faster + more realistic than dev)
+- HTML report as an artifact on failure
+- Retries 2x on flake
+- A failure blocks the merge (configure it as a **required check** in branch protection)
 
-## Seletores — ordem de preferência
+## Selectors — order of preference
 
-1. `page.getByRole(...)` — semântico, acessível, robusto
-2. `page.getByLabel(...)` — se input tem `<label htmlFor>` apontando pra ele
-3. `page.getByText(...)` — pra elementos não-interativos (badges, headers)
-4. `page.getByPlaceholder(...)` — fallback quando label não está semântico
-5. `page.locator('[data-testid="..."]')` — último recurso (acopla a HTML)
+1. `page.getByRole(...)` — semantic, accessible, robust
+2. `page.getByLabel(...)` — if the input has a `<label htmlFor>` pointing to it
+3. `page.getByText(...)` — for non-interactive elements (badges, headers)
+4. `page.getByPlaceholder(...)` — fallback when the label is not semantic
+5. `page.locator('[data-testid="..."]')` — last resort (couples to the HTML)
 
-**Anti-pattern:** locators CSS profundos (`.foo > .bar:nth-child(2)`) — quebram em refactor.
+**Anti-pattern:** deep CSS locators (`.foo > .bar:nth-child(2)`) — they break on refactor.
 
 ## Anti-flakiness
 
-- **Timeouts generosos** — 30s test, 10s expect, 30s navigation
-- **Trace on first retry** — debug fácil sem custo em CI
-- **Retries em CI** — absorve flake real (network); local 0 pra pegar testes não-determinísticos cedo
-- **forbidOnly em CI** — não vaza `.only` entre PRs
-- **Storage state reusado** — login 1x; specs herdam sessão
+- **Generous timeouts** — 30s test, 10s expect, 30s navigation
+- **Trace on first retry** — easy debugging with no CI cost
+- **Retries in CI** — absorbs real flake (network); local 0 to catch non-deterministic tests early
+- **forbidOnly in CI** — no leaked `.only` between PRs
+- **Reused storage state** — login once; specs inherit the session
 
-## Quando algo quebrar
+## When something breaks
 
-1. Reproduzir local: `pnpm test:e2e:ui` → seleciona o spec → rode visual
-2. Em CI, baixar `playwright-report-<run_id>` artifact pro HTML report
-3. Trace tem screenshots + DOM por step
-4. Se o teste é genuinamente quebrado pela mudança, atualize seletores ou assertions — não `--no-verify` o commit
+1. Reproduce locally: `pnpm test:e2e:ui` → select the spec → run it visually
+2. In CI, download the `playwright-report-<run_id>` artifact for the HTML report
+3. The trace has screenshots + DOM per step
+4. If the test is genuinely broken by the change, update the selectors or assertions — do not `--no-verify` the commit

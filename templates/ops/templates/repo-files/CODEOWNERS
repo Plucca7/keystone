@@ -1,20 +1,20 @@
 # CODEOWNERS
 # Ref: https://example.com/handbook
 #
-# Copie este arquivo para .github/CODEOWNERS do seu repo
-# e ajuste os times/owners conforme o projeto.
+# Copy this file to .github/CODEOWNERS in your repo
+# and adjust the teams/owners per project.
 
-# Default: todo PR precisa de review do time de engenharia
+# Default: every PR needs a review from the engineering team
 * @your-team
 
-# DevOps e CI/CD
+# DevOps and CI/CD
 .github/ @your-team
 
-# Migrations e banco de dados
+# Migrations and database
 supabase/migrations/ @your-team
 
-# Componentes de UI / Design System
+# UI Components / Design System
 components/ui/ @your-team
 
-# Segurança e autenticação
+# Security and authentication
 **/auth* @your-team

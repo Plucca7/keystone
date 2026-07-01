@@ -1,13 +1,11 @@
 /**
- * Event System — Green Copilot
+ * Event system — a decoupled bus for business actions.
+ * Ready for future integration with webhooks or external systems.
  *
- * Sistema de eventos desacoplado para ações de negócio.
- * Preparado para integração futura com webhooks e ERPs.
- *
- * Uso:
+ * Usage:
  *   import { events } from '@/lib/events';
- *   events.emit('bid.status_changed', { bidId, oldStatus, newStatus });
- *   events.on('bid.status_changed', handler);
+ *   events.emit('item.created', { itemId });
+ *   events.on('item.created', handler);
  */
 
 // ============================================
@@ -15,29 +13,9 @@
 // ============================================
 
 export interface EventMap {
-  // Bids
-  'bid.created': { bidId: string; companyId: string; code: string }
-  'bid.updated': { bidId: string; fields: string[] }
-  'bid.status_changed': { bidId: string; oldStatus: string; newStatus: string }
-  'bid.deleted': { bidId: string }
-
-  // Contracts
-  'contract.created': { contractId: string; companyId: string; code: string }
-  'contract.updated': { contractId: string; fields: string[] }
-  'contract.commitment_created': { contractId: string; commitmentId: string; noteNumber: string }
-  'contract.note_added': { contractId: string; noteId: string }
-  'contract.deleted': { contractId: string }
-
-  // Activities
-  'todo.created': { todoId: string; title: string }
-  'todo.completed': { todoId: string }
-  'todo.deleted': { todoId: string }
-  'compromisso.created': { compromissoId: string; title: string; startDatetime: string }
-  'compromisso.deleted': { compromissoId: string }
-  'postit.created': { postitId: string }
-  'postit.deleted': { postitId: string }
-
-  // System
+  'item.created': { itemId: string }
+  'item.updated': { itemId: string; fields: string[] }
+  'item.deleted': { itemId: string }
   'audit.logged': { entityType: string; entityId: string; action: string }
 }
 

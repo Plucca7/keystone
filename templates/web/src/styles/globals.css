@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 /*
- * Design System — Template default tokens (placeholder neutro).
+ * Design System — default template tokens (neutral placeholder).
  *
- * Estes tokens são placeholders para o template começar a renderizar.
- * Each project must replace as cores em :root e [data-theme='dark']
- * pelos tokens definidos em your design tokens.
+ * These tokens are placeholders so the template renders out of the box.
+ * Each project should replace the colors in :root and [data-theme='dark']
+ * with its own design tokens.
  *
- * Handbook: "Zero hardcoded values — use Design System tokens"
+ * Rule: zero hardcoded values — use the design tokens.
  */
 
 /* ===== LIGHT MODE ===== */
@@ -30,7 +30,7 @@
   --text-3: #a3a3a3;
   --text-inv: #ffffff;
 
-  /* Primary Accent — placeholder, substituir por cor do projeto */
+  /* Primary Accent — placeholder, replace with the project color */
   --accent: #475569;
   --accent-hi: #334155;
   --accent-lo: #64748b;
@@ -38,7 +38,7 @@
   --accent-bd: rgba(71, 85, 105, 0.2);
   --accent-glow: rgba(71, 85, 105, 0.2);
 
-  /* Secondary Accent — placeholder, substituir por cor do projeto */
+  /* Secondary Accent — placeholder, replace with the project color */
   --accent2: #94a3b8;
   --accent2-hi: #64748b;
   --accent2-lo: #cbd5e1;
@@ -72,7 +72,7 @@
   --grad-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
   --grad-hero: linear-gradient(160deg, #fafafa 0%, #ffffff 40%, rgba(71, 85, 105, 0.06) 100%);
 
-  /* Data Visualization — placeholder, substituir por paleta do projeto */
+  /* Data Visualization — placeholder, replace with the project palette */
   --dv-1: #475569;
   --dv-2: #4a9ab8;
   --dv-3: #c8a030;

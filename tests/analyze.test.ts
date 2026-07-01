@@ -49,7 +49,7 @@ test('formatReport: shows the three parts and orders by severity', () => {
   assert.ok(out.indexOf('Tests', planStart) < out.indexOf('Documentation', planStart))
 })
 
-test('analyzeProject: a freshly created project mostly passes but has no tests yet', async () => {
+test('analyzeProject: a freshly created project meets the standard, example test included', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'keystone-an-'))
   try {
     const answers: KeystoneAnswers = {
@@ -66,12 +66,12 @@ test('analyzeProject: a freshly created project mostly passes but has no tests y
     const { projectDir } = await createProject(answers)
     const results = await analyzeProject(projectDir)
 
-    // The mould ships a README, .gitignore with .env, and db conventions.
+    // The mould ships a README, .gitignore with .env, db conventions, and an example test.
     assert.equal(results.find((r) => r.title === 'Has a README')?.passed, true)
     assert.equal(results.find((r) => r.title.startsWith('Secrets kept'))?.passed, true)
     assert.equal(results.find((r) => r.pillar === 'Database')?.passed, true)
-    // But a brand-new project has no tests of its own yet.
-    assert.equal(results.find((r) => r.pillar === 'Tests')?.passed, false)
+    // The mould now ships an example test, so a brand-new project already has one.
+    assert.equal(results.find((r) => r.pillar === 'Tests')?.passed, true)
   } finally {
     await rm(parent, { recursive: true, force: true })
   }

@@ -1,47 +1,47 @@
-# ADR-NNN: Título da Decisão
+# ADR-NNN: Decision Title
 
-**Status:** Proposta | Aceita | Depreciada | Substituída por ADR-XXX
-**Data:** YYYY-MM-DD
-**Autor(es):** Nome
+**Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXX
+**Date:** YYYY-MM-DD
+**Author(s):** Name
 
-## Contexto
+## Context
 
-<!-- Qual é o problema ou necessidade que motivou esta decisão? -->
+<!-- What is the problem or need that motivated this decision? -->
 
-## Problema
+## Problem
 
-<!-- Descreva o problema específico que precisa ser resolvido -->
+<!-- Describe the specific problem that needs to be solved -->
 
-## Opções Consideradas
+## Options Considered
 
-### Opção 1: Nome
-- **Prós:** ...
-- **Contras:** ...
+### Option 1: Name
+- **Pros:** ...
+- **Cons:** ...
 
-### Opção 2: Nome
-- **Prós:** ...
-- **Contras:** ...
+### Option 2: Name
+- **Pros:** ...
+- **Cons:** ...
 
-### Opção 3: Nome
-- **Prós:** ...
-- **Contras:** ...
+### Option 3: Name
+- **Pros:** ...
+- **Cons:** ...
 
-## Decisão
+## Decision
 
-<!-- Qual opção foi escolhida e por quê? -->
+<!-- Which option was chosen and why? -->
 
-## Impactos
+## Impacts
 
-<!-- Que mudanças esta decisão causa no sistema/equipe? -->
+<!-- What changes does this decision cause in the system/team? -->
 
-## Riscos
+## Risks
 
-<!-- Quais riscos esta decisão introduz? -->
+<!-- What risks does this decision introduce? -->
 
-## Rollback / Migração
+## Rollback / Migration
 
-<!-- Como reverter se necessário? Há migração de dados? -->
+<!-- How to revert if needed? Is there a data migration? -->
 
 ---
 
-> Ref: [Engineering Handbook](https://example.com/handbook) — "Se não tem ADR, não foi decidido."
+> Ref: [Engineering Handbook](https://example.com/handbook) — "If there is no ADR, it was not decided."

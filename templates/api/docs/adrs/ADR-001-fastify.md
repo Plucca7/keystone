@@ -1,33 +1,36 @@
-# ADR-001: Fastify como framework HTTP
+# ADR-001: Fastify as the HTTP framework
 
-**Status:** Aceita
-**Data:** 2026-03-27
+**Status:** Accepted
+**Date:** 2026-03-27
 **Authors:** your team
 
-## Contexto
+## Context
 
-Precisamos de um framework HTTP performante para APIs TypeScript/Node.
+We need a performant HTTP framework for TypeScript/Node services.
 
-## Opções Consideradas
+## Options considered
 
 ### Express
-- **Prós:** Ecossistema maduro, muito material
-- **Contras:** Performance inferior, tipagem fraca, middleware legacy
+
+- **Pros:** Mature ecosystem, plenty of material
+- **Cons:** Lower performance, weak typing, legacy middleware
 
 ### Fastify
-- **Prós:** Alta performance, TypeScript first, schema validation nativa, logging integrado (pino)
-- **Contras:** Ecossistema menor que Express
+
+- **Pros:** High performance, TypeScript-first, native schema validation, built-in logging (pino)
+- **Cons:** Smaller ecosystem than Express
 
 ### Hono
-- **Prós:** Ultra-leve, multi-runtime
-- **Contras:** Ecossistema ainda jovem
 
-## Decisão
+- **Pros:** Ultra-light, multi-runtime
+- **Cons:** Ecosystem still young
 
-**Fastify** — melhor balanço entre performance, tipagem e maturidade para APIs.
+## Decision
 
-## Impactos
+**Fastify** — the best balance of performance, typing, and maturity for services.
 
-- Todos os templates de API usam Fastify
-- Logging via pino (já integrado)
-- Schema validation via Zod (plugin disponível)
+## Consequences
+
+- All API templates use Fastify
+- Logging via pino (already integrated)
+- Schema validation via Zod (plugin available)

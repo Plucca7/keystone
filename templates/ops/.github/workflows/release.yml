@@ -1,7 +1,7 @@
 # Release
-# Cria release automatizada com changelog
+# Creates an automated release with a changelog
 #
-# Uso:
+# Usage:
 #   jobs:
 #     release:
 #       uses: your-org/github-ops/.github/workflows/release.yml@main

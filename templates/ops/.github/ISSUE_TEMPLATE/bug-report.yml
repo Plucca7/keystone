@@ -1,42 +1,42 @@
 name: Bug Report
-description: Reporte um bug encontrado
+description: Report a bug you found
 title: "[BUG] "
 labels: ["bug"]
 body:
   - type: textarea
     id: description
     attributes:
-      label: Descrição do bug
-      description: O que aconteceu?
-      placeholder: Descreva o bug de forma clara
+      label: Bug description
+      description: What happened?
+      placeholder: Describe the bug clearly
     validations:
       required: true
 
   - type: textarea
     id: steps
     attributes:
-      label: Passos para reproduzir
-      description: Como reproduzir o bug?
+      label: Steps to reproduce
+      description: How do you reproduce the bug?
       placeholder: |
-        1. Vá em '...'
-        2. Clique em '...'
-        3. Veja o erro
+        1. Go to '...'
+        2. Click on '...'
+        3. See the error
     validations:
       required: true
 
   - type: textarea
     id: expected
     attributes:
-      label: Comportamento esperado
-      description: O que deveria ter acontecido?
+      label: Expected behavior
+      description: What should have happened?
     validations:
       required: true
 
   - type: textarea
     id: actual
     attributes:
-      label: Comportamento atual
-      description: O que aconteceu de fato?
+      label: Actual behavior
+      description: What actually happened?
     validations:
       required: true
 
@@ -44,16 +44,16 @@ body:
     id: screenshots
     attributes:
       label: Screenshots
-      description: Se aplicável, adicione prints
+      description: If applicable, add screenshots
 
   - type: dropdown
     id: severity
     attributes:
-      label: Severidade
+      label: Severity
       options:
-        - SEV-4 (Minor — próximo dia útil)
-        - SEV-3 (Non-critical — <4 horas)
+        - SEV-4 (Minor — next business day)
+        - SEV-3 (Non-critical — <4 hours)
         - SEV-2 (Critical — <30 min)
-        - SEV-1 (Outage — imediato)
+        - SEV-1 (Outage — immediate)
     validations:
       required: true

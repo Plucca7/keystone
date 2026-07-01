@@ -1,7 +1,7 @@
 name: E2E Tests
 
-# Fundação Playwright (standard). Roda em PRs que mexem em código ou config.
-# Bloqueia merge em falha. Configurar como required check no branch protection.
+# Playwright foundation (standard). Runs on PRs that touch code or config.
+# Blocks merge on failure. Configure as a required check in branch protection.
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ on:
       - '.github/workflows/e2e.yml'
   workflow_dispatch:
 
-# Cancela runs anteriores do mesmo PR pra economizar minutos
+# Cancels previous runs of the same PR to save minutes
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Versão é detectada do campo "packageManager" do package.json — único source of truth.
+      # Version is detected from the "packageManager" field in package.json — single source of truth.
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Cache de browsers do Playwright — economiza ~2min por run
+      # Playwright browser cache — saves ~2min per run
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -52,12 +52,12 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Install Playwright system deps (se browser veio do cache)
+      - name: Install Playwright system deps (if browser came from cache)
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: pnpm exec playwright install-deps chromium
 
-      # Build prod do app — Playwright sobe via `pnpm start` (mais rápido + realista que dev).
-      # Substitua/adicione env vars conforme o setup do seu projeto (Supabase, APIs, etc).
+      # Production build of the app — Playwright serves it via `pnpm start` (faster + more realistic than dev).
+      # Replace/add env vars according to your project's setup (Supabase, APIs, etc).
       - name: Build app
         run: pnpm build
 
@@ -65,12 +65,12 @@ jobs:
         run: pnpm test:e2e
         env:
           CI: 'true'
-          # Adapte: credenciais do user de teste pra fluxo autenticado (specs em critical/).
-          # Se o seu projeto não tem auth ainda, apague essas envs — só smoke roda.
+          # Adapt: test user credentials for the authenticated flow (specs in critical/).
+          # If your project has no auth yet, delete these envs — only smoke runs.
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
 
-      # HTML report como artifact pra debug post-mortem em falha
+      # HTML report as an artifact for post-mortem debugging on failure
       - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4

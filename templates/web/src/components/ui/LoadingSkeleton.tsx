@@ -70,7 +70,7 @@ function PageSkeleton() {
 
 export function LoadingSkeleton({ variant = 'page', count = 5, className }: LoadingSkeletonProps) {
   return (
-    <div className={cn('w-full', className)} role="status" aria-label="Carregando...">
+    <div className={cn('w-full', className)} role="status" aria-label="Loading...">
       {variant === 'card' && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: count }).map((_, i) => (

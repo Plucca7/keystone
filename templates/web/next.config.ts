@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Handbook: Security headers
+  // Security headers
   async headers() {
     return [
       {
@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  // Handbook: Always use next/image
+  // Always use next/image
   images: {
     formats: ['image/avif', 'image/webp'],
   },

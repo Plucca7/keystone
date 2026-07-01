@@ -1,11 +1,11 @@
-# Project Router — encaminha issues e PRs para o GitHub Project v2 do produto.
-# A lógica fica no workflow reutilizável local (_project-router-reusable.yml),
-# este arquivo é só a "cola" que escuta os eventos do repo e delega.
+# Project Router — routes issues and PRs to the product's GitHub Project v2.
+# The logic lives in the local reusable workflow (_project-router-reusable.yml);
+# this file is just the "glue" that listens to the repo's events and delegates.
 #
-# Configuração no repo:
-#   - Project v2 criado na sua conta ou organização, com campo Status
-#   - Secret PROJECT_TOKEN (PAT com escopo project + repo)
-#   - project-number abaixo: número do Project v2 deste produto
+# Configuration in the repo:
+#   - Project v2 created in your account or organization, with a Status field
+#   - PROJECT_TOKEN secret (PAT with project + repo scope)
+#   - project-number below: the Project v2 number for this product
 
 name: Project Router
 

@@ -7,7 +7,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      /* LZR Design System v1.3 — design.lzrtechnologies.com/greencopilot */
+      /* Design System — replace with your tokens */
       colors: {
         bg: 'var(--bg)',
         surface: 'var(--surface)',

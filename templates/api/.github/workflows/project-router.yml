@@ -4,7 +4,7 @@
 #
 # Configuração no repo:
 #   - Project v2 criado na sua conta ou organização, com campo Status
-#   - Secret LZR_PROJECT_TOKEN (PAT com escopo project + repo)
+#   - Secret PROJECT_TOKEN (PAT com escopo project + repo)
 #   - project-number abaixo: número do Project v2 deste produto
 
 name: Project Router
@@ -19,7 +19,7 @@ jobs:
   route:
     uses: ./.github/workflows/_project-router-reusable.yml
     secrets:
-      LZR_PROJECT_TOKEN: ${{ secrets.LZR_PROJECT_TOKEN }}
+      PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
     with:
       project-owner: __PROJECT_OWNER__
       project-number: __PROJECT_NUMBER__

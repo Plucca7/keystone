@@ -1,8 +1,8 @@
 # lzr-github-ops
 
-Workflows reutilizáveis do GitHub Actions e templates de governança da **LZR Technologies**.
+Workflows reutilizáveis do GitHub Actions e templates de governança .
 
-Baseado no [Engineering Handbook](https://code.lzrtechnologies.com).
+
 
 ## Workflows Reutilizáveis
 
@@ -21,7 +21,7 @@ on:
 
 jobs:
   ci:
-    uses: LZR-Tech/lzr-github-ops/.github/workflows/ci.yml@main
+    uses: your-org/github-ops/.github/workflows/ci.yml@main
     with:
       node-version: '20'
       package-manager: 'npm'
@@ -42,7 +42,7 @@ on:
 
 jobs:
   security:
-    uses: LZR-Tech/lzr-github-ops/.github/workflows/security.yml@main
+    uses: your-org/github-ops/.github/workflows/security.yml@main
 ```
 
 ### Release (`release.yml`)
@@ -57,7 +57,7 @@ on:
 
 jobs:
   release:
-    uses: LZR-Tech/lzr-github-ops/.github/workflows/release.yml@main
+    uses: your-org/github-ops/.github/workflows/release.yml@main
 ```
 
 ## Templates
@@ -84,8 +84,8 @@ Já inclusos em `.github/`:
 3. Copie os templates de docs para `docs/`
 4. Ajuste owners e configurações conforme o projeto
 
-Ou use os **templates oficiais** ([lzr-template-api-node](https://github.com/LZR-Tech/lzr-template-api-node), [lzr-template-web-next](https://github.com/LZR-Tech/lzr-template-web-next)) que já vêm com tudo configurado.
+Ou use os **templates oficiais** ([lzr-template-api-node](https://github.com/your-org/template-api), [lzr-template-web-next](https://github.com/your-org/template-web)) que já vêm com tudo configurado.
 
 ## Referência
 
-- [LZR Engineering Handbook](https://code.lzrtechnologies.com)
+

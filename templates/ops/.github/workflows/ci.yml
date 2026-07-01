@@ -1,11 +1,11 @@
-# CI Pipeline — LZR Technologies
+# CI Pipeline
 # Workflow reutilizável para projetos TypeScript
-# Ref: https://code.lzrtechnologies.com
+# Ref: https://example.com/handbook
 #
 # Uso em outro repo:
 #   jobs:
 #     ci:
-#       uses: LZR-Tech/lzr-github-ops/.github/workflows/ci.yml@main
+#       uses: your-org/github-ops/.github/workflows/ci.yml@main
 
 name: CI
 

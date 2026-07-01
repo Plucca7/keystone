@@ -44,4 +44,4 @@
 
 ---
 
-> Ref: [LZR Engineering Handbook](https://code.lzrtechnologies.com) — "Se não tem ADR, não foi decidido."
+> Ref: [Engineering Handbook](https://example.com/handbook) — "Se não tem ADR, não foi decidido."

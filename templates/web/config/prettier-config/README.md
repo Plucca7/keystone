@@ -1,13 +1,13 @@
-# @lzr/prettier-config
+# @repo/prettier-config
 
-Configuração Prettier compartilhada da **LZR Technologies**.
+Shared Prettier configuration.
 
-Baseado no [Engineering Handbook](https://code.lzrtechnologies.com).
+
 
 ## Instalação
 
 ```bash
-npm install -D github:LZR-Tech/lzr-prettier-config prettier prettier-plugin-tailwindcss
+npm install -D github:your-org/prettier-config prettier prettier-plugin-tailwindcss
 ```
 
 ## Uso
@@ -16,7 +16,7 @@ No `package.json` do seu projeto:
 
 ```json
 {
-  "prettier": "@lzr/prettier-config"
+  "prettier": "@repo/prettier-config"
 }
 ```
 
@@ -31,8 +31,8 @@ No `package.json` do seu projeto:
 
 ## Histórico
 
-Originalmente fazia parte do monorepo `LZR-Tech/lzr-shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
 
 ## Referência
 
-- [LZR Engineering Handbook](https://code.lzrtechnologies.com)
+

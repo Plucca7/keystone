@@ -1,13 +1,13 @@
-# @lzr/tsconfig
+# @repo/tsconfig
 
-Configurações TypeScript compartilhadas da **LZR Technologies**.
+Configurações TypeScript (shared).
 
-Baseado no [Engineering Handbook](https://code.lzrtechnologies.com).
+
 
 ## Instalação
 
 ```bash
-npm install -D github:LZR-Tech/lzr-tsconfig
+npm install -D github:your-org/tsconfig
 ```
 
 ## Uso
@@ -16,7 +16,7 @@ npm install -D github:LZR-Tech/lzr-tsconfig
 
 ```json
 {
-  "extends": "@lzr/tsconfig/tsconfig.next.json",
+  "extends": "@repo/tsconfig/tsconfig.next.json",
   "compilerOptions": {
     "paths": { "@/*": ["./src/*"] }
   },
@@ -29,7 +29,7 @@ npm install -D github:LZR-Tech/lzr-tsconfig
 
 ```json
 {
-  "extends": "@lzr/tsconfig/tsconfig.node.json",
+  "extends": "@repo/tsconfig/tsconfig.node.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"
@@ -42,7 +42,7 @@ npm install -D github:LZR-Tech/lzr-tsconfig
 
 ```json
 {
-  "extends": "@lzr/tsconfig/tsconfig.react-native.json"
+  "extends": "@repo/tsconfig/tsconfig.react-native.json"
 }
 ```
 
@@ -51,14 +51,14 @@ npm install -D github:LZR-Tech/lzr-tsconfig
 | Config | Stack | Quando usar |
 |--------|-------|-------------|
 | `tsconfig.base.json` | Base compartilhada | Não usar diretamente |
-| `tsconfig.node.json` | APIs Node.js | `extends: "@lzr/tsconfig/tsconfig.node.json"` |
-| `tsconfig.next.json` | Next.js App Router | `extends: "@lzr/tsconfig/tsconfig.next.json"` |
-| `tsconfig.react-native.json` | Expo / React Native | `extends: "@lzr/tsconfig/tsconfig.react-native.json"` |
+| `tsconfig.node.json` | APIs Node.js | `extends: "@repo/tsconfig/tsconfig.node.json"` |
+| `tsconfig.next.json` | Next.js App Router | `extends: "@repo/tsconfig/tsconfig.next.json"` |
+| `tsconfig.react-native.json` | Expo / React Native | `extends: "@repo/tsconfig/tsconfig.react-native.json"` |
 
 ## Histórico
 
-Originalmente fazia parte do monorepo `LZR-Tech/lzr-shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
 
 ## Referência
 
-- [LZR Engineering Handbook](https://code.lzrtechnologies.com)
+

@@ -1,6 +1,6 @@
-# E2E — Playwright (padrão LZR)
+# E2E — Playwright (standard)
 
-Fundação Playwright pronta pra adotar em qualquer projeto LZR Next.js. Cobre setup, CI, padrões anti-flakiness, autenticação reusada via storage state.
+Fundação Playwright pronta pra adotar em qualquer project Next.js. Cobre setup, CI, padrões anti-flakiness, autenticação reusada via storage state.
 
 ## Filosofia
 

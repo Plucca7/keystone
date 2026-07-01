@@ -1,19 +1,19 @@
-# Project Router — LZR Technologies
+# Project Router
 # Workflow reutilizável que roteia issues e PRs para um GitHub Project v2.
 # Cria colunas dinamicamente por coder e move itens conforme o ciclo de vida.
 #
 # Uso em outro repo:
 #   jobs:
 #     route:
-#       uses: LZR-Tech/lzr-github-ops/.github/workflows/project-router.yml@main
+#       uses: your-org/github-ops/.github/workflows/project-router.yml@main
 #       secrets:
-#         LZR_PROJECT_TOKEN: ${{ secrets.LZR_PROJECT_TOKEN }}
+#         PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
 #       with:
-#         project-owner: LZR-Tech
+#         project-owner: your-org
 #         project-number: 1
 #
 # Pré-requisito (configurado pela skill /new-project):
-#   - Secret LZR_PROJECT_TOKEN no repo, com escopos `project` + `repo`.
+#   - Secret PROJECT_TOKEN no repo, com escopos `project` + `repo`.
 #   - Por padrão a skill copia o PAT do dev pro repo automaticamente.
 #
 # Comportamento:
@@ -39,7 +39,7 @@ on:
         required: true
         type: number
     secrets:
-      LZR_PROJECT_TOKEN:
+      PROJECT_TOKEN:
         description: 'PAT com escopo project + repo. Necessário porque GITHUB_TOKEN não acessa Projects v2.'
         required: true
 
@@ -53,7 +53,7 @@ jobs:
           PROJECT_OWNER: ${{ inputs.project-owner }}
           PROJECT_NUMBER: ${{ inputs.project-number }}
         with:
-          github-token: ${{ secrets.LZR_PROJECT_TOKEN }}
+          github-token: ${{ secrets.PROJECT_TOKEN }}
           script: |
             const PROJECT_OWNER = process.env.PROJECT_OWNER
             const PROJECT_NUMBER = parseInt(process.env.PROJECT_NUMBER, 10)

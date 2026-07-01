@@ -2,7 +2,7 @@
   "name": "lzr-api",
   "version": "0.1.0",
   "private": true,
-  "description": "API LZR Technologies — TypeScript/Node",
+  "description": "Service (API) — TypeScript/Node",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -25,10 +25,10 @@
     "pino-pretty": "^11.0.0"
   },
   "devDependencies": {
-    "@lzr/eslint-config": "file:./config/eslint-config",
-    "@lzr/tsconfig": "file:./config/tsconfig",
-    "@lzr/prettier-config": "file:./config/prettier-config",
-    "@lzr/commitlint-config": "file:./config/commitlint-config",
+    "@repo/eslint-config": "file:./config/eslint-config",
+    "@repo/tsconfig": "file:./config/tsconfig",
+    "@repo/prettier-config": "file:./config/prettier-config",
+    "@repo/commitlint-config": "file:./config/commitlint-config",
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
     "@eslint/js": "^9.0.0",
@@ -44,7 +44,7 @@
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   },
-  "prettier": "@lzr/prettier-config",
+  "prettier": "@repo/prettier-config",
   "lint-staged": {
     "*.{ts,js,mjs,cjs}": ["eslint --fix", "prettier --write"],
     "*.{json,md,yml,yaml}": ["prettier --write"]

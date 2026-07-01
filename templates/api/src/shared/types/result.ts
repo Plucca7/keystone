@@ -1,5 +1,5 @@
 /**
- * Result Pattern — LZR Technologies
+ * Result Pattern
  * Handbook: "Return { success, data, error } instead of throwing"
  */
 

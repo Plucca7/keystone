@@ -1,4 +1,4 @@
-import { node } from '@lzr/eslint-config'
+import { node } from '@repo/eslint-config'
 
 export default [
   ...node,

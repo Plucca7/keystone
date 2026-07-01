@@ -1,10 +1,10 @@
-import { react } from '@lzr/eslint-config'
+import { react } from '@repo/eslint-config'
 import nextPlugin from '@next/eslint-plugin-next'
 
 export default [
   ...react,
   {
-    // Why: the shared @lzr/eslint-config serves both the web and the api mould,
+    // Why: the shared @repo/eslint-config serves both the web and the api mould,
     // so the Next-only plugin is registered here, at the web mould's own config,
     // instead of polluting the shared package. Registering it removes Next's
     // build warning ("plugin not detected") and turns on Next's own checks

@@ -1,7 +1,7 @@
 /**
- * @lzr/commitlint-config
- * Configuração CommitLint da LZR Technologies
- * Baseada no Engineering Handbook: https://code.lzrtechnologies.com
+ * @repo/commitlint-config
+ * CommitLint configuration
+ * Project conventions
  *
  * Formato: <type>: <description>
  * Exemplos:

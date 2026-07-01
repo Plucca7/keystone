@@ -1,13 +1,13 @@
-# @lzr/commitlint-config
+# @repo/commitlint-config
 
-Configuração CommitLint da **LZR Technologies** — Conventional Commits.
+Configuração CommitLint — Conventional Commits.
 
-Baseado no [Engineering Handbook](https://code.lzrtechnologies.com).
+
 
 ## Instalação
 
 ```bash
-npm install -D github:LZR-Tech/lzr-commitlint-config @commitlint/cli @commitlint/config-conventional
+npm install -D github:your-org/commitlint-config @commitlint/cli @commitlint/config-conventional
 ```
 
 ## Uso
@@ -15,7 +15,7 @@ npm install -D github:LZR-Tech/lzr-commitlint-config @commitlint/cli @commitlint
 `commitlint.config.js`:
 
 ```js
-module.exports = { extends: ['@lzr/commitlint-config'] }
+module.exports = { extends: ['@repo/commitlint-config'] }
 ```
 
 ## Tipos permitidos
@@ -38,9 +38,9 @@ security: fixes SQL injection
 
 ## Histórico
 
-Originalmente fazia parte do monorepo `LZR-Tech/lzr-shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
+Originalmente fazia parte do monorepo `your-org/shared-config`. Separado em 2026 para resolver problemas de resolução de imports quando instalado via `github:` deps.
 
 ## Referência
 
-- [LZR Engineering Handbook](https://code.lzrtechnologies.com)
+
 - [Conventional Commits](https://www.conventionalcommits.org/)

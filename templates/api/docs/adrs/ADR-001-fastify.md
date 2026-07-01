@@ -2,7 +2,7 @@
 
 **Status:** Aceita
 **Data:** 2026-03-27
-**Autor(es):** LZR Technologies
+**Authors:** your team
 
 ## Contexto
 
@@ -24,7 +24,7 @@ Precisamos de um framework HTTP performante para APIs TypeScript/Node.
 
 ## Decisão
 
-**Fastify** — melhor balanço entre performance, tipagem e maturidade para APIs LZR.
+**Fastify** — melhor balanço entre performance, tipagem e maturidade para APIs.
 
 ## Impactos
 

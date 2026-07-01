@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Serviço** | Nome |
-| **Repo** | github.com/LZR-Tech/... |
+| **Repo** | github.com/your-org/... |
 | **Stack** | TypeScript / Node / Next.js |
 | **Ambiente** | Production: URL / Staging: URL |
 | **Owner** | @time-responsavel |
@@ -16,7 +16,7 @@
 
 ```bash
 # 1. Clone o repo
-git clone https://github.com/LZR-Tech/NOME.git
+git clone https://github.com/your-org/NAME.git
 
 # 2. Copie as env vars
 cp .env.example .env.local
@@ -104,4 +104,4 @@ git push origin main
 
 ---
 
-> Ref: [LZR Engineering Handbook — SRE & Confiabilidade](https://code.lzrtechnologies.com)
+> Ref: [Engineering Handbook — SRE & Confiabilidade](https://example.com/handbook)

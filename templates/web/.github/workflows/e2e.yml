@@ -1,6 +1,6 @@
 name: E2E Tests
 
-# Fundação Playwright (padrão LZR). Roda em PRs que mexem em código ou config.
+# Fundação Playwright (standard). Roda em PRs que mexem em código ou config.
 # Bloqueia merge em falha. Configurar como required check no branch protection.
 
 on:

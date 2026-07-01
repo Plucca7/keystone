@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 /*
- * LZR Design System v1.3 — Template default tokens (placeholder neutro).
+ * Design System — Template default tokens (placeholder neutro).
  *
  * Estes tokens são placeholders para o template começar a renderizar.
- * Cada projeto LZR DEVE substituir as cores em :root e [data-theme='dark']
- * pelos tokens definidos em https://design.lzrtechnologies.com/<projeto>.
+ * Each project must replace as cores em :root e [data-theme='dark']
+ * pelos tokens definidos em your design tokens.
  *
  * Handbook: "Zero hardcoded values — use Design System tokens"
  */

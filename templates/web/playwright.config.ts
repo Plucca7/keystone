@@ -3,9 +3,9 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 /**
- * Playwright config — LZR template web-next.
+ * Playwright config — web template.
  *
- * Princípios LZR:
+ * Principles:
  *   - Suite ENXUTA: smoke + critical do produto, sem cobertura ampla.
  *   - Anti-flakiness: retries em CI, locator-based, timeouts generosos.
  *   - Storage state reuso: login feito 1x no globalSetup; specs herdam sessão.

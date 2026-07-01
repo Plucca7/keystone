@@ -1,6 +1,6 @@
 /**
  * Error Response — RFC 9457 (Problem Details)
- * Handbook: https://code.lzrtechnologies.com
+ * Handbook: https://example.com/handbook
  *
  * Exemplo:
  * {

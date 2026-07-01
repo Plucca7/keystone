@@ -1,105 +1,99 @@
-# lzr-template-web-next
+# Web template
 
-Template oficial para apps web em **Next.js App Router** da LZR Technologies.
-
-Baseado no [Engineering Handbook](https://code.lzrtechnologies.com).
+An official starting point for web apps on **Next.js App Router**.
 
 ## Stack
 
-| Tecnologia | Função |
-|------------|--------|
+| Technology | Role |
+| --- | --- |
 | **Next.js 15** | Framework (App Router) |
-| **React 19** | UI (Server Components por padrão) |
-| **TypeScript** | Linguagem (strict mode, zero any) |
-| **Tailwind CSS** | Estilos |
-| **React Query** | Client-side caching/polling |
-| **Zustand** | Estado global mínimo |
-| **React Hook Form + Zod** | Formulários + validação |
-| **Vitest** | Testes unitários |
-| **Playwright** | Testes E2E |
+| **React 19** | UI (Server Components by default) |
+| **TypeScript** | Language (strict mode, zero `any`) |
+| **Tailwind CSS** | Styling |
+| **React Query** | Client-side caching / polling |
+| **Zustand** | Minimal global state |
+| **React Hook Form + Zod** | Forms + validation |
+| **Vitest** | Unit tests |
+| **Playwright** | End-to-end tests |
 
-## Quick Start
+## Quick start
 
-### 1. Criar projeto a partir deste template
+### 1. Create a project from this template
 
 ```bash
-gh repo create meu-app --template LZR-Tech/lzr-template-web-next --public --clone
-cd meu-app
+gh repo create my-app --template your-org/template-web --public --clone
+cd my-app
 ```
 
-### 2. Instalar e rodar
+### 2. Install and run
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env.local
-npm run dev
+pnpm dev
 # → http://localhost:3000
 ```
 
-## Estrutura de pastas
+## Folder structure
 
 ```
 src/
 ├── app/                     # Next.js App Router
-│   ├── layout.tsx           # Root layout (i18n: pt-BR)
+│   ├── layout.tsx           # Root layout
 │   ├── page.tsx             # Home page
 │   ├── providers.tsx        # Client providers (React Query)
-│   ├── (auth)/              # Grupo de rotas: autenticação
-│   │   └── login/
-│   ├── (dashboard)/         # Grupo de rotas: área logada
 │   └── api/v1/              # API routes
 │       └── health/route.ts
-├── components/              # Componentes React
-│   ├── ui/                  # Design System (botões, inputs, etc)
-│   ├── forms/               # Componentes de formulário
-│   ├── layouts/             # Layouts reutilizáveis
-│   └── features/            # Componentes por feature
+├── components/              # React components
+│   ├── ui/                  # Design System (buttons, inputs, etc.)
+│   ├── forms/               # Form components
+│   ├── layouts/             # Reusable layouts
+│   └── features/            # Feature-specific components
 ├── hooks/                   # Custom hooks
-├── lib/                     # Utilitários e configs
-│   ├── fetch.ts             # Fetch wrapper (Result Pattern)
-│   └── types.ts             # Types globais
+├── lib/                     # Utilities and config
+│   ├── fetch.ts             # Fetch wrapper (result pattern)
+│   └── types.ts             # Shared types
 └── styles/
     └── globals.css          # Tailwind + CSS variables
 ```
 
-## Padrões do Handbook
+## Conventions
 
-| Padrão | Implementação |
-|--------|---------------|
-| **Server Components** | Padrão — só `'use client'` quando interatividade |
+| Convention | Where |
+| --- | --- |
+| **Server Components** | Default — `'use client'` only for interactivity |
 | **React Query** | Client caching via `providers.tsx` |
-| **Zustand** | Estado global mínimo (adicionar conforme necessidade) |
-| **React Hook Form + Zod** | Formulários tipados e validados |
-| **Result Pattern** | `apiFetch()` em `lib/fetch.ts` |
-| **RFC 9457** | Errors como Problem Details |
-| **Security headers** | Configurados em `next.config.ts` |
-| **Design tokens** | CSS variables em `globals.css` |
+| **Zustand** | Minimal global state (add as needed) |
+| **React Hook Form + Zod** | Typed, validated forms |
+| **Result pattern** | `apiFetch()` in `lib/fetch.ts` |
+| **RFC 9457** | Errors as Problem Details |
+| **Security headers** | Configured in `next.config.ts` |
+| **Design tokens** | CSS variables in `globals.css` |
 
-## Performance (Handbook: Core Web Vitals)
+## Performance (Core Web Vitals)
 
-| Métrica | Target |
-|---------|--------|
+| Metric | Target |
+| --- | --- |
 | LCP | < 2.5s |
-| FID | < 100ms |
+| INP | < 200ms |
 | CLS | < 0.1 |
 
-- Sempre usar `next/image` com `sizes`
-- Server Components por padrão
-- Lazy load componentes pesados
+- Always use `next/image` with `sizes`
+- Server Components by default
+- Lazy-load heavy components
 
 ## Scripts
 
-| Script | O que faz |
-|--------|-----------|
-| `npm run dev` | Dev server |
-| `npm run build` | Build de produção |
-| `npm run typecheck` | Verifica tipos |
-| `npm run lint` | ESLint + Next.js lint |
-| `npm run test` | Testes unitários (Vitest) |
-| `npm run test:e2e` | Testes E2E (Playwright) |
+| Script | What it does |
+| --- | --- |
+| `pnpm dev` | Dev server |
+| `pnpm build` | Production build |
+| `pnpm typecheck` | Type check |
+| `pnpm lint` | ESLint + Next.js lint |
+| `pnpm test` | Unit tests (Vitest) |
+| `pnpm test:e2e` | End-to-end tests (Playwright) |
 
-## Referência
+## Reference
 
-- [LZR Engineering Handbook](https://code.lzrtechnologies.com)
 - [Next.js Docs](https://nextjs.org/docs)
 - [React Query](https://tanstack.com/query)

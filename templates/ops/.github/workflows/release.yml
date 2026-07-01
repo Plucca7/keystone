@@ -1,10 +1,10 @@
-# Release — LZR Technologies
+# Release
 # Cria release automatizada com changelog
 #
 # Uso:
 #   jobs:
 #     release:
-#       uses: LZR-Tech/lzr-github-ops/.github/workflows/release.yml@main
+#       uses: your-org/github-ops/.github/workflows/release.yml@main
 
 name: Release
 

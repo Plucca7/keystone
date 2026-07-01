@@ -1,5 +1,5 @@
 {
-  "extends": "@lzr/tsconfig/tsconfig.node.json",
+  "extends": "@repo/tsconfig/tsconfig.node.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",

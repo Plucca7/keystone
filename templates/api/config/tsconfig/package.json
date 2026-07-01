@@ -1,11 +1,11 @@
 {
-  "name": "@lzr/tsconfig",
+  "name": "@repo/tsconfig",
   "version": "1.0.0",
-  "description": "Configurações TypeScript compartilhadas da LZR Technologies",
+  "description": "Shared TypeScript configuration",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LZR-Tech/lzr-tsconfig.git"
+    "url": "https://github.com/your-org/tsconfig.git"
   },
   "files": [
     "tsconfig.base.json",

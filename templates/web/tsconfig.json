@@ -1,5 +1,5 @@
 {
-  "extends": "@lzr/tsconfig/tsconfig.next.json",
+  "extends": "@repo/tsconfig/tsconfig.next.json",
   "compilerOptions": {
     "paths": {
       "@/*": [

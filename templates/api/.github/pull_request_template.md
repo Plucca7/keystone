@@ -30,4 +30,4 @@
 
 ## Referências
 
-- [Engineering Handbook](https://code.lzrtechnologies.com)
+- [Engineering Handbook](https://example.com/handbook)

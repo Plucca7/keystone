@@ -19,8 +19,8 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'LZR App',
-  description: 'Aplicação LZR Technologies',
+  title: 'App',
+  description: 'Web application',
 }
 
 export default function RootLayout({

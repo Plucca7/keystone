@@ -3,8 +3,8 @@
 # (definido neste mesmo repo, em .github/workflows/project-router.yml).
 #
 # Configuração:
-#   - Project oficial: https://github.com/users/LZR-Tech/projects/4 (LZR Platform Roadmap)
-#   - Secret necessário: LZR_PROJECT_TOKEN (PAT com escopo project + repo)
+#   - Project oficial: https://github.com/your-org/projects/1 (Platform Roadmap)
+#   - Secret necessário: PROJECT_TOKEN (PAT com escopo project + repo)
 #
 # Por que o nome de arquivo é project-router.repo.yml e não project-router.yml:
 #   o workflow reutilizável já se chama project-router.yml; manter nome distinto
@@ -22,7 +22,7 @@ jobs:
   route:
     uses: ./.github/workflows/project-router.yml
     secrets:
-      LZR_PROJECT_TOKEN: ${{ secrets.LZR_PROJECT_TOKEN }}
+      PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
     with:
-      project-owner: LZR-Tech
+      project-owner: your-org
       project-number: 4

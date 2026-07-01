@@ -1,1 +1,1 @@
-module.exports = { extends: ['@lzr/commitlint-config'] }
+module.exports = { extends: ['@repo/commitlint-config'] }

@@ -11,7 +11,7 @@ import type { Page } from '@playwright/test'
  *     // ...
  *   })
  *
- * Não mocka Supabase — esse SIM bate no projeto dev real (vzolthievrzhtejwihfp)
+ * Não mocka Supabase — esse SIM bate no projeto dev real (your-project-ref)
  * pra validar RLS e schema. Pra isolar, configurar projeto dedicado de teste no futuro.
  */
 

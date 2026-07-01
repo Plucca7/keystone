@@ -1,6 +1,6 @@
-# LZR Platform Roadmap
+# Platform Roadmap
 
-> Documento mestre das melhorias de **plataforma** LZR — tudo que afeta como criamos código (templates, configs compartilhadas, CI reutilizável, skill `/new-project`, governança).
+> Documento mestre das melhorias de **platform** — tudo que afeta como criamos código (templates, configs compartilhadas, CI reutilizável, skill `/new-project`, governança).
 >
 > Este NÃO é o backlog de produtos (Brand, Green Copilot, etc). Aqueles vivem em cada repo de produto.
 
@@ -8,7 +8,7 @@
 
 A plataforma existe pra **acelerar o time, não atrasar**. Investimos em melhorias quando:
 
-1. **Há dor real** — algum produto LZR sentiu o impacto da falta dela
+1. **Há dor real** — algum product sentiu o impacto da falta dela
 2. **O ROI é claro** — esforço de implementação << ganho operacional
 3. **A maturidade do produto pede** — não adianta ter Lighthouse CI antes de ter um cliente pagante
 
@@ -20,7 +20,7 @@ Cada melhoria entra numa de 3 camadas:
 
 | Camada | Quando atacar | Critério |
 |--------|---------------|----------|
-| 🔴 **Crítico** | Quando primeiro produto LZR tiver 2-3 clientes pagantes | "Sem isso o produto pode quebrar em prod sem ninguém ver" |
+| 🔴 **Crítico** | Quando primeiro product tiver 2-3 clientes pagantes | "Sem isso o produto pode quebrar em prod sem ninguém ver" |
 | 🟡 **Importante** | Quando primeiro produto tiver 10+ clientes ou segundo produto ativo | "Eleva muito a qualidade percebida e a velocidade do time" |
 | 🟢 **Refinos** | Quando houver dor específica ou time de plataforma dedicado | "Excelência opcional, custo-benefício varia muito" |
 
@@ -30,7 +30,7 @@ Cada melhoria entra numa de 3 camadas:
 
 - **#7** Dependabot + CodeQL + npm audit nos templates *(security baseline)*
 - **#8** Coverage threshold no `ci.yml` reutilizável (mínimo 80%, falha PR abaixo)
-- **#9** Setup de observabilidade padronizado — Sentry + structured logs (helper `@lzr/observability`)
+- **#9** Setup de observabilidade padronizado — Sentry + structured logs (helper `@repo/observability`)
 
 ### 🟡 Importante
 
@@ -56,7 +56,7 @@ Cada melhoria entra numa de 3 camadas:
 ## Como usar este documento
 
 - **Adicionar item**: abrir issue no `lzr-github-ops` com label `platform` + `priority:critical|important|refinement` + `area:*` apropriada. Atualizar este doc com `#NÚMERO`.
-- **Atacar item**: mover issue pra `Em andamento` no [board LZR Platform Roadmap](https://github.com/users/LZR-Tech/projects/4). Workflow do project-router faz isso automaticamente quando você abre PR vinculado.
+- **Atacar item**: mover issue pra `Em andamento` no [platform roadmap board](https://github.com/your-org/projects/1). Workflow do project-router faz isso automaticamente quando você abre PR vinculado.
 - **Reordenar prioridade**: editar este doc + a label da issue. O doc é o storyteller; o board é o tracker operacional.
 
 ## Convenções

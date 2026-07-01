@@ -1,11 +1,11 @@
 {
-  "name": "@lzr/prettier-config",
+  "name": "@repo/prettier-config",
   "version": "1.0.0",
-  "description": "Configuração Prettier compartilhada da LZR Technologies",
+  "description": "Shared Prettier configuration",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LZR-Tech/lzr-prettier-config.git"
+    "url": "https://github.com/your-org/prettier-config.git"
   },
   "main": "index.json",
   "files": ["index.json"],

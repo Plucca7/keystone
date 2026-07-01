@@ -51,16 +51,16 @@ importers:
       '@eslint/js':
         specifier: ^9.0.0
         version: 9.39.4
-      '@lzr/commitlint-config':
+      '@repo/commitlint-config':
         specifier: file:./config/commitlint-config
         version: file:config/commitlint-config(@commitlint/cli@19.8.1(@types/node@22.19.17)(typescript@5.9.3))(@commitlint/config-conventional@19.8.1)
-      '@lzr/eslint-config':
+      '@repo/eslint-config':
         specifier: file:./config/eslint-config
         version: file:config/eslint-config(@eslint/js@9.39.4)(@typescript-eslint/eslint-plugin@8.59.2(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7)))(eslint-plugin-react@7.37.5(eslint@9.39.4(jiti@1.21.7)))(eslint@9.39.4(jiti@1.21.7))(globals@15.15.0)
-      '@lzr/prettier-config':
+      '@repo/prettier-config':
         specifier: file:./config/prettier-config
         version: file:config/prettier-config(prettier-plugin-tailwindcss@0.6.14(prettier@3.8.3))(prettier@3.8.3)
-      '@lzr/tsconfig':
+      '@repo/tsconfig':
         specifier: file:./config/tsconfig
         version: file:config/tsconfig
       '@playwright/test':
@@ -562,13 +562,13 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@lzr/commitlint-config@file:config/commitlint-config':
+  '@repo/commitlint-config@file:config/commitlint-config':
     resolution: {directory: config/commitlint-config, type: directory}
     peerDependencies:
       '@commitlint/cli': '>=18.0.0'
       '@commitlint/config-conventional': '>=18.0.0'
 
-  '@lzr/eslint-config@file:config/eslint-config':
+  '@repo/eslint-config@file:config/eslint-config':
     resolution: {directory: config/eslint-config, type: directory}
     peerDependencies:
       '@eslint/js': '>=9.0.0'
@@ -579,13 +579,13 @@ packages:
       eslint-plugin-react: '>=7.37.0'
       globals: '>=15.0.0'
 
-  '@lzr/prettier-config@file:config/prettier-config':
+  '@repo/prettier-config@file:config/prettier-config':
     resolution: {directory: config/prettier-config, type: directory}
     peerDependencies:
       prettier: '>=3.0.0'
       prettier-plugin-tailwindcss: '>=0.5.0'
 
-  '@lzr/tsconfig@file:config/tsconfig':
+  '@repo/tsconfig@file:config/tsconfig':
     resolution: {directory: config/tsconfig, type: directory}
 
   '@next/env@15.5.16':
@@ -3126,12 +3126,12 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@lzr/commitlint-config@file:config/commitlint-config(@commitlint/cli@19.8.1(@types/node@22.19.17)(typescript@5.9.3))(@commitlint/config-conventional@19.8.1)':
+  '@repo/commitlint-config@file:config/commitlint-config(@commitlint/cli@19.8.1(@types/node@22.19.17)(typescript@5.9.3))(@commitlint/config-conventional@19.8.1)':
     dependencies:
       '@commitlint/cli': 19.8.1(@types/node@22.19.17)(typescript@5.9.3)
       '@commitlint/config-conventional': 19.8.1
 
-  '@lzr/eslint-config@file:config/eslint-config(@eslint/js@9.39.4)(@typescript-eslint/eslint-plugin@8.59.2(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7)))(eslint-plugin-react@7.37.5(eslint@9.39.4(jiti@1.21.7)))(eslint@9.39.4(jiti@1.21.7))(globals@15.15.0)':
+  '@repo/eslint-config@file:config/eslint-config(@eslint/js@9.39.4)(@typescript-eslint/eslint-plugin@8.59.2(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7)))(eslint-plugin-react@7.37.5(eslint@9.39.4(jiti@1.21.7)))(eslint@9.39.4(jiti@1.21.7))(globals@15.15.0)':
     dependencies:
       '@eslint/js': 9.39.4
       '@typescript-eslint/eslint-plugin': 8.59.2(@typescript-eslint/parser@8.59.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
@@ -3141,12 +3141,12 @@ snapshots:
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@1.21.7))
       globals: 15.15.0
 
-  '@lzr/prettier-config@file:config/prettier-config(prettier-plugin-tailwindcss@0.6.14(prettier@3.8.3))(prettier@3.8.3)':
+  '@repo/prettier-config@file:config/prettier-config(prettier-plugin-tailwindcss@0.6.14(prettier@3.8.3))(prettier@3.8.3)':
     dependencies:
       prettier: 3.8.3
       prettier-plugin-tailwindcss: 0.6.14(prettier@3.8.3)
 
-  '@lzr/tsconfig@file:config/tsconfig': {}
+  '@repo/tsconfig@file:config/tsconfig': {}
 
   '@next/env@15.5.16': {}
 

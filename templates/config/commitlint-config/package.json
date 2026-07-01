@@ -1,11 +1,11 @@
 {
-  "name": "@lzr/commitlint-config",
+  "name": "@repo/commitlint-config",
   "version": "1.0.0",
-  "description": "Configuração CommitLint da LZR Technologies — Conventional Commits",
+  "description": "CommitLint configuration — Conventional Commits",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LZR-Tech/lzr-commitlint-config.git"
+    "url": "https://github.com/your-org/commitlint-config.git"
   },
   "main": "index.js",
   "files": ["index.js"],

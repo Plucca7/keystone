@@ -1,7 +1,7 @@
 /**
- * @lzr/eslint-config
- * Configuração ESLint compartilhada da LZR Technologies
- * Baseada no Engineering Handbook: https://code.lzrtechnologies.com
+ * @repo/eslint-config
+ * Shared ESLint configuration
+ * Project conventions
  */
 
 import js from '@eslint/js'

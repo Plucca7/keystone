@@ -1,94 +1,76 @@
-# Keystone
+# Documentation index
 
-> Start a project that is born to professional standards — without building the foundation by hand.
-
-_Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
-
-**Status: in development — a stage, not a permanent state.** The scope is fully specified (8 quality
-pillars, command flow, behavior, identity), and implementation is underway toward a finished release.
-A LZR-specific version of the `new-project` command already works today against internal templates;
-this repository documents the generic product it is becoming.
+> **What this folder is:** the design documents for Keystone — an open, unbranded standard for
+> scaffolding a new software project on professional foundations, and for keeping that project close
+> to the standard through its life. Any team can adopt it as a common foundation.
+>
+> **Status:** three commands are implemented today — create a new project, run the automatic checks,
+> and analyze an existing project (read-only). Everything else described across these documents is
+> planned design, not shipped software; each document carries its own status line. This index only
+> maps the folder — read the linked documents for the detail.
 
 ---
 
-## What it is
+## The two layers
 
-A family of commands that scaffolds a new software project with professional foundations already
-built in, and stays with the project through its life. It is aimed at **solo developers and small
-teams** who want to start right and fast, without having to be experts in project setup.
+Keystone is built as **two complementary layers**:
 
-It is **not an AI product and does not charge for AI.** Everything that ships by default is
-deterministic and free — formatters, linters, tests, rules, configuration. When intelligence is
-genuinely useful (for example, deriving the project's visual identity, or analyzing an existing
-project), it uses the **AI assistant the developer already codes with** — never a paid layer of
-its own.
+- **Layer A — Product Foundation.** Deterministic, zero AI cost: the eight quality pillars a
+  scaffolded project is born with, plus the checks that hold them. This is where the three
+  implemented commands live.
+- **Layer B — Agent Harness.** Planned, not built. When intelligence is genuinely useful, it runs on
+  the developer's own AI assistant — never a separate paid service.
 
-## What it covers — the 8 pillars
+See [pillars.md](pillars.md) for the blueprint that ties both layers together.
 
-A project created with it is born covering, end to end:
+## Start here
 
-- **Foundation** — one consistent structure; accessible by default; locale-aware dates and money;
-  starting language and screen priority asked up front, never assumed.
-- **Code quality** — auto-formatting on save; blocks any error or warning before it ships; flags
-  files that grew too large; comments the _why_, not the obvious.
-- **Database** — created/updated timestamps on everything; soft delete (nothing truly disappears);
-  versioned, repeatable migrations; unguessable identifiers.
-- **Tests** — born with each feature; cover the happy path _and_ the failures; a failing test
-  blocks shipping; focus on what matters, not a coverage number.
-- **Workflow** — three branch levels (official / staging / working); a review gate; a task board and
-  session hand-off out of the box; authorship recorded on every delivery.
-- **Ship it** — auto-deploy after the checks pass; a staging copy before production; one-gesture
-  rollback; secrets kept out of the code.
-- **Security** — essential at birth, reinforced when needed; checks on the dev machine _and_ before
-  shipping; abuse protection on by default; the AI-driven layer optional and off.
-- **Documentation** — decisions become short records; docs generated from code where possible; born
-  with the project; entry points get a clear manual.
+- **[overview.md](overview.md)** — the soul of the tool: who it serves, what it promises, how far it
+  reaches, and why the AI is always the developer's own.
+- **[pillars.md](pillars.md)** — the blueprint: the two layers and the eight quality pillars, end to
+  end.
 
-## The commands (the family)
+## The commands
 
-- **`new-project`** — scaffold a new project, ready to work.
-- **`analyze-project`** _(designed, not built)_ — measure an existing, living project against the
-  pillars: distance to the standard, an upgrade plan, and an estimate of cost and risk.
-- **session hand-off** — pick up where you left off; reads the project's own journal.
-- **ship help** — assist going live once hosting is chosen.
+- **[commands.md](commands.md)** — the full project-creation flow, from the initial command to a
+  scaffolded, working project. _(Implemented.)_
+- **[setup-wizard.md](setup-wizard.md)** — the setup flow in detail: what the wizard asks, what it
+  infers, and what it never asks. _(Implemented.)_
+- **[analyze.md](analyze.md)** — the read-only command that measures an existing project against the
+  pillars: distance from the standard, an upgrade plan, and an estimate of cost and risk.
+  _(Implemented.)_
 
-## How it works, in short
+The automatic checks — the deterministic pillar checks run over a project at zero AI cost — are the
+third implemented command; their behavior is defined pillar by pillar in the documents below.
 
-1. **Product briefing** — name, type, language, screen priority, look, sensitivity (six quick questions).
-2. **Technical setup** — where to version (GitHub / GitLab / local only), visibility, parent folder.
-3. **It deduces what it can** — whether a database is needed (from type + sensitivity), the security
-   level, the visual foundation. It does not ask what it can figure out.
-4. **It builds everything** — folder, repository, three branches, task board, database (if needed),
-   visual identity, ship pipeline scaffold, automated checks, first commit.
-5. **Confirmation** — a summary of what was created and the next steps.
+## The eight pillars
 
-## Honest boundaries
+Each document is the full rule for one pillar. The rules are the standard the scaffold aims for;
+where a rule describes something not yet wired in, the document says so inline.
 
-- It **does not create accounts on third-party services** for you (database, hosting). Those are
-  yours; it uses a key you provide **once**, stores it safely outside the code, and reuses it on the
-  next project.
-- Migrations run through the database's **own official tooling**, with no AI involved.
-- The generic version is **still being built**. What is real today is the LZR-specific `new-project`;
-  the rest of this document is the specified design, not shipped software.
+- **[foundation.md](foundation.md)** — Foundation: one consistent structure, accessible by default,
+  locale-aware, starting language and screen priority asked up front.
+- **[code-quality.md](code-quality.md)** — Code quality: auto-formatting, blocking on any error or
+  warning, oversized-file flags, comments that explain the _why_.
+- **[database.md](database.md)** — Database: timestamps on everything, soft delete, versioned and
+  repeatable migrations, unguessable identifiers.
+- **[tests.md](tests.md)** — Tests: born with each feature, covering the happy path and the failures,
+  a failing test blocking a ship.
+- **[workflow.md](workflow.md)** — Workflow: three branch levels, a review gate, a task board, and
+  session hand-off. _(Parts are planned — see the document.)_
+- **[ship-it.md](ship-it.md)** — Ship it: the delivery pipeline, a staging copy before production,
+  rollback, secrets kept out of the code. _(Parts are planned — see the document.)_
+- **[security.md](security.md)** — Security: essential at birth, reinforced when needed, checks on
+  the machine and before shipping, abuse protection on by default.
+- **[documentation.md](documentation.md)** — Documentation: decisions become short records, docs
+  generated from code where possible, born with the project.
 
-## Roadmap
+## Planning
 
-- ✅ Scope specified — pillars, wizard, end-to-end flow, product soul
-- 🚧 Generic implementation — in progress
-- ⬜ `analyze-project` — designed, not yet built
-- ⬜ Each pillar's detailed ruleset — to be written
-- ✅ License — MIT
+- **[build-plan.md](build-plan.md)** — the roadmap from these design documents to working code:
+  what is built, what is planned, and the order of the stages.
 
-## Contributing
+---
 
-This project is **open**: anyone can read it, use it, and propose improvements. Contributions never
-land directly in the official version. A proposal is made on a **separate copy**, runs through the
-**automated checks** (formatting, tests, standards), and only what passes reaches a **maintainer**,
-who has the final say — approve, request changes, or decline. The automated gates filter most issues
-before review; the maintainer is the gate for the rest. This keeps the project open to the community
-without letting quality drift.
-
-## License
-
-MIT — free to use, modify, and distribute (including commercially), as long as the copyright notice
-is kept. See [LICENSE](LICENSE).
+_Keystone — the stone that holds the whole arch together: a project's foundation, in place from day
+one._

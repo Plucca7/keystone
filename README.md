@@ -1,25 +1,42 @@
 # Keystone
 
-> Start a project that is born to professional standards — without building the foundation by hand.
+> Start a project born to professional standards — built by a well-harnessed AI agent, without building the foundation by hand.
 
 _Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
 
-**Status: in development.** The design is complete, and the core already works: `new` scaffolds a
-project, `check` runs the automated guards, and `analyze` measures an existing project against the
-standard. More is being layered on toward a first release.
+**Status: in development.** Three commands work today: `new` scaffolds a project, `check` runs the
+automated checks over a project, and `analyze` measures an existing project against the standard
+(read-only). Everything beyond these three is planned and not yet built.
 
 ## What it is
 
 A family of commands that scaffolds a new software project with professional foundations already
-built in — and stays with the project through its life. For **solo developers and small teams** who
-want to start right and fast, without having to be experts in project setup.
+built in — and is designed to stay with the project through its life. For **solo developers and
+small teams** who want to start right and fast, without having to be experts in project setup.
 
-It is **not an AI product and does not charge for AI**: everything that ships by default is
-deterministic and free (formatting, guards, tests, rules). When intelligence helps (deriving the
-visual identity, judging an analysis), it uses the AI assistant the developer already codes with —
-never a paid layer of its own.
+Keystone **doesn't sell AI or charge for it**. The product foundation is deterministic and free
+(formatting, checks, tests, rules) — quality never depends on paid inference. And the agent that
+builds the project runs under a harness powered by **the AI you already code with** — never a
+separate paid layer.
 
-The full rationale, the **8 quality pillars**, the product soul and the build plan are in [docs/](docs/).
+The full rationale, the **8 quality pillars**, the product design, and the build plan are in [docs/](docs/).
+
+## Two layers
+
+Keystone is two complementary layers — one for _what_ gets built, one for _who_ builds it.
+
+- **Layer A — Product Foundation** _(deterministic, zero-cost)_. The product is born solid without
+  depending on AI: the 8 pillars ship as deterministic verification — formatters, linters,
+  type-checkers, tests, and CI/CD gates.
+- **Layer B — Agent Harness** _(planned)_. The project is built by an AI coding agent — the
+  assistant you already use. Layer B is the harness planned for that agent: context engineering,
+  spec-driven development, subagents (isolated-context reviewers — spec, code, security), and
+  guardrails (lifecycle hooks that block off-standard behavior). This layer is in development and
+  not yet part of the three shipping commands.
+
+The line is drawn deliberately: product quality (A) is deterministic and free, while the building
+agent (B) is designed to get a first-class harness that runs on your own AI. The harness applies to
+_building_ the code, not to _guaranteeing_ its quality.
 
 ## Requirements
 
@@ -31,7 +48,7 @@ The full rationale, the **8 quality pillars**, the product soul and the build pl
 # create a new project (asks a few questions)
 node src/index.ts new my-app
 
-# run the automated guards over a project (exposed secrets, oversized files)
+# run the automated checks over a project (exposed secrets, oversized files)
 node src/index.ts check .
 
 # measure an existing project against the standard (read-only)
@@ -44,13 +61,13 @@ Once published, these become `keystone new`, `keystone check`, `keystone analyze
 
 ```bash
 node --test tests/*.test.ts   # run the test suite
-node src/index.ts check src   # Keystone runs its own guards and passes
+node src/index.ts check src   # Keystone runs its own checks and passes
 ```
 
-## The 8 pillars
+## Layer A — the 8 pillars
 
 Foundation · Code quality · Database · Tests · Workflow · Ship it · Security · Documentation.
-Each is detailed in [docs/pilares.md](docs/pilares.md).
+Each is detailed in [docs/pillars.md](docs/pillars.md).
 
 ## Contributing
 

@@ -1,142 +1,78 @@
-# LZR API Template — Instruções para IA
+# Service (API) project — AI instructions
 
-> **Engineering Handbook v2.4** — Toda alteração de regra segue `governance.md` (versionar → propagar → enforcement)
-> Este arquivo é lido automaticamente pelo Claude Code antes de qualquer tarefa.
+> Read automatically by the coding agent before any task. Keep it lean: stack,
+> conventions, and where to look. Details live on demand in `docs/` and `.claude/`.
 
-## Idioma
-- **SEMPRE** responder em português brasileiro (pt-BR)
-- Código e nomes de variáveis em inglês
+## Language
 
-## Arreio do agente (Camada B)
+- Code, identifiers, comments, and commits in English.
 
-Este projeto nasce com um arreio para a IA que o constrói. Detalhe em [docs/agent-harness.md](docs/agent-harness.md).
+## Agent harness (Layer B)
 
-- **Ritual (B2):** toda funcionalidade abre com `specs/<slug>/spec.md` — o pedido reformulado + um **alvo de "pronto" verificável**, aprovado antes de qualquer código. Ao concluir, confere-se item a item contra esse alvo; lacuna se declara, não se esconde. Código e especificação divergem → a especificação vence.
-- **Revisores (B3):** `.claude/agents/` — revisor de especificação, revisor de código, auditor de segurança, cada um em contexto isolado.
-- **Vigias que travam (B4):** `.claude/hooks/` bloqueia registrar segredo e mexer na branch protegida. Travas reais do sistema, não avisos.
+This project is born with a harness for the AI that builds it. Full map in
+[docs/agent-harness.md](docs/agent-harness.md).
 
-## Referências autoritativas
-
-| Documento | URL | O que define |
-|-----------|-----|-------------|
-| **Engineering Handbook v2.4** | https://code.lzrtechnologies.com | Arquitetura, padrões de código, CI/CD, segurança, governança |
-
-Em caso de dúvida entre o que está no código e o que está nesses documentos, **o documento vence**.
-
----
-
-## Configs compartilhadas (`@lzr/*`)
-
-Este template herda 4 configs centralizadas da LZR-Tech. Vêm pré-instaladas via `npm install` e ativadas automaticamente — o dev não precisa fazer nada manual.
-
-| Config | Repo fonte | O que controla |
-|---|---|---|
-| `@lzr/tsconfig` | [LZR-Tech/lzr-tsconfig](https://github.com/LZR-Tech/lzr-tsconfig) | Strict mode TS, paths, target, lib |
-| `@lzr/eslint-config` | [LZR-Tech/lzr-eslint-config](https://github.com/LZR-Tech/lzr-eslint-config) | Zero `any`, imports organizados, naming |
-| `@lzr/prettier-config` | [LZR-Tech/lzr-prettier-config](https://github.com/LZR-Tech/lzr-prettier-config) | Aspas simples, sem `;`, 100 cols |
-| `@lzr/commitlint-config` | [LZR-Tech/lzr-commitlint-config](https://github.com/LZR-Tech/lzr-commitlint-config) | Conventional Commits |
-
-**Para mudar uma regra que afeta todos os projetos LZR**: abrir PR no repo correspondente acima. Não duplique a regra localmente.
-
-**Para override pontual** (ex.: desativar uma rule num arquivo): documente o motivo com `// eslint-disable-next-line ... -- Why: ...`.
-
----
+- **Ritual (B2):** every feature opens with `specs/<slug>/spec.md` — the request restated
+  plus a **verifiable "done" target**, approved before any code. On completion the work is
+  checked against that target point by point; a gap is declared, not hidden. When code and
+  spec diverge, the spec wins.
+- **Reviewers (B3):** `.claude/agents/` — spec reviewer, code reviewer, security auditor,
+  each in its own isolated context.
+- **Guardrails (B4):** `.claude/hooks/` blocks committing a secret and touching a protected
+  branch. Real rails, not warnings.
 
 ## Stack
 
-| Pacote | Versão | Propósito |
-|--------|--------|-----------|
-| fastify | ^5 | Framework HTTP |
-| zod | ^3 | Validação |
-| pino | ^9 | Logging estruturado |
-| typescript | ^5.6 | Linguagem |
-| vitest | ^2 | Testes |
+| Package | Purpose |
+| --- | --- |
+| fastify | HTTP framework |
+| zod | Validation |
+| pino | Structured logging |
+| typescript | Language (strict mode) |
+| vitest | Tests |
 
----
+Do not add a dependency without checking the stack does not already cover it.
 
-## Arquitetura
+## Structure (feature-based)
 
-### Estrutura de pastas (feature-based)
 ```
 src/
 ├── features/
-│   ├── bids/
-│   │   ├── bids.service.ts
-│   │   ├── bids.controller.ts
-│   │   ├── bids.types.ts
-│   │   ├── bids.validation.ts
-│   │   └── __tests__/
-│   └── companies/
-├── shared/
-│   ├── utils/
-│   ├── types/
-│   └── middleware/
+│   └── <feature>/
+│       ├── <feature>.service.ts
+│       ├── <feature>.controller.ts
+│       ├── <feature>.types.ts
+│       ├── <feature>.validation.ts
+│       └── __tests__/
+├── shared/         # utils, types, middleware
 ├── config/
 └── index.ts
 ```
 
-### Padrões obrigatórios
+## Conventions
 
-- **Result Pattern** — `ok(data)` / `fail(error)`, nunca throw para erros de negócio
-- **Zod** para validação de toda entrada externa (API, forms, env vars)
-- **RFC 9457** para respostas de erro
-- **Logging estruturado** via Pino (JSON, com trace_id, tenant_id)
-- **Zero `any`** — usar `unknown` + type guard
+- **Result pattern** — return `ok(data)` / `fail(error)`; never throw for a business error.
+- **Validate every external input** (request body, params, env vars) with a Zod schema.
+- **RFC 9457** (Problem Details) for error responses.
+- **Structured logging** via Pino (JSON, with a trace id and, where multi-tenant, a tenant id).
+- **TypeScript strict**, zero `any` — use `unknown` plus a type guard.
+- **Named exports** only; a barrel `index.ts` per feature.
+- **JSDoc** on public service methods.
+- **Pagination** on every `getAll()` (`.limit()` or cursor-based) — never return an unbounded list.
+- **Comment the "why"** — a decision, a trade-off, a business rule, a workaround. Never the obvious.
+- New feature ships with its test.
 
-### TypeScript
-- `strict: true` — sem exceções
-- Named exports (nunca default)
-- Barrel exports por feature (`index.ts`)
+## Security
 
-### Commits
-- Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`, `security:`
+- Never log secrets, tokens, or personal data.
+- Secrets live in the environment, never in the repo.
+- Treat all incoming data as untrusted; validate at the boundary.
+- Check authorization before returning data. In a multi-tenant service, every query filters by
+  the tenant, in the data layer — a request with no tenant is blocked, never "sees everything".
+- The error returned to the client carries no internal detail (path, version, stack).
 
----
+## Zero tolerance for warnings and errors
 
-## Regras de código
-
-- **JSDoc obrigatório** em métodos públicos de service
-- **Comentários explicativos** — decisões de arquitetura, trade-offs, workarounds, regras de negócio
-- **Paginação obrigatória** — todo `getAll()` usa `.limit()` ou paginação cursor-based
-- **Testes** — feature nova = teste novo
-- **Segurança** — NUNCA logar senhas, tokens, CPF/CNPJ. Variáveis sensíveis em `.env.local`
-
----
-
-## Super-admin (multi-tenant)
-
-Em toda API multi-tenant da LZR, **super-admin é role explícito, NUNCA orphan**.
-
-- Padrão técnico: `profiles.role = 'super_admin'` consultado por função SECURITY DEFINER `is_super_admin_user()`
-- User sem `company_id` e sem role super_admin = orphan → **BLOQUEADO** (OWASP A01 — Broken Access Control)
-- **NUNCA** usar `IS NULL OR company_id = ...` em policies (brecha cross-tenant)
-- Endpoints sensíveis: validar scope/auth antes de retornar dados
-
----
-
-## Zero tolerance a warnings/erros
-
-Toda regra do Handbook é **enforced**. Nenhum PR pode ser mergeado com:
-
-- Erro ou warning de lint
-- Erro de type-check
-- Teste falhando
-- Build quebrado
-- Cobertura abaixo de 80% nas features novas
-
-**Procedimento ao detectar problema** (mesmo pré-existente):
-
-1. Parar o trabalho atual
-2. Corrigir TUDO (não só o arquivo tocado)
-3. Validar `pnpm typecheck && pnpm lint && pnpm test && pnpm build` com **0 erros e 0 warnings**
-4. Só então retomar a tarefa original
-
-**Proibido**: ignorar com "pré-existente", "não toquei nesse arquivo", "arrumo depois".
-
----
-
-## Governança de Regras (v2.4)
-
-**REGRA PERPÉTUA**: Toda criação/edição/remoção de regra DEVE ser refletida em TODAS as fontes (7 passos).
-
-> Referência: `Elementos-reutilizaveis/knowledge/frontend/governance.md`
+Nothing ships with a lint error or warning, a type error, a failing test, or a broken build.
+On finding one — even a pre-existing one — stop, fix it, confirm
+`pnpm typecheck && pnpm lint && pnpm test && pnpm build` is clean, then resume the task.

@@ -1,5 +1,5 @@
 // Refuses code that leaks a secret — the most critical security guard.
-// Deterministic, no AI. See docs/seguranca.md item 1.3.
+// Deterministic, no AI. See docs/security.md item 1.3.
 //
 // The patterns are assembled from parts on purpose: written whole, this file
 // would match its own definitions and flag itself. Split, the detector never

@@ -1,5 +1,5 @@
 // Flags files that grew too large to stay easy to understand.
-// See docs/qualidade-codigo.md item 3.
+// See docs/code-quality.md item 3.
 
 import type { Guard } from './types.ts'
 

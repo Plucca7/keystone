@@ -8,11 +8,19 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { scanSecrets } from '../src/guards/secrets.ts'
 import { scanSize } from '../src/guards/size.ts'
+import { scanDangerous } from '../src/guards/dangerous.ts'
 import { runGuardsOnContent, checkProject } from '../src/guards/runner.ts'
 
 const AWS_SAMPLE = `const k = "${'AKIA' + 'ABCDEFGHIJKLMNOP'}";`
 const API_SAMPLE = `const apiKey = "${'abcdef1234567890'}";`
 const PRIVATE_KEY_SAMPLE = '-----BEGIN PRIVATE ' + 'KEY-----'
+
+// Dangerous samples are assembled from parts for the same reason as the secrets:
+// so this test file does not trip the detector when Keystone scans its own project.
+const EVAL_SAMPLE = `const r = ${'ev' + 'al'}(userInput);`
+const REACT_HTML_SAMPLE = `<div ${'dangerously' + 'SetInner' + 'HTML'}={{ __html: raw }} />`
+const DOM_HTML_SAMPLE = `el.${'inner' + 'HTML'} = userInput;`
+const SHELL_SAMPLE = 'exec' + 'Sync(`rm -rf ${dir}`);'
 
 test('scanSecrets: flags an AWS access key', () => {
   const [finding] = scanSecrets('a.ts', AWS_SAMPLE)
@@ -30,6 +38,33 @@ test('scanSecrets: flags a private key block', () => {
 
 test('scanSecrets: no false positive on clean code', () => {
   assert.deepEqual(scanSecrets('a.ts', 'const total = price * quantity;'), [])
+})
+
+test('scanDangerous: flags dynamic code execution', () => {
+  const [finding] = scanDangerous('a.ts', EVAL_SAMPLE)
+  assert.ok(finding)
+  assert.equal(finding.guard, 'dangerous')
+})
+
+test('scanDangerous: flags raw HTML injection (React)', () => {
+  assert.equal(scanDangerous('a.tsx', REACT_HTML_SAMPLE).length, 1)
+})
+
+test('scanDangerous: flags a direct DOM HTML write', () => {
+  assert.equal(scanDangerous('a.ts', DOM_HTML_SAMPLE).length, 1)
+})
+
+test('scanDangerous: flags a shell command built with interpolation', () => {
+  assert.equal(scanDangerous('a.ts', SHELL_SAMPLE).length, 1)
+})
+
+test('scanDangerous: no false positive on an equality comparison', () => {
+  // `===` must not be mistaken for an innerHTML assignment.
+  assert.deepEqual(scanDangerous('a.ts', 'if (el.innerHTML === expected) ok();'), [])
+})
+
+test('scanDangerous: no false positive on clean code', () => {
+  assert.deepEqual(scanDangerous('a.ts', 'const total = price * quantity;'), [])
 })
 
 test('scanSize: flags an oversized file', () => {

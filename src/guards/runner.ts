@@ -1,14 +1,15 @@
 // Runs every guard over a set of files. Deterministic, no AI, zero cost.
 // This is what a project's pre-ship check and Keystone's own self-check call.
-// See docs/seguranca.md (camada 2) and docs/qualidade-codigo.md.
+// See docs/security.md and docs/code-quality.md.
 
 import { readFile } from 'node:fs/promises'
 import type { Finding, Guard } from './types.ts'
 import { scanSecrets } from './secrets.ts'
 import { scanSize } from './size.ts'
+import { scanDangerous } from './dangerous.ts'
 import { listSourceFiles } from './files.ts'
 
-const GUARDS: Guard[] = [scanSecrets, scanSize]
+const GUARDS: Guard[] = [scanSecrets, scanSize, scanDangerous]
 
 /** Run all guards against a single file's content. */
 export function runGuardsOnContent(file: string, content: string): Finding[] {

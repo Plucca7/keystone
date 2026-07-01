@@ -6,13 +6,13 @@
 >
 > **Status — what is actually built today:** only three commands exist — `new` (scaffolds a
 > project), `check` (runs exactly two deterministic guards over files: an exposed-secret scan and an
-> oversized-file check), and `analyze` (read-only, reports only: six presence checks — exposed
-> secrets, .gitignore completeness, presence of tests, presence of a README, basic database-convention
-> text checks, oversized files). Everything else in this document — dangerous-pattern flagging,
+> oversized-file check, and a dangerous-pattern scan), and `analyze` (read-only, reports only: six
+> presence checks — exposed secrets, .gitignore completeness, presence of tests, presence of a README,
+> basic database-convention text checks, oversized files). Everything else in this document —
 > dependency-vulnerability scanning, owner-filter query checks, edge enforcement, a pre-publish gate,
-> and the AI vulnerability hunt — is the **target**, not built. The single security-relevant check
-> that runs today is the exposed-secret scan (marked 🔧 below). Grounded in the references chosen for
-> relevance to typical web-app projects (listed at the end).
+> and the AI vulnerability hunt — is the **target**, not built. The security-relevant checks that run
+> today are the exposed-secret scan and the dangerous-pattern scan (both marked 🔧 below). Grounded in
+> the references chosen for relevance to typical web-app projects (listed at the end).
 
 ---
 
@@ -32,11 +32,11 @@ developer already uses — optional and off by default. That deeper hunt is plan
 ## How a project is born secure — three layers (zero cost)
 
 1. **Written rules** — this document.
-2. **Automatic checks** — they read the code. One security-relevant check runs today via the
-   `run the automatic checks` command: 🔧 exposed-secret scanning. Deterministic, no AI. _Planned:_
-   dangerous-pattern flagging and a dependency-list scan are the target, not built; and wiring the
-   checks to run again automatically before publishing (a second net at the gate) is the standard the
-   scaffold aims for, not built.
+2. **Automatic checks** — they read the code. Two security-relevant checks run today via the
+   `run the automatic checks` command: 🔧 exposed-secret scanning and 🔧 dangerous-pattern scanning
+   (injection/XSS sinks). Deterministic, no AI. _Planned:_ a dependency-list scan is the target, not
+   built; and wiring the checks to run again automatically before publishing (a second net at the
+   gate) is the standard the scaffold aims for, not built.
 3. **Protection configuration** — sensible protection settings, on by default. _Planned:_ pre-tuned edge
    protection switched on by default is designed, not delivered.
 
@@ -81,7 +81,9 @@ The single most important rule in any multi-tenant system.
   validated.
 - Protection against the classic attacks: a malicious command injected into a field, a malicious
   script that runs on another user's screen (injection and XSS).
-- _Planned:_ a check that flags dangerous patterns in the code is the target, not built.
+- 🔧 A dangerous-pattern scan flags the classic sinks today — dynamic code execution, raw HTML
+  injection (React escape hatch and direct DOM write), and shell commands built with interpolation.
+  Deeper taint analysis (tracing untrusted input to a sink) is the target, not built.
 
 ### 1.6 Third-party components watched
 
@@ -149,7 +151,8 @@ default, and a project is meant to be secure without it.
   1.9 → configuration.
 - **OWASP Cheat Sheet Series** — the "how to" for each item.
 - **OWASP Web Security Testing Guide** — how to test.
-- Automatic checks (built today): exposed-secret scanning + oversized-file scanning. _Planned:_ static
-  analysis of dangerous patterns in the code + dependency-list scanning; edge rate limiting.
+- Automatic checks (built today): exposed-secret scanning + oversized-file scanning + dangerous-pattern
+  scanning (injection/XSS sinks). _Planned:_ deeper taint analysis + dependency-list scanning; edge
+  rate limiting.
 
 > Note: each item must be confirmed against the current ASVS version at the implementation phase.

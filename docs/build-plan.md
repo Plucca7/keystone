@@ -37,12 +37,12 @@ target, not yet built. See [foundation.md](foundation.md).
 
 ### Stage 3 — The automatic checks — partially implemented
 
-The pieces that run on their own and block. **Built today:** exactly two guards — the exposed-secret
-scan and the oversized-file check — wired into the `check` command. **Planned (not yet built):** the
-rest of code quality (auto-format, blocking on errors), the rest of security (dangerous code,
-dependencies with known flaws, tenant isolation), and tests (run and block). Also planned: running
-the guards again at publish time as a second net. See [code-quality.md](code-quality.md),
-[security.md](security.md), [tests.md](tests.md).
+The pieces that run on their own and block. **Built today:** three guards — the exposed-secret
+scan, the oversized-file check, and a dangerous-pattern scan (injection/XSS sinks) — wired into the
+`check` command. **Planned (not yet built):** the rest of code quality (auto-format, blocking on
+errors), the rest of security (dependencies with known flaws, tenant isolation, deeper taint
+analysis), and tests (run and block). Also planned: running the guards again at publish time as a
+second net. See [code-quality.md](code-quality.md), [security.md](security.md), [tests.md](tests.md).
 
 ### Stage 4 — The pillars realized in the template — planned
 

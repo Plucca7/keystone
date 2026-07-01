@@ -4,8 +4,10 @@
 > meant to be born with. An open, unbranded standard any team can adopt as a common foundation.
 >
 > **Status — what is actually built today:** three commands exist. `new` scaffolds a new project
-> (asks setup questions, then copies a template). `check` runs exactly **two** deterministic file
-> guards: an exposed-secret scan and an oversized-file check — nothing else. `analyze` is read-only
+> (asks setup questions, then copies a template). `check` runs **three** deterministic file
+> guards: an exposed-secret scan, an oversized-file check, and a dangerous-pattern scan
+> (injection/XSS vectors: dynamic code execution, raw HTML injection, shell commands built with
+> interpolation) — nothing else. `analyze` is read-only
 > (reports only) and runs exactly **six** checks: exposed secrets, `.gitignore` completeness,
 > presence of tests, presence of a README, basic database-convention text checks (plain string
 > matching over `.sql` files), and oversized files. **Everything else in this document — every other
@@ -126,8 +128,9 @@ _Target — no auto-deploy, staging, or rollback is built._
 
 > Full rule in [security.md](security.md).
 
-_What runs today:_ the exposed-secret scan in `check` 🔧 and in `analyze` 🔧. Everything else in this
-pillar is the **target**.
+_What runs today:_ the exposed-secret scan in `check` 🔧 and in `analyze` 🔧, plus a
+dangerous-pattern scan in `check` 🔧 (injection/XSS vectors). Everything else in this pillar is the
+**target**.
 
 - **Security in code, not in a paid agent** — the intent is that deterministic checks run on their
   own at zero cost, and that the developer's own AI (Layer B) can hunt deeper via a metered hook that

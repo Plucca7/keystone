@@ -1,4 +1,4 @@
-// Creating a project: copy the real mould (web or api) into place, then adjust
+// Creating a project: copy the real template (web or api) into place, then adjust
 // the few variable points (the name). No more hand-made scaffold — the project
 // is born as the actual template, byte-for-byte, only renamed.
 // See docs/build-plan.md and docs/commands.md.
@@ -10,13 +10,13 @@ import type { KeystoneAnswers, ProjectType } from './types.ts'
 
 const TEMPLATES_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'templates')
 
-// Layer B — the agent harness. Stack-agnostic (reviewers, guardrails, the spec ritual,
-// layered context), so it lives once and is copied on top of every mould rather than
+// Layer B — the agent harness. Stack-agnostic (reviewers, guardrails, the spec workflow,
+// layered context), so it lives once and is copied on top of every template rather than
 // duplicated inside each one.
 const HARNESS_DIR = join(TEMPLATES_DIR, 'agent-harness')
 
-/** Which mould serves each project type. Mobile has no mould yet. */
-const MOULD_BY_TYPE: Record<ProjectType, 'web' | 'api' | null> = {
+/** Which template serves each project type. Mobile has no template yet. */
+const TEMPLATE_BY_TYPE: Record<ProjectType, 'web' | 'api' | null> = {
   site: 'web',
   system: 'web',
   service: 'api',
@@ -45,54 +45,62 @@ export function deduce(answers: KeystoneAnswers): DeducedChoices {
 
 export interface CreateResult {
   projectDir: string
-  mould: 'web' | 'api'
+  template: 'web' | 'api'
   deduced: DeducedChoices
 }
 
 // Directories that are dependencies, build output, or VCS metadata — never copied into a
-// new project, even if a stray local build left them in the mould. Keeps a generated
+// new project, even if a stray local build left them in the template. Keeps a generated
 // project clean and small.
 const NON_COPYABLE_DIRS = new Set(['node_modules', '.git', 'dist', '.next', '.turbo', 'coverage'])
 
+// Loose build artifacts matched by file name: the TypeScript incremental-build cache
+// (*.tsbuildinfo) is per-machine state from whoever last built the template — copying
+// it would hand every generated project a stale cache from another project.
+const NON_COPYABLE_FILES = /\.tsbuildinfo$/
+
 /**
- * Build a copy filter that skips the non-copyable directories INSIDE a mould, judged by
- * the path relative to the mould root — never the absolute path. This matters when
- * Keystone itself is installed: the mould then lives under `.../node_modules/keystone/
+ * Build a copy filter that skips the non-copyable directories INSIDE a template, judged by
+ * the path relative to the template root — never the absolute path. This matters when
+ * Keystone itself is installed: the template then lives under `.../node_modules/keystone/
  * templates/...`, so an absolute-path check would see "node_modules" in every path and
- * copy nothing. Relative to the mould root, only a real nested build/deps dir is skipped.
+ * copy nothing. Relative to the template root, only a real nested build/deps dir is skipped.
  */
 export function copyFilterFor(sourceRoot: string): (source: string) => boolean {
   return (source: string) => {
     const rel = relative(sourceRoot, source)
-    return !rel.split(/[\\/]/).some((segment) => NON_COPYABLE_DIRS.has(segment))
+    const segments = rel.split(/[\\/]/)
+    if (segments.some((segment) => NON_COPYABLE_DIRS.has(segment))) return false
+    const last = segments[segments.length - 1] ?? ''
+    return !NON_COPYABLE_FILES.test(last)
   }
 }
 
-/** Create the project by copying the real mould and renaming it. */
+/** Create the project by copying the real template and renaming it. */
 export async function createProject(answers: KeystoneAnswers): Promise<CreateResult> {
-  const mould = MOULD_BY_TYPE[answers.product.type]
-  if (!mould) {
+  const template = TEMPLATE_BY_TYPE[answers.product.type]
+  if (!template) {
     throw new Error(
-      `No mould yet for project type "${answers.product.type}" — only site/system/service.`,
+      `No template yet for project type "${answers.product.type}" — only site/system/service.`,
     )
   }
 
   const deduced = deduce(answers)
   const projectDir = resolve(answers.setup.parentDir, answers.product.name)
-  const source = join(TEMPLATES_DIR, mould)
+  const source = join(TEMPLATES_DIR, template)
 
-  // Copy the actual mould, skipping installed dependencies. The filter is anchored to
+  // Copy the actual template, skipping installed dependencies. The filter is anchored to
   // each source root so it works whether Keystone runs from the repo or from an install
   // under node_modules.
   await cp(source, projectDir, { recursive: true, filter: copyFilterFor(source) })
 
-  // Layer B — lay the agent harness on top of the mould, so every project is born with
-  // its reviewers, guardrails, spec ritual, and layered context. Copied after the mould
-  // (never overwrites a mould file: the harness only adds .claude/, specs/, and docs/).
+  // Layer B — lay the agent harness on top of the template, so every project is born with
+  // its reviewers, guardrails, spec workflow, and layered context. Copied after the template
+  // (never overwrites a template file: the harness only adds .claude/, specs/, and docs/).
   await cp(HARNESS_DIR, projectDir, { recursive: true, filter: copyFilterFor(HARNESS_DIR) })
 
   // Change only the name, by text substitution, so the rest of the manifest
-  // keeps the mould's exact formatting (no JSON reflow).
+  // keeps the template's exact formatting (no JSON reflow).
   const pkgPath = join(projectDir, 'package.json')
   const manifest = await readFile(pkgPath, 'utf8')
   const renamed = manifest.replace(
@@ -101,15 +109,15 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
   )
   await writeFile(pkgPath, renamed)
 
-  // Record how this project was created, next to the mould it came from.
+  // Record how this project was created, next to the template it came from.
   const record = {
     keystoneVersion: '0.1.0',
-    mould,
+    template,
     product: answers.product,
     setup: answers.setup,
     deduced,
   }
   await writeFile(join(projectDir, 'keystone.json'), `${JSON.stringify(record, null, 2)}\n`)
 
-  return { projectDir, mould, deduced }
+  return { projectDir, template, deduced }
 }

@@ -18,7 +18,7 @@ matters. The aim is for everything to run on its own, deterministically, at zero
 
 ## 1. Formatting that fixes itself
 
-- The mould ships a formatter config, so an editor set to format on save applies it as you write.
+- The template ships a formatter config, so an editor set to format on save applies it as you write.
 - 🔧 The `check` command enforces it either way: its project gates run the project's own
   `format:check` script and **block** when formatting drifts.
 - The goal is that no one decides or debates style — the formatter handles it.

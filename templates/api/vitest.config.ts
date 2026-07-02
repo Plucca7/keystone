@@ -4,9 +4,29 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // Silence request logging during tests: the app logs every injected
+    // request, which buries test output. env.ts reads LOG_LEVEL at import
+    // time, so setting it here (before test files load) is enough.
+    env: {
+      LOG_LEVEL: 'fatal',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      // Measure the whole product source, not just files that tests happen
+      // to import — untested files must show up as 0%, not vanish.
+      include: ['src/**'],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/__tests__/**',
+        // Honest exclusion, bootstrap only: server.ts (ports, process
+        // signals, process.exit) and index.ts (one-line entry) touch the
+        // real process and cannot run under the test runner without faking
+        // the process itself. Everything they wire together IS covered via
+        // buildApp() injection tests. Do NOT add product code here.
+        'src/server.ts',
+        'src/index.ts',
+      ],
       thresholds: {
         statements: 80,
         branches: 80,
@@ -14,7 +34,7 @@ export default defineConfig({
         lines: 80,
       },
     },
-    include: ['src/**/*.test.ts', '__tests__/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
   },
   resolve: {
     alias: {

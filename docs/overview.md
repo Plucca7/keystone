@@ -24,9 +24,9 @@ but stays welcoming to those just starting out.
 ## What it aims to deliver
 
 **Start a project whose folder already carries a high-standard foundation — without assembling it by
-hand.** The standard lives inside the mould (the `web` and `api` templates): the quality configs,
+hand.** The standard lives inside the template (the `web` and `api` templates): the quality configs,
 git hooks, CI workflow files, example tests and project structure are all part of the template. The
-`new` command copies that mould into place, so a fresh project is born with those files present —
+`new` command copies that template into place, so a fresh project is born with those files present —
 then starts version control, installs dependencies, and switches on the git hooks. Running the
 tests and wiring up CI remain steps the developer takes afterward.
 
@@ -37,7 +37,7 @@ that disappears after setup.
 
 Implemented today:
 
-- **`new`** — copies the standard mould into a new folder and adjusts the few variable points: it
+- **`new`** — copies the standard template into a new folder and adjusts the few variable points: it
   renames the package, records how the project was created (`keystone.json`), and deduces two
   choices from what the user already said (whether it needs a database, and its security level). It
   then starts version control with a first commit, installs dependencies, and — through that
@@ -54,8 +54,9 @@ Planned (in development, not yet built):
 
 - **Guided design step** — a step that generates the project's visual identity through the
   developer's own assistant.
-- **Distance-from-standard report with an upgrade plan** — turning `analyze`'s presence checks into
-  a plan to close the gap, with cost/risk.
+- **Deep upgrade plan** — `analyze` already prints its three-part report (state, prioritized plan,
+  and fixed indicative effort/risk classes per check); what remains planned is the deeper,
+  project-specific cost/risk judgement, done by the developer's own assistant.
 - **Session hand-off / resume** — one action to close a work session (recording what was done and
   where things stand), another to resume it (reading that record so the next session picks up
   without re-explaining context).

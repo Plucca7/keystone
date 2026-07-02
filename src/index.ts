@@ -1,6 +1,23 @@
 #!/usr/bin/env node
 // Keystone entry point. Routes the command and runs the matching flow.
 
+// Fail fast on an unsupported runtime: the "engines" field alone does not block an
+// install on an older Node — it only warns — so without this check the failure would
+// surface later as a confusing runtime error instead of a clear requirement. Static
+// imports are hoisted and evaluate before this line, but every internal module parses
+// on older Node (plain ES2022, no top-level side effects beyond path resolution), so
+// this check is genuinely the first thing that can fail. (The compiled package runs
+// on Node 20+; running the TypeScript sources directly needs Node 24+, which the
+// runtime itself enforces.)
+const MINIMUM_NODE_MAJOR = 20
+const nodeMajor = Number(process.versions.node.split('.')[0])
+if (nodeMajor < MINIMUM_NODE_MAJOR) {
+  process.stderr.write(
+    `Keystone requires Node.js ${MINIMUM_NODE_MAJOR}+ (found ${process.versions.node}).\n`,
+  )
+  process.exit(1)
+}
+
 import { resolve } from 'node:path'
 import { runWizard } from './wizard.ts'
 import { createProject } from './create.ts'
@@ -42,9 +59,9 @@ async function runNew(args: string[]): Promise<void> {
   try {
     print('\nKeystone — let’s set up your project.\n')
     const answers = await runWizard(prompter, firstPositional(args))
-    const { projectDir, mould, deduced } = await createProject(answers)
+    const { projectDir, template, deduced } = await createProject(answers)
     print(`\n✓ Project created at ${projectDir}`)
-    print(`  From the ${mould} mould`)
+    print(`  From the ${template} template`)
     print(`  Database: ${deduced.needsDatabase ? 'yes (deduced)' : 'not needed'}`)
     print(`  Security: ${deduced.securityLevel}`)
     // Flags only ever turn a step off; both steps are on by default so the project
@@ -100,7 +117,7 @@ async function runCheck(args: string[]): Promise<void> {
   }
 
   // Front 2 — the project gates (its own formatter, linter, types, tests, audit).
-  // These are the real brakes: they run the project's tooling and block on failure.
+  // These are the enforcing checks: they run the project's tooling and block on failure.
   let gatesFailed = false
   if (runGates) {
     print('\nProject gates:')
@@ -145,4 +162,12 @@ async function main(): Promise<void> {
   }
 }
 
-await main()
+// One catch at the top so an expected operational failure (input ending mid-wizard,
+// an unreachable directory) exits with a clean one-line message and a non-zero code —
+// never a raw stack trace at the user.
+try {
+  await main()
+} catch (error) {
+  printError(`Error: ${error instanceof Error ? error.message : String(error)}`)
+  process.exitCode = 1
+}

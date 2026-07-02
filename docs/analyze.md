@@ -12,7 +12,7 @@
 > database-convention check over `.sql` files, and oversized files — and produces a report. It only
 > reads and reports — it changes nothing. Acting on anything it recommends is a separate decision you
 > make later, by hand. Everything beyond those three commands (dependency-vulnerability scanning,
-> tenant-isolation/owner-filter query checks, dangerous-pattern scanning, accessibility, and the
+> tenant-isolation query checks, dangerous-pattern scanning, accessibility, and the
 > before-going-live workflow) is the **target**, not built yet.
 
 ---
@@ -49,7 +49,7 @@ These are the only checks `analyze` performs right now — all plain, determinis
 3. **Has tests** — looks for test files or a `tests/` folder.
 4. **Has a README** — looks for a `README.md` at the root.
 5. **Database conventions** — a plain-text match over `.sql` files for four expected terms (`uuid`,
-   `owner_id`, `created_at`, `deleted_at`). It is a text check, not a real SQL analysis.
+   `tenant_id`, `created_at`, `deleted_at`). It is a text check, not a real SQL analysis.
 6. **No oversized files** — flags files past the size threshold.
 
 ## The report (three parts)
@@ -67,13 +67,17 @@ What to do to get there, **in the right order**: the most critical and highest-r
 
 - **Effort** on a simple scale: **small / medium / large** (no faking hour-level precision).
 - **Risk** of touching it: **low / medium / high** (a change that could break surrounding code weighs more).
+- **Honesty note:** these ratings are **fixed per check** — each deterministic check carries a
+  pre-assigned effort/risk class, chosen when the check was written. They are indicative ordering
+  hints, not a computed estimate of your codebase. The deeper, project-specific cost/risk judgement
+  belongs to the assistant the developer already uses (see below), and is planned, not built.
 
 ## The intelligence — who does what
 
 - **The six deterministic checks** surface the mechanical gap they cover today (an exposed secret, a
   missing `.env` rule, no tests, no README, a database file missing an expected convention term, an
   oversized file) — **free, no AI**. Deeper mechanical checks such as dependency-vulnerability scanning
-  and owner-filter query analysis are **planned**, not part of this command yet.
+  and tenant-filter query analysis are **planned**, not part of this command yet.
 - **Your own AI** makes the judgment calls that need a head: severity, the upgrade plan,
   the risk estimate. It runs on your own AI — never a metered platform layer.
 
@@ -82,7 +86,7 @@ What to do to get there, **in the right order**: the most critical and highest-r
 - Measures against the same [8 pillars](pillars.md) the `new` command applies.
 - Tenant isolation and exposed secrets (the most serious findings) come from
   [Security](security.md) — today `analyze` checks exposed secrets; the tenant-isolation
-  (owner-filter) check is planned there, not yet built.
+  (tenant-filter) check is planned there, not yet built.
 - If you decide to act on the report, the upgrade is meant to follow the [Workflow](workflow.md)
   (review gate, tests at every step) — that workflow is the planned standard, not something this
   read-only command carries out for you.

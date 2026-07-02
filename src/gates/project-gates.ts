@@ -1,4 +1,4 @@
-// The project gates: the "brakes" that run a project's own tooling and block when it
+// The project gates: the blocking checks that run a project's own tooling and fail when it
 // fails. The text guards (src/guards) read files; these gates instead RUN the project's
 // checks — formatter, linter, type-checker, tests — plus a dependency-vulnerability
 // audit. Together they are the pre-ship gate the pillars call for (docs/code-quality.md

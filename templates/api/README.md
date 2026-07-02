@@ -58,61 +58,88 @@ src/
 ├── config/          # Configuration (env, logger)
 │   ├── env.ts       # Env var validation (Zod)
 │   └── logger.ts    # Structured logger (Pino)
-├── features/        # Features organized by domain
+├── modules/         # Domain modules, 3 layers each
 │   └── health/      # Example: health check
-│       ├── health.controller.ts
-│       └── index.ts
+│       ├── health.controller.ts   # HTTP shape only
+│       ├── health.service.ts      # Business logic
+│       ├── health.repository.ts   # Data access boundary
+│       ├── health.routes.ts       # Route registration
+│       ├── __tests__/             # Module tests
+│       └── index.ts               # Barrel export
 ├── shared/          # Shared code
-│   ├── middleware/  # Global middleware
-│   │   └── error-handler.ts  # RFC 9457
-│   ├── types/       # Shared types
-│   │   ├── error.ts   # AppError + Problem Details
-│   │   ├── result.ts  # Result pattern
-│   │   └── index.ts
-│   └── utils/       # Utilities
-└── index.ts         # Entry point (bootstrap)
+│   ├── middleware/  # Global middleware (error handler, auth, rate limit)
+│   ├── types/       # Shared types (Result pattern, AppError, events)
+│   └── constants/   # Named constants (HTTP status codes)
+├── app.ts           # Builds the Fastify app (pure, testable via inject)
+├── server.ts        # Starts listening + graceful shutdown
+└── index.ts         # Entry point (starts the server)
+db/
+└── migrations/      # Ordered SQL migrations (see db/migrations/README.md)
+scripts/             # db-migrate.sh, setup-branch-protection.sh
+tests/               # Integration/e2e tests + testing doc
+docs/                # deploy.md, ADRs
 ```
 
-## Adding a new feature
+## Adding a new module
 
 ```bash
-mkdir -p src/features/companies
+mkdir -p src/modules/companies
 ```
 
 ```
-src/features/companies/
-├── companies.controller.ts   # Routes
-├── companies.service.ts      # Business logic
-├── companies.types.ts        # Types and Zod schemas
-├── companies.validation.ts   # Input validation
-├── __tests__/                # Feature tests
-│   └── companies.test.ts
+src/modules/companies/
+├── companies.controller.ts   # HTTP shape only (request/reply mapping)
+├── companies.service.ts      # Business logic (Result pattern)
+├── companies.repository.ts   # Data access boundary (the only layer that sees the DB)
+├── companies.routes.ts       # Route registration
+├── __tests__/                # Module tests (ship with the module)
+│   └── companies.service.test.ts
 └── index.ts                  # Barrel export
 ```
 
+Layer rule: controller -> service -> repository, never skipping, never
+backwards. Register the module's routes in `src/app.ts`.
+
 ## Conventions
 
-| Convention             | Where                                        |
-| ---------------------- | -------------------------------------------- |
-| **Zero `any`**         | tsconfig strict + ESLint rule                |
-| **Result pattern**     | `ok(data)` / `fail(error)` in `shared/types` |
-| **RFC 9457**           | Error handler returns Problem Details        |
-| **Zod validation**     | Every external input validated               |
-| **Structured logging** | Pino JSON with a trace id                    |
-| **Feature-based**      | Code organized by domain                     |
-| **Barrel exports**     | `index.ts` in each feature                   |
+| Convention             | Where                                                 |
+| ---------------------- | ----------------------------------------------------- |
+| **Zero `any`**         | tsconfig strict + ESLint rule                         |
+| **Result pattern**     | `ok(data)` / `fail(error)` in `shared/types`          |
+| **RFC 9457**           | Error handler returns Problem Details                 |
+| **Zod validation**     | Every external input validated                        |
+| **Structured logging** | Pino JSON with a trace id                             |
+| **3-layer modules**    | controller / service / repository per domain          |
+| **Barrel exports**     | `index.ts` in each module                             |
+| **snake_case in SQL**  | All DB identifiers; camelCase stays in TS             |
+| **Tests always grow**  | Every feature ships with its test (`tests/README.md`) |
 
 ## Scripts
 
-| Script               | What it does                |
-| -------------------- | --------------------------- |
-| `pnpm dev`           | Dev server with hot reload  |
-| `pnpm build`         | Compile TypeScript          |
-| `pnpm start`         | Run the build in production |
-| `pnpm typecheck`     | Type check                  |
-| `pnpm lint`          | Run ESLint                  |
-| `pnpm test`          | Run tests                   |
-| `pnpm test:coverage` | Tests with coverage (>80%)  |
+| Script               | What it does                                |
+| -------------------- | ------------------------------------------- |
+| `pnpm dev`           | Dev server with hot reload                  |
+| `pnpm build`         | Compile TypeScript                          |
+| `pnpm start`         | Run the build in production                 |
+| `pnpm typecheck`     | Type check                                  |
+| `pnpm lint`          | Run ESLint                                  |
+| `pnpm test`          | Run tests                                   |
+| `pnpm test:coverage` | Tests with coverage (80% minimum, enforced) |
+| `pnpm db:migrate`    | Apply SQL migrations (needs `DATABASE_URL`) |
+
+## Database
+
+SQL migrations live in `db/migrations/` (naming, ordering, and conventions in
+[db/migrations/README.md](db/migrations/README.md)). They are applied in order
+by `scripts/db-migrate.sh`, tracked in a `schema_migrations` table, and always
+run BEFORE the code deploys.
+
+## Deploy
+
+Two GitHub Actions pipelines ship the service: `develop` -> staging and
+`main` -> production, each running quality gates, then migrations, then the
+deploy, then a smoke test. Hosting is your choice — one marked step per
+workflow is all you fill in. Full guide: [docs/deploy.md](docs/deploy.md).
 
 ## Reference
 

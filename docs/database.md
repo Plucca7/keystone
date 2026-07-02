@@ -10,12 +10,12 @@
 > checks named on this page are still the target, not built. `analyze` is read-only and runs exactly
 > six presence checks (exposed secrets, .gitignore
 > completeness, presence of tests, presence of a README, basic text checks over `.sql` files, and
-> oversized files). Everything else on this page — including the owner-filter query check — is the
+> oversized files). Everything else on this page — including the tenant-filter query check — is the
 > **target**, not yet built. Planned items are marked "planned" below and never carry the 🔧 symbol.
 
 ## Principle
 
-The vault where everything is stored is born organized, traceable, and secure by default. Structural
+The data store is born organized, traceable, and secure by default. Structural
 changes are always recorded; nothing is truly lost.
 
 ## 1. Timestamp everything
@@ -36,18 +36,18 @@ changes are always recorded; nothing is truly lost.
   (migrations), identical across every environment. Nobody edits the database directly.
 - These run through the database service's own tooling — **no AI, zero cost**.
 
-## 4. Shuffled identifiers
+## 4. Unguessable identifiers
 
 - Each record has an **unguessable identifier** (not a sequential 1, 2, 3). Nobody can count how many
   records exist or probe the data by walking the numbers.
 
-## 5. Every record carries the owner tag
+## 5. Every record carries the tenant id
 
-- Every record carries the **owning tenant's tag**, and that separation is enforced in the database.
+- Every record carries the **owning tenant's id**, and that separation is enforced in the database.
   This is tenant isolation.
 - It is the foundation of the Security pillar's "inner lock" — see [security.md](security.md),
   item 1.1.
-- **Planned:** an automatic check that flags a query that runs without the owner filter. This check
+- **Planned:** an automatic check that flags a query that runs without the tenant filter. This check
   is a target and is **not built yet** — it does not run today.
 
 ## 6. Internal names in English

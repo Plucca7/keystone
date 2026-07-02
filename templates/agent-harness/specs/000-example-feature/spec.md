@@ -1,16 +1,16 @@
-# <Feature name> — spec
+# <Feature name> -- spec
 
-> The ritual: a feature opens with this spec and does not become code until the
+> The workflow: a feature opens with this spec and does not become code until the
 > spec-reviewer approves it. When code and spec later diverge, the spec wins.
 > Rename this folder `NNN-your-feature` and fill it in.
 
 ## The request, restated
 
-<The problem in your own words — who has it, what it costs to not solve it.>
+<The problem in your own words -- who has it, what it costs to not solve it.>
 
 ## Done-target (verifiable)
 
-<The single most important line. A concrete, checkable condition — an observable behavior,
+<The single most important line. A concrete, checkable condition -- an observable behavior,
 a passing test, a measured number. Not "improve X". If someone cannot tell from this
 whether the finished work is done, it is not a done-target yet.>
 

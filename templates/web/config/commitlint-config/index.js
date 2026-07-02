@@ -3,42 +3,34 @@
  * CommitLint configuration
  * Project conventions
  *
- * Format: <type>: <description>
+ * Format: <type>(<scope>): <description>   -- the scope is REQUIRED
  * Examples:
- *   feat: adds dashboard feature
- *   fix: corrects timeout bug
- *   docs: updates README
- *   refactor: extracts validation logic
- *   test: adds auth flow tests
- *   chore: updates dependencies
- *   security: fixes SQL injection
+ *   feat(dashboard): adds usage chart
+ *   fix(auth): corrects session timeout bug
+ *   docs(readme): updates setup instructions
+ *   refactor(items): extracts validation logic
+ *   test(items): adds archive policy tests
+ *   chore(deps): updates dependencies
+ *   security(api): fixes SQL injection
  */
 
 module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    // Allowed types
-    'type-enum': [
-      2,
-      'always',
-      [
-        'feat',
-        'fix',
-        'docs',
-        'refactor',
-        'test',
-        'chore',
-        'security',
-        'style',
-        'perf',
-        'ci',
-        'build',
-        'revert',
-      ],
-    ],
+    // Allowed types -- exactly these seven, no more. The list is kept short on
+    // purpose so history stays scannable: style/formatting-only changes are
+    // `chore`, performance work is `refactor` (or `fix` when it repairs a
+    // regression), CI/build tooling is `chore`, and a revert describes what it
+    // restores with one of these types.
+    'type-enum': [2, 'always', ['feat', 'fix', 'docs', 'refactor', 'test', 'chore', 'security']],
     // Type is required and lowercase
     'type-case': [2, 'always', 'lower-case'],
     'type-empty': [2, 'never'],
+
+    // Scope is REQUIRED: `feat: adds x` says nothing about WHERE. The scope
+    // names the touched area (feature, module, package) and makes
+    // `git log --oneline` navigable without opening diffs.
+    'scope-empty': [2, 'never'],
 
     // Subject is required
     'subject-empty': [2, 'never'],

@@ -1,6 +1,8 @@
 // Turns the check results into the three-part report the user reads:
 // 1) where the project stands, 2) a prioritized plan, 3) cost and risk per item.
-// See docs/analyze.md.
+// The effort/risk values are fixed classes assigned per check (indicative ordering
+// hints, not a computed estimate) — the report says so, so nobody mistakes them for
+// analysis. See docs/analyze.md.
 
 import type { CheckResult, Severity } from './checks.ts'
 
@@ -30,6 +32,12 @@ export function formatReport(results: CheckResult[]): string {
       lines.push(`   ${index + 1}. [${r.pillar}] ${r.title} — ${r.detail}`)
       lines.push(`      effort: ${r.effort} · risk: ${r.risk} · severity: ${r.severity}`)
     })
+    // Honesty over gloss: the classes above are fixed per check, not computed for this
+    // codebase — say so in the report itself.
+    lines.push(
+      '',
+      '   (effort/risk are fixed indicative classes per check, not a computed estimate)',
+    )
   }
 
   return `${lines.join('\n')}\n`

@@ -1,6 +1,13 @@
+import path from 'node:path'
+
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // The app's own directory is the file-tracing root. Without this, Next
+  // walks up looking for a lockfile to infer a "workspace root" -- and any
+  // stray lockfile in a parent directory triggers a build warning and wrong
+  // tracing. A generated project is standalone, so its root IS the app.
+  outputFileTracingRoot: path.join(__dirname),
   // Security headers
   async headers() {
     return [

@@ -49,12 +49,24 @@ src/
 │   ├── forms/               # Form components
 │   ├── layouts/             # Reusable layouts
 │   └── features/            # Feature-specific components
+├── features/                # Domain logic per feature (pure business rules)
 ├── hooks/                   # Custom hooks
 ├── lib/                     # Utilities and config
 │   ├── fetch.ts             # Fetch wrapper (result pattern)
+│   ├── logger.ts            # Central structured logger (no raw console.*)
+│   ├── query-keys.ts        # Central React Query key registry
+│   ├── query-config.ts      # Cache presets per data volatility
+│   ├── query-invalidation.ts# Cross-entity invalidation helpers
 │   └── types.ts             # Shared types
 └── styles/
     └── globals.css          # Tailwind + CSS variables
+db/
+└── migrations/              # Ordered SQL migrations (NNNN_description.sql)
+scripts/
+├── db-migrate.sh            # Apply pending migrations (schema_migrations tracking)
+└── setup-branch-protection.sh # Server-side branch protection via gh api
+docs/
+└── deploy.md                # Staging/production pipeline guide
 ```
 
 ## Conventions

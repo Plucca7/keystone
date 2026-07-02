@@ -20,6 +20,6 @@ control. Nothing lands unreviewed, and the automated guards filter most issues b
 - **Comments explain the "why"**, not the obvious.
 - **Secrets never live in the code.**
 
-The full design — the 8 pillars, the soul, the end-to-end flow — is in [docs/](docs/).
+The full design — the 8 pillars, the core rationale, the end-to-end flow — is in [docs/](docs/).
 
 Every delivery records its author.

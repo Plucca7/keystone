@@ -27,3 +27,12 @@ export const rateLimitPlugin: FastifyPluginCallback<RateLimitOptions> = (fastify
   })
   done()
 }
+
+// Why: Fastify encapsulates plugins — a hook added inside a plugin applies
+// only to routes registered in that plugin's own context, so without this
+// flag the limiter silently protected NOTHING (caught by the test suite).
+// The skip-override symbol is exactly what the `fastify-plugin` package sets;
+// inlining it avoids adding a dependency for one boolean.
+;(rateLimitPlugin as FastifyPluginCallback<RateLimitOptions> & Record<symbol, boolean>)[
+  Symbol.for('skip-override')
+] = true

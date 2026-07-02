@@ -99,7 +99,11 @@ const checkDatabaseConventions: Check = (s) => {
     }
   }
   const text = sqlFiles.map((f) => f.content).join('\n')
-  const conventions = ['uuid', 'owner_id', 'created_at', 'deleted_at']
+  // The four database conventions, by their canonical column/term names: unguessable
+  // ids (uuid), tenant isolation (tenant_id), timestamps (created_at), soft delete
+  // (deleted_at). tenant_id is the international multi-tenant convention — it must
+  // match what the templates' migrations actually ship.
+  const conventions = ['uuid', 'tenant_id', 'created_at', 'deleted_at']
   const missing = conventions.filter((c) => !text.includes(c))
   return {
     pillar: 'Database',

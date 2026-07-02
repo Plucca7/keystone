@@ -21,10 +21,45 @@ export interface Prompter {
 export class ReadlinePrompter implements Prompter {
   private rl = readline.createInterface({ input, output })
 
+  // Own line queue instead of rl.question(): readline DISCARDS lines that arrive while
+  // no question is pending, and a pipe delivers all its lines at once — so with
+  // question() a piped `keystone new` lost every answer after the first and then hung
+  // (or died with an unsettled top-level await) when stdin closed. Buffering every
+  // line makes piped/scripted input first-class, and end-of-input becomes a clear,
+  // catchable error instead of a hang.
+  private queued: string[] = []
+  private waiting: { resolve: (line: string) => void; reject: (err: Error) => void }[] = []
+  private isClosed = false
+
+  constructor() {
+    this.rl.on('line', (line) => {
+      const waiter = this.waiting.shift()
+      if (waiter) waiter.resolve(line)
+      else this.queued.push(line)
+    })
+    this.rl.on('close', () => {
+      this.isClosed = true
+      for (const waiter of this.waiting.splice(0)) {
+        waiter.reject(new Error('Input ended before all questions were answered.'))
+      }
+    })
+  }
+
+  private ask(prompt: string): Promise<string> {
+    output.write(prompt)
+    // Serve an already-buffered line first (piped input), then fall back to waiting.
+    const buffered = this.queued.shift()
+    if (buffered !== undefined) return Promise.resolve(buffered)
+    if (this.isClosed) {
+      return Promise.reject(new Error('Input ended before all questions were answered.'))
+    }
+    return new Promise((resolve, reject) => this.waiting.push({ resolve, reject }))
+  }
+
   async text(question: string): Promise<string> {
     let answer = ''
     while (answer.trim() === '') {
-      answer = (await this.rl.question(`${question} `)).trim()
+      answer = (await this.ask(`${question} `)).trim()
     }
     return answer
   }
@@ -35,7 +70,7 @@ export class ReadlinePrompter implements Prompter {
     // Never trust raw input: loop until the typed number maps to a real option.
     // An out-of-range index yields undefined, which also covers the range check.
     while (true) {
-      const picked = Number((await this.rl.question('> ')).trim())
+      const picked = Number((await this.ask('> ')).trim())
       const chosen = Number.isInteger(picked) ? choices[picked - 1] : undefined
       if (chosen) {
         return chosen.value

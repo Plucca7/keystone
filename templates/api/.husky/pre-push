@@ -1,1 +1,15 @@
-npm run typecheck && npm test
+# Guard first: refuse any push that targets a protected branch.
+# Why parse stdin instead of checking the current branch: git hands pre-push
+# the refs being pushed, which also catches "git push origin HEAD:main" from
+# a feature branch — a current-branch check would miss it.
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main | refs/heads/master | refs/heads/production)
+      echo "Blocked: pushing to '$remote_ref' is not allowed." >&2
+      echo "Protected branches change only through pull requests." >&2
+      exit 1
+      ;;
+  esac
+done
+
+pnpm run typecheck && pnpm run test

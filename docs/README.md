@@ -19,14 +19,14 @@ Keystone is built as **two complementary layers**:
   scaffolded project is born with, plus the checks that hold them. This is where the three
   implemented commands live.
 - **Layer B — Agent Harness.** Built: `new` lays it into every project (reviewers, guardrail hooks,
-  the spec ritual, layered context — distilled from the house's own practice). It runs on the
+  the spec workflow, layered context — distilled from real working practice). It runs on the
   developer's own AI assistant — never a separate paid service.
 
 See [pillars.md](pillars.md) for the blueprint that ties both layers together.
 
 ## Start here
 
-- **[overview.md](overview.md)** — the soul of the tool: who it serves, what it promises, how far it
+- **[overview.md](overview.md)** — the core rationale: who it serves, what it promises, how far it
   reaches, and why the AI is always the developer's own.
 - **[pillars.md](pillars.md)** — the blueprint: the two layers and the eight quality pillars, end to
   end.

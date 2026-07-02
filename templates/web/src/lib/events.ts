@@ -8,6 +8,13 @@
  *   events.on('item.created', handler);
  */
 
+import { createLogger } from './logger'
+
+// All product code logs through the central logger (lib/logger.ts) -- never
+// raw console.*. The logger owns formatting (structured JSON in prod) and is
+// the single point to wire an ingestion service later.
+const log = createLogger('events')
+
 // ============================================
 // EVENT TYPES
 // ============================================
@@ -56,7 +63,11 @@ class EventBus {
       try {
         await handler(payload)
       } catch (error) {
-        console.error(`[events] Error in handler for "${event}":`, error)
+        // A failing handler must not break the emitter or its siblings, so the
+        // error is logged and swallowed here (see Promise.allSettled below).
+        log.error(`Handler failed for event "${event}"`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     })
 

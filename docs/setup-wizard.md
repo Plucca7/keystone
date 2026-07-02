@@ -12,7 +12,7 @@
 > staging, rollback, review gate, task board) is still planned, not built. This document describes the
 > setup flow the implemented create-a-new-project command runs.
 >
-> **What "create" actually does today (ground truth):** it copies the official mould (web or api)
+> **What "create" actually does today (ground truth):** it copies the official template (web or api)
 > into a new project folder, renames the package to the project's name, writes a `keystone.json`
 > record of how the project was created, and computes two inferred choices (whether it needs a
 > database, and the security level) from the answers. That is the whole of it. It does **not** create
@@ -62,11 +62,11 @@ The essential minimum. Six questions; the fifth is optional and branches.
   product's essence, avoiding a generic AI look
 - **Import my own** → the user brings a ready identity (existing brand, design done elsewhere); a
   later, still-planned step would apply it
-- **Decide later** → starts with the mould's neutral default look (the only path that acts today,
-  because the mould already ships that look)
+- **Decide later** → starts with the template's neutral default look (the only path that acts today,
+  because the template already ships that look)
 
 > Today, the visual-identity answer is only recorded in `keystone.json`. No design step runs — a new
-> project is born with whatever look the copied mould already contains.
+> project is born with whatever look the copied template already contains.
 
 ### 6. Handles sensitive data or money? · _yes · no_ → feeds the security and database inference
 
@@ -91,7 +91,7 @@ Type-3 questions about infrastructure:
 - **Parent folder** · _where, on the machine, the project folder will be created_
 
 > The command **creates the project folder itself** inside the parent folder — this part is built: it
-> copies the official mould into a new folder named after the project. The user does not need to
+> copies the official template into a new folder named after the project. The user does not need to
 > create any folder beforehand, nor run the command from inside one.
 >
 > The versioning and visibility answers, however, are **only recorded** today. The command does **not**
@@ -109,8 +109,8 @@ Type-3 questions about infrastructure:
   - Both of these are computed and written into `keystone.json` — that inference is built. What is
     inferred is a **record**, not an action: nothing is provisioned or configured from it yet.
 - **Design-system application:** the visual foundation (fonts, spacing, accessibility, locale
-  formatting) is fixed by the standard, and the mould already ships it. There is no separate
-  design step that "applies" it — a new project simply inherits the foundation the copied mould
+  formatting) is fixed by the standard, and the template already ships it. There is no separate
+  design step that "applies" it — a new project simply inherits the foundation the copied template
   already contains. The personality (color / font) that would follow the path chosen in question 5
   is planned, not built.
 
@@ -151,13 +151,13 @@ Type-3 questions about infrastructure:
 ## Visual-identity paths (summary)
 
 > Today all three paths only **record** the choice; the identity work described in the middle column is
-> planned. The one thing that actually happens is that a new project inherits the mould's default look.
+> planned. The one thing that actually happens is that a new project inherits the template's default look.
 
-| Path                                 | What is intended to happen (planned unless noted)                    | Deep briefing? |
-| ------------------------------------ | -------------------------------------------------------------------- | -------------- |
-| Generate a custom identity (default) | Would derive identity from the essence; avoids a generic AI look     | Yes            |
-| Import my own                        | User brings a ready brand / design; a later step would apply it      | No             |
-| Decide later                         | Neutral default look from the mould (acts today); personalized later | No             |
+| Path                                 | What is intended to happen (planned unless noted)                       | Deep briefing? |
+| ------------------------------------ | ----------------------------------------------------------------------- | -------------- |
+| Generate a custom identity (default) | Would derive identity from the essence; avoids a generic AI look        | Yes            |
+| Import my own                        | User brings a ready brand / design; a later step would apply it         | No             |
+| Decide later                         | Neutral default look from the template (acts today); personalized later | No             |
 
 ---
 

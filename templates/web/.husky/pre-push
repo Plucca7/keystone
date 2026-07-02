@@ -1,1 +1,19 @@
-npm run typecheck && npm test
+# Rail 1: refuse direct pushes to protected branches. Git feeds pre-push one
+# line per ref being pushed on stdin ("<local ref> <local sha> <remote ref>
+# <remote sha>"); checking the REMOTE ref catches `git push origin HEAD:main`
+# too, which a current-branch check would miss. Protected branches only move
+# through reviewed pull requests -- the server-side twin of this rail is
+# scripts/setup-branch-protection.sh.
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main | refs/heads/master | refs/heads/production)
+      echo "Push blocked: '${remote_ref#refs/heads/}' is a protected branch." >&2
+      echo "Open a pull request instead of pushing directly." >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Rail 2: the full fast suite before anything leaves the machine. Broken types
+# or tests stop here instead of burning a CI round-trip.
+pnpm run typecheck && pnpm test

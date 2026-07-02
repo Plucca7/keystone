@@ -31,8 +31,8 @@ the rest is the target.
 developer already uses — and Layer B is that agent's harness: what shapes its context, the spec it
 follows, the specialists it consults, and the guardrails that stop it from going wrong. It runs
 entirely on the developer's own AI, with no external paid service required. **Layer B ships today:
-every scaffolded project is born with it** (see the four parts below), distilled from the house's own
-working practice rather than copied from elsewhere.
+every scaffolded project is born with it** (see the six parts below), distilled from real, production
+working practice rather than invented on a whiteboard.
 
 The two layers keep AI in its place: Layer A's quality guarantees are deterministic and run at zero
 AI cost, so AI is never the basis of the quality guarantee; Layer B gives the coding agent a
@@ -89,9 +89,9 @@ string matching) 🔧; none of the guarantees below are implemented._
 - Automatic created/updated timestamps on every record.
 - Delete = hide and stay recoverable (nothing truly disappears) — reversible deletion.
 - Every structural change through recorded, repeatable steps; nobody edits directly.
-- Shuffled, unguessable identifiers (not sequential 1, 2, 3).
-- Internal names always in English. Every record carries the owner tag (tenant isolation) — see
-  Pillar 7. (No owner-filter or tenant-isolation query check is built; this is the target.)
+- Unguessable, non-sequential identifiers (never 1, 2, 3).
+- Internal names always in English. Every record carries the tenant id (tenant isolation) — see
+  Pillar 7. (No tenant-isolation query check is built; this is the target.)
 
 ### 4. Tests
 
@@ -166,14 +166,15 @@ _Target — not enforced by any command. `analyze` today only checks that a READ
 
 ## Layer B — the agent harness (built)
 
-The project is built by an AI coding agent, with Layer B as the scaffolding around that agent — four
+The project is built by an AI coding agent, with Layer B as the scaffolding around that agent — six
 parts. Like Layer A, it runs on the developer's own AI, with no external paid service required. **All
-four parts ship today**, copied into every scaffolded project (`templates/agent-harness/`, laid on
-top of the mould by `new`), and each is distilled from a working house practice, not invented.
+six parts ship today**, copied into every scaffolded project (`templates/agent-harness/`, laid on
+top of the template by `new`), and each is distilled from real working practice, not invented.
 
-> How it lands: `new` copies the shared harness on top of the chosen mould, so a fresh project is
-> born with `.claude/` (agents, hooks, settings, scoped rules), `specs/` (the spec ritual), and
-> `docs/agent-harness.md` (the map). The guardrail hooks are proven to block by an automated test.
+> How it lands: `new` copies the shared harness on top of the chosen template, so a fresh project is
+> born with `.claude/` (agents, hooks, settings, rules), `specs/` (the spec workflow), `memory/`
+> (the long-term memory index), `knowledge/project-journal/` (briefings and the per-coder daily
+> log), and `docs/agent-harness.md` (the map). The guardrail hooks are proven to block by an automated test.
 
 ### B1. Context engineering — _built_
 
@@ -185,7 +186,7 @@ The agent works with the right context and its working memory stays focused.
   everywhere.
 - Docs (`docs/`, `.claude/`) are consulted on demand, never auto-loaded.
 - _Still the target:_ an automatic check that flags an always-on instruction set that has grown too
-  large, and cross-session working-memory persistence.
+  large. (Cross-session persistence is delivered by B5 and B6 below.)
 
 ### B2. Spec-driven development — _built_
 
@@ -203,8 +204,8 @@ Isolated-context specialists, in `.claude/agents/`.
 
 - Reviewers and auditors that work in their own context window and return a focused verdict, keeping
   the main thread clean.
-- Shipped: a **spec reviewer**, a **code reviewer** (the house review rubric), and a **security
-  auditor** (the house security pillars).
+- Shipped: a **spec reviewer**, a **code reviewer** (a rigorous review rubric), and a **security
+  auditor** (the security pillars).
 - Division of labor with B2: spec-driven development defines _what_ to check (the "done" target); the
   subagents are _who_ checks it in isolation — the spec reviewer validates the target, the code
   reviewer validates the diff.
@@ -213,17 +214,44 @@ Isolated-context specialists, in `.claude/agents/`.
 
 ### B4. Guardrails — _built_
 
-Rails that block, not ones that merely warn. Deterministic hooks in `.claude/hooks/`, registered in
+Hooks that block, not ones that merely warn. Deterministic hooks in `.claude/hooks/`, registered in
 `.claude/settings.json`.
 
 - **Lifecycle hooks** that deterministically block off-standard behavior before a tool runs.
-- They are the harness's real teeth: a guarantee enforced by the system, not a promise by the agent.
+- They are the harness's hard guarantees: enforced by the system, not a promise by the agent.
 - Shipped and proven by test: `block-secret` (blocks staging/reading a `.env` secret) and
   `block-protected-branch` (blocks a commit/push straight onto a protected branch).
 - Deliberately **not** a hard hook: "block declaring work done that isn't". Whether a "done" claim is
-  honest is a judgment, not a regex — so it lives in the B2 ritual (the point-by-point check against
+  honest is a judgment, not a regex — so it lives in the B2 workflow (the point-by-point check against
   the done-target), not in a hook that would give false confidence. Being honest about which
   guarantees are hard and which are judgment is itself part of the standard.
+
+### B5. Session continuity — _built_
+
+Work survives the end of a session. Rule: `.claude/rules/session-lifecycle.md`.
+
+- Explicit commands the user gives: **"resume session"** to start, **"close session"** to end.
+- On resume: identify the coder (from the version-control user name), read the newest briefing,
+  survey the codebase **beyond** the briefing before acting, open the daily-log entry (session
+  number, date, start time), then delete the briefing — briefings are disposable by design.
+- On close: write the next briefing from the embedded template, close the daily log (end time,
+  total duration, summary), and move durable decisions into long-term memory (B6).
+- **Context budget:** at roughly 60% of the context window, the agent winds down and hands off —
+  a clean hand-off beats a degraded long session.
+- Enforcement tier: a rule the agent follows (strong guidance), not a hook — a script cannot judge
+  whether a summary is truthful, and a fake guarantee would be worse than an honest rule.
+
+### B6. Long-term memory — _built_
+
+Permanent facts outlive sessions. Rule: `.claude/rules/long-term-memory.md`.
+
+- `memory/` at the project root: one fact per file, indexed by `MEMORY.md` (the index is what gets
+  loaded, never full contents).
+- Durable decisions are saved **proactively**, the moment they happen; existing memories are
+  updated instead of duplicated; memories proven wrong are deleted.
+- The boundary with B5: briefings carry **in-flight state** (disposable), memory carries
+  **permanent facts** (rules, decisions, invariants).
+- Same enforcement tier as B5: a followed rule, honestly declared as such.
 
 ---
 
@@ -232,13 +260,13 @@ Rails that block, not ones that merely warn. Deterministic hooks in `.claude/hoo
 _This section describes the intended design; most of the mechanisms it references are still the
 target._
 
-- _Tenant isolation_ (Security) is meant to live in the _Database_ vault (owner tag + shuffled
+- _Tenant isolation_ (Security) is meant to live in the _Database_ pillar (tenant id + unguessable
   identifiers).
-- The _"always blocks"_ of _Code quality_ is meant to have teeth because of _Tests_.
+- The _"always blocks"_ of _Code quality_ is meant to be enforceable because of _Tests_.
 - The _"ships itself"_ of _Ship it_ is meant to be safe only because of the _Code quality_ and
   _Tests_ gates.
 - The **same automatic-check mechanism is meant to recur across three pillars** — Code quality,
-  Tests, and Security — as the deterministic teeth of Layer A. Today that mechanism runs as the text
+  Tests, and Security — as the deterministic enforcement of Layer A. Today that mechanism runs as the text
   guards (secret, size, dangerous) plus the project's own gates (format, lint, types, tests, audit).
 - **Layer A's deterministic checks and Layer B's guardrails are the same idea at two levels:** A
   guards the code, B guards the agent that writes it. Both ship today — A's secret/size/dangerous

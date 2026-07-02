@@ -2,9 +2,25 @@
 
 A ready-to-adopt Playwright foundation for any Next.js project. Covers setup, CI, anti-flakiness patterns, and reused authentication via storage state.
 
+## Where E2E sits: the test pyramid
+
+The project's suite has **four layers**; E2E is the narrow top, not the workhorse:
+
+| Layer                | What it covers                                                                                                                                                                                                                             | Tooling    | Example                                               |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ----------------------------------------------------- |
+| 1. **Fast unit**     | Utilities, helpers, isolated pieces                                                                                                                                                                                                        | Vitest     | `src/__tests__/lib/events.test.ts`                    |
+| 2. **Business rule** | Domain decisions as pure functions — no mocks, no I/O, time as data                                                                                                                                                                        | Vitest     | `src/__tests__/features/items/archive-policy.test.ts` |
+| 3. **Integration**   | Data access against a **real database** — mocks lie: they encode what you believe the database does, and pass while production fails. Run against a disposable local PostgreSQL with the real migrations applied (`scripts/db-migrate.sh`) | Vitest     | add when the first repository/service lands           |
+| 4. **E2E (few)**     | The critical user journeys through the real UI                                                                                                                                                                                             | Playwright | this directory                                        |
+
+**The suite never stabilizes — it only grows.** Every feature ships with its
+test in the layer where the logic lives; a bug fix ships with the test that
+would have caught it. Tests are never deleted to "get green" — a red test is
+information about the code, not an obstacle.
+
 ## Philosophy
 
-**A lean, unpretentious suite.** Broad coverage is the job of unit tests (Vitest). Here we keep only:
+**A lean, unpretentious suite.** Broad coverage is the job of the lower layers (Vitest). Here we keep only:
 
 - **Smoke** (`e2e/smoke/`) — the app boots, the landing renders, basic redirects. No authentication.
 - **Critical** (`e2e/critical/`) — the main authenticated product flows. Reuses the session via `storageState`.

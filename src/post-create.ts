@@ -1,20 +1,20 @@
-// After the mould is copied into place, the create command can take the project
+// After the template is copied into place, the create command can take the project
 // the last mile: start version control, install dependencies, and — through that
-// install — switch on the git hooks that ship inside the mould. This module decides
+// install — switch on the git hooks that ship inside the template. This module decides
 // and orders those steps; the actual execution goes through an injected CommandRunner
 // (see exec.ts) so the flow is testable without running git or a package manager.
 //
-// See docs/commands.md Step 4 ("Repository" / "Automatic checks"): these were the
-// planned-but-unbuilt pieces of the create command.
+// See docs/commands.md Step 4 ("Repository" / "Automatic checks") for the behavior
+// contract this module implements.
 
 import { access } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { CommandRunner, CommandResult } from './exec.ts'
 
-/** The package managers a mould can declare, in the order we detect them. */
+/** The package managers a template can declare, in the order we detect them. */
 export type PackageManager = 'pnpm' | 'npm' | 'yarn'
 
-/** Which lockfile proves which manager. Lockfile beats guessing — it is what the mould was built with. */
+/** Which lockfile proves which manager. Lockfile beats guessing — it is what the template was built with. */
 const LOCKFILE_BY_MANAGER: Record<PackageManager, string> = {
   pnpm: 'pnpm-lock.yaml',
   npm: 'package-lock.json',
@@ -64,7 +64,7 @@ export interface StepOutcome {
  * Take a freshly copied project the last mile.
  *
  * Order matters and is deliberate:
- *   1. git init → add → commit happens BEFORE install. The mould's commit-msg and
+ *   1. git init → add → commit happens BEFORE install. The template's commit-msg and
  *      pre-commit hooks are activated by husky, which only runs during install; doing
  *      the first commit first means the baseline commit is never blocked by hooks that
  *      aren't set up yet, while every commit AFTER install is properly guarded.
@@ -95,12 +95,23 @@ export async function runPostCreate(
   return outcomes
 }
 
-/** Start version control and record the baseline commit. Three ordered git calls. */
+/**
+ * Start version control and record the baseline commit. Ordered git calls, ending on
+ * the integration branch:
+ *   - `git init -b main` pins the official branch name instead of inheriting the
+ *     machine's default (which may be anything), so the protected-branch guards and
+ *     the docs always agree on what "official" is called.
+ *   - The baseline commit lands on main — it IS the official starting point.
+ *   - Then `develop` is created and checked out, because main is protected (the
+ *     template's guards block direct commits to it) and daily work belongs on the
+ *     integration/working levels. Without this, the developer's very next commit
+ *     would be blocked by the project's own guard — a dead end.
+ */
 async function initGit(projectDir: string, runner: CommandRunner): Promise<StepOutcome[]> {
   const outcomes: StepOutcome[] = []
 
-  const init = await runner.run('git', ['init'], projectDir)
-  outcomes.push(toOutcome('initialize version control', init))
+  const init = await runner.run('git', ['init', '-b', 'main'], projectDir)
+  outcomes.push(toOutcome('initialize version control (main)', init))
   // If git itself is missing or init failed, the add/commit cannot succeed — skip them
   // rather than emit two more confusing failures for the same root cause.
   if (!init.ok) return outcomes
@@ -109,14 +120,19 @@ async function initGit(projectDir: string, runner: CommandRunner): Promise<StepO
   outcomes.push(toOutcome('stage the initial files', add))
   if (!add.ok) return outcomes
 
-  // Conventional-commit message so that once the commit-msg hook is live (after
-  // install), the project's own history already matches the format the hook enforces.
+  // Conventional-commit message WITH scope, so once the commit-msg hook is live
+  // (after install) the history already matches the exact format the hook enforces.
   const commit = await runner.run(
     'git',
-    ['commit', '-m', 'chore: scaffold project with keystone'],
+    ['commit', '-m', 'chore(scaffold): initialize project with keystone'],
     projectDir,
   )
   outcomes.push(toOutcome('record the first commit', commit))
+  if (!commit.ok) return outcomes
+
+  // Leave the developer on the integration branch, ready to work.
+  const branch = await runner.run('git', ['checkout', '-b', 'develop'], projectDir)
+  outcomes.push(toOutcome('create the develop branch (daily work happens here)', branch))
 
   return outcomes
 }

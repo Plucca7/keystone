@@ -10,4 +10,6 @@ jobs:
     uses: ./.github/workflows/_ci-reusable.yml
     with:
       node-version: '20'
-      package-manager: 'npm'
+      # pnpm, not npm: this template ships a pnpm-lock.yaml, and setup-node's
+      # npm cache fails outright when package-lock.json is absent.
+      package-manager: 'pnpm'

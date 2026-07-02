@@ -5,7 +5,7 @@
 > and the many pieces that are still the standard the scaffold aims for, not delivered behavior.
 > See [pillars.md](pillars.md) and [setup-wizard.md](setup-wizard.md).
 >
-> **Status:** the `create a new project` command copies the official mould (web or api) into a new
+> **Status:** the `create a new project` command copies the official template (web or api) into a new
 > folder, lays the agent harness on top, renames the package, writes a `keystone.json` record, and
 > deduces two settings (whether a database is needed, and the security level) from the answers. It
 > then takes the project the last mile: it **starts version control with a first commit, installs
@@ -44,7 +44,7 @@ Questions, one at a time:
 
 - **Needs a database?** — inferred from project type + sensitivity, and recorded
 - **Security level** — essential, or reinforced if sensitive, and recorded
-- **Visual foundation** — fonts, spacing, accessibility, locale formatting: these live in the mould,
+- **Visual foundation** — fonts, spacing, accessibility, locale formatting: these live in the template,
   so every copied project starts with them in place
 
 ## Step 4 — Creation (what the command actually does)
@@ -52,14 +52,17 @@ Questions, one at a time:
 The command:
 
 1. **Copies the project folder** into the parent folder — a byte-for-byte copy of the official
-   mould (web or api), skipping installed dependencies.
+   template (web or api), skipping installed dependencies.
 2. **Renames the package** — changes only the `name` in `package.json` to the project name.
-3. **Writes a record** (`keystone.json`) noting the mould used, the answers, and the deductions.
+3. **Writes a record** (`keystone.json`) noting the template used, the answers, and the deductions.
 4. **Deduces two settings** (database needed?, security level) and stores them in that record.
-5. **Starts version control** — `git init`, stages the files, and makes a first conventional commit.
-   The commit happens _before_ install, so the baseline is never blocked by hooks that install has
-   not switched on yet. Skipped by `--no-git`.
-6. **Installs dependencies** with the mould's package manager (detected from its lockfile), which
+5. **Starts version control** — `git init -b main` (the official branch is pinned, never the
+   machine default), stages the files, makes a first scoped conventional commit on `main`, then
+   creates and checks out `develop` — because `main` is protected by the template's own guards,
+   daily work belongs on the integration level, and without this the developer's next commit would
+   be blocked by the project's own guardrail. The commit happens _before_ install, so the baseline
+   is never blocked by hooks that install has not switched on yet. Skipped by `--no-git`.
+6. **Installs dependencies** with the template's package manager (detected from its lockfile), which
    runs the `prepare` script and thereby **switches on the git hooks**. Skipped by `--no-install`.
 
 Beyond that, in particular:
@@ -76,13 +79,13 @@ Beyond that, in particular:
   reuse a service key, or run migrations. When a database is inferred, that fact is only recorded in
   `keystone.json`; setting it up is left to the developer.
 - **Visual identity.** _Planned._ The guided design step and the import-an-existing-design path are
-  not built. Every project simply starts with the mould's default look and its visual foundation
-  (fonts, spacing, accessibility, locale formatting), which ship inside the mould.
+  not built. Every project simply starts with the template's default look and its visual foundation
+  (fonts, spacing, accessibility, locale formatting), which ship inside the template.
 - **Deploy / hosting.** _Planned._ The delivery pipeline, the staging environment, and the automated
-  deploy are the standard the scaffold aims for — not built. The mould **contains** the
+  deploy are the standard the scaffold aims for — not built. The template **contains** the
   delivery-pipeline files, but the command does not wire up or trigger any deploy. Deploy and hosting
   are entirely up to the developer, who decides where and how to host.
-- **Automatic checks** (quality, tests, security). The mould **contains** them: the git hooks
+- **Automatic checks** (quality, tests, security). The template **contains** them: the git hooks
   (a pre-commit that runs the staged-file linter, a commit-msg check, and a pre-push that runs the
   type-check and the tests), the lint / format / type configs, and example end-to-end tests are all
   present in the copied folder. The install step (step 6) now **activates the git hooks** via the
@@ -93,7 +96,7 @@ Beyond that, in particular:
 
 ## Step 5 — Final confirmation
 
-A summary of what was created: the local folder (a renamed copy of the mould), the recorded
+A summary of what was created: the local folder (a renamed copy of the template), the recorded
 answers and deductions, whether a database was inferred as needed, and the outcome of each
 post-create step (version control, install) — reported honestly, so a step that failed is never
 silent. No **remote** repository, database, or deploy exists yet; those are the developer's to set

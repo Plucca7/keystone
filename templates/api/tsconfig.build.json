@@ -1,0 +1,8 @@
+{
+  // Build-only config: same compiler options as tsconfig.json, but test files
+  // are excluded so `dist/` ships product code only. Typecheck (tsc --noEmit)
+  // keeps using tsconfig.json, which DOES include tests — they are typed code
+  // and must pass the same strictness as the product.
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/__tests__/**"]
+}

@@ -66,11 +66,11 @@ test('analyzeProject: a freshly created project meets the standard, example test
     const { projectDir } = await createProject(answers)
     const results = await analyzeProject(projectDir)
 
-    // The mould ships a README, .gitignore with .env, db conventions, and an example test.
+    // The template ships a README, .gitignore with .env, db conventions, and an example test.
     assert.equal(results.find((r) => r.title === 'Has a README')?.passed, true)
     assert.equal(results.find((r) => r.title.startsWith('Secrets kept'))?.passed, true)
     assert.equal(results.find((r) => r.pillar === 'Database')?.passed, true)
-    // The mould now ships an example test, so a brand-new project already has one.
+    // The template now ships an example test, so a brand-new project already has one.
     assert.equal(results.find((r) => r.pillar === 'Tests')?.passed, true)
   } finally {
     await rm(parent, { recursive: true, force: true })

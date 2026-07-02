@@ -16,7 +16,7 @@
 
 ## Principle
 
-The safety net that gives everything else its teeth: without tests, Code quality's "always blocks"
+The safety net that makes everything else enforceable: without tests, Code quality's "always blocks"
 and Ship it's "ships itself" would have nothing to stand on. It is an adversarial verifier that runs
 at zero cost.
 
@@ -32,7 +32,7 @@ at zero cost.
 
 ## 3. If it fails, it doesn't ship
 
-- A failing test should **block shipping**, automatically. The net has teeth.
+- A failing test should **block shipping**, automatically — the net is enforced, not advisory.
 - 🔧 The `check` command runs the project's own `test` script as a blocking gate: a failing suite
   makes `check` fail. (`analyze` still only reports whether test files exist — a separate, read-only
   presence check.)

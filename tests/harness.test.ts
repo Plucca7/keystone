@@ -25,7 +25,7 @@ function answers(type: ProjectType, parentDir: string): KeystoneAnswers {
   }
 }
 
-test('harness: every generated project is born with the four-part harness', async () => {
+test('harness: every generated project is born with the six-part harness', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
   try {
     const { projectDir } = await createProject(answers('site', parent))
@@ -38,6 +38,11 @@ test('harness: every generated project is born with the four-part harness', asyn
       '.claude/settings.json', // B4 wiring
       '.claude/rules/example-rule.md', // B1
       'specs/000-example-feature/spec.md', // B2
+      '.claude/rules/session-lifecycle.md', // B5 — session continuity (hand-off ritual)
+      '.claude/rules/long-term-memory.md', // B6 — the agent's long-term memory
+      'memory/MEMORY.md', // B6 — the memory index, born in place
+      'knowledge/project-journal/briefings/README.md', // B5 — briefing structure
+      'knowledge/project-journal/daily-log/README.md', // B5 — per-coder daily log
       'docs/agent-harness.md', // the map
     ]) {
       assert.ok((await stat(join(projectDir, f))).isFile(), `expected ${f} in the project`)
@@ -70,4 +75,66 @@ test('guardrail: the secret hook blocks reading a .env file (exit 2)', () => {
 
 test('guardrail: the secret hook allows a harmless command (exit 0)', () => {
   assert.equal(runSecretHook('ls -la'), 0)
+})
+
+// The protected-branch hook decides by asking git for the CURRENT branch of its working
+// directory — so proving it takes a real repository, once on a protected branch and once
+// on a working branch. This is what makes "guardrails proven by test" true for BOTH hooks.
+const BRANCH_HOOK = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'templates/agent-harness/.claude/hooks/block-protected-branch.mjs',
+)
+
+function runBranchHook(command: string, cwd: string): number {
+  const res = spawnSync('node', [BRANCH_HOOK], {
+    input: JSON.stringify({ tool_input: { command } }),
+    encoding: 'utf8',
+    cwd,
+  })
+  return res.status ?? -1
+}
+
+/** A throwaway git repository sitting on the given branch, with one baseline commit. */
+function gitRepoOn(branch: string, dir: string): void {
+  const git = (...args: string[]): void => {
+    const res = spawnSync('git', args, { cwd: dir, encoding: 'utf8' })
+    assert.equal(res.status, 0, `git ${args[0]} failed: ${res.stderr}`)
+  }
+  git('init', '-b', branch)
+  // Identity is required for the commit; scoped to this repo only.
+  git('config', 'user.email', 'test@example.com')
+  git('config', 'user.name', 'Test')
+  git('commit', '--allow-empty', '-m', 'chore(test): baseline')
+}
+
+test('guardrail: the branch hook blocks a commit on a protected branch (exit 2)', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'keystone-branch-'))
+  try {
+    gitRepoOn('main', dir)
+    assert.equal(runBranchHook('git commit -m "feat(x): change"', dir), 2)
+  } finally {
+    await rm(dir, { recursive: true, force: true })
+  }
+})
+
+test('guardrail: the branch hook allows a commit on a working branch (exit 0)', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'keystone-branch-'))
+  try {
+    gitRepoOn('feat/some-work', dir)
+    assert.equal(runBranchHook('git commit -m "feat(x): change"', dir), 0)
+  } finally {
+    await rm(dir, { recursive: true, force: true })
+  }
+})
+
+test('guardrail: the branch hook ignores commands that are not commit/push (exit 0)', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'keystone-branch-'))
+  try {
+    gitRepoOn('main', dir)
+    // Reading state on a protected branch is fine; only landing code is blocked.
+    assert.equal(runBranchHook('git status', dir), 0)
+  } finally {
+    await rm(dir, { recursive: true, force: true })
+  }
 })

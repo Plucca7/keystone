@@ -1,0 +1,62 @@
+# Adapted from the ops template's issue forms. Every piece of work starts as
+# an issue: one branch = one issue = one PR, so a well-formed issue is the
+# unit of traceability.
+name: Bug Report
+description: Report a bug you found
+title: '[BUG] '
+labels: ['bug']
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug description
+      description: What happened?
+      placeholder: Describe the bug clearly
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How do you reproduce the bug?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See the error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - SEV-4 (Minor - next business day)
+        - SEV-3 (Non-critical - <4 hours)
+        - SEV-2 (Critical - <30 min)
+        - SEV-1 (Outage - immediate)
+    validations:
+      required: true

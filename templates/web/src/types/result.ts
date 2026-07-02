@@ -18,9 +18,9 @@
  *
  *   const result = await createItem(data);
  *   if (result.ok) {
- *     console.log(result.value);
+ *     render(result.value);
  *   } else {
- *     console.error(result.error);
+ *     log.error('Failed to create item', { error: result.error }); // central logger, never console.*
  *   }
  */
 

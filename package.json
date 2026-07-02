@@ -7,11 +7,13 @@
     "keystone": "./dist/index.js"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=20"
   },
   "files": [
     "dist",
-    "templates",
+    "templates/web",
+    "templates/api",
+    "templates/agent-harness",
     "docs"
   ],
   "publishConfig": {

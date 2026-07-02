@@ -15,13 +15,17 @@ The "how work happens" is meant to come pre-assembled, so a project would be bor
 lose the thread between sessions. The same structure is what would let a project open up to a
 community without turning into chaos.
 
-## 1. Three levels (planned)
+## 1. Three levels — _built (the isolated-workspace refinement remains planned)_
 
-- The design calls for three lines: **official** (what is live / done), **staging** (what is being
-  integrated), and **daily work** (each person's active branch). The intent is that the official line
-  is never edited directly.
-- The standard also calls for each independent line of work to get its own isolated workspace. This
-  is part of the planned design, not a built behavior.
+- Three lines: **official** (`main` — what is live / done), **staging** (`develop` — what is being
+  integrated), and **daily work** (each person's active branch). The official line is never edited
+  directly.
+- 🔧 What ships today: `new` pins the official branch (`git init -b main`), records the baseline
+  commit there, and leaves the developer on `develop`; the template's git hooks refuse a direct
+  commit or push to a protected branch (for humans, not only for the agent); and a bundled script
+  configures the official branch's protection on the hosting service (required review + required
+  checks).
+- _Planned:_ each independent line of work getting its own isolated workspace.
 
 ## 2. Review gate before the official branch (planned)
 
@@ -37,11 +41,16 @@ community without turning into chaos.
 - The design is for a project to be born with a **board** (to do / doing / done) already set up, so
   progress is visible from day one. This is planned, not yet part of what the scaffold produces.
 
-## 4. Session hand-off (planned)
+## 4. Session hand-off — _built (as a Layer B rule)_
 
-- The design calls for two paired actions: one that closes a work session, recording what was done and
-  where things stand, and one that resumes it, reading that record and picking up without re-explaining
-  context. The goal is that each session would leave the path ready for the next. Not yet built.
+- 🔧 Two paired actions, shipped in the agent harness (`.claude/rules/session-lifecycle.md`):
+  **"close session"** writes a hand-off briefing and closes the per-coder daily log (session number,
+  date, start/end time, total duration, summary); **"resume session"** reads the newest briefing,
+  surveys the codebase beyond it, opens the next daily-log entry, and deletes the absorbed briefing.
+- Includes a context budget: at roughly 60% of the context window the agent winds down and hands
+  off, because a clean hand-off beats a degraded long session.
+- Enforcement tier is declared honestly: a rule the agent follows, not a hard hook — see
+  [pillars.md](pillars.md), B5.
 
 ## 5. Author on every delivery (planned)
 

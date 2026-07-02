@@ -45,10 +45,38 @@ test('e2e: a freshly created system project is born in the standard', async () =
     assert.equal(deduced.securityLevel, 'reinforced')
 
     const results = await analyzeProject(projectDir)
-    // A brand-new project meets everything the analysis can check — the mould now ships
+    // A brand-new project meets everything the analysis can check — the template now ships
     // an example test too, so nothing is missing.
     const failing = results.filter((r) => !r.passed).map((r) => r.pillar)
     assert.deepEqual(failing, [])
+  } finally {
+    await rm(parent, { recursive: true, force: true })
+  }
+})
+
+test('e2e: a freshly created service project is born in the standard', async () => {
+  // This closes the blind spot the audit exposed: only the web path was exercised, which
+  // hid the fact that the api template shipped without example tests and would fail its
+  // own "Has tests" analysis. Both templates must produce a project that passes.
+  const parent = await mkdtemp(join(tmpdir(), 'keystone-e2e-api-'))
+  try {
+    const answers: KeystoneAnswers = {
+      product: {
+        name: 'billing-service',
+        type: 'service',
+        language: 'en',
+        screen: 'both',
+        look: 'later',
+        sensitive: true,
+      },
+      setup: { versionTarget: 'github', isPrivate: true, parentDir: parent },
+    }
+    const { projectDir, deduced } = await createProject(answers)
+    assert.equal(deduced.needsDatabase, true)
+
+    const results = await analyzeProject(projectDir)
+    const failing = results.filter((r) => !r.passed).map((r) => `${r.pillar}: ${r.title}`)
+    assert.deepEqual(failing, [], 'a fresh service project must pass its own analysis')
   } finally {
     await rm(parent, { recursive: true, force: true })
   }

@@ -50,8 +50,23 @@ test('runPostCreate: full run inits git, commits, then installs — in that orde
     const outcomes = await runPostCreate(dir, { initGit: true, installDeps: true }, runner)
     const sequence = runner.calls.map((c) => `${c.command} ${c.args[0]}`)
     // git work happens before install, so the baseline commit is never blocked by
-    // hooks that install has not switched on yet.
-    assert.deepEqual(sequence, ['git init', 'git add', 'git commit', 'pnpm install'])
+    // hooks that install has not switched on yet — and the developer is left on the
+    // integration branch, because main is protected by the template's own guards.
+    assert.deepEqual(sequence, [
+      'git init',
+      'git add',
+      'git commit',
+      'git checkout',
+      'pnpm install',
+    ])
+    // The official branch is pinned (never the machine default) and develop is created.
+    const init = runner.calls[0]
+    assert.deepEqual(init?.args, ['init', '-b', 'main'], 'official branch is pinned to main')
+    const checkout = runner.calls[3]
+    assert.deepEqual(checkout?.args, ['checkout', '-b', 'develop'], 'work continues on develop')
+    // The baseline message carries a scope, matching the commit rule the hooks enforce.
+    const commitArgs = runner.calls[2]?.args ?? []
+    assert.match(String(commitArgs[2]), /^chore\(scaffold\): /)
     assert.ok(outcomes.every((o) => o.ok))
   } finally {
     await rm(dir, { recursive: true, force: true })
@@ -77,9 +92,10 @@ test('runPostCreate: --no-install skips install but still versions', async () =>
   const runner = new RecordingRunner()
   try {
     await runPostCreate(dir, { initGit: true, installDeps: false }, runner)
+    // Four git calls: init, add, commit, and the checkout onto develop.
     assert.deepEqual(
       runner.calls.map((c) => c.command),
-      ['git', 'git', 'git'],
+      ['git', 'git', 'git', 'git'],
     )
   } finally {
     await rm(dir, { recursive: true, force: true })

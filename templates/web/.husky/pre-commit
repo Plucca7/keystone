@@ -1,1 +1,19 @@
+# Rail 1: refuse commits made directly on a protected branch. Work happens on
+# feature branches and reaches main/production only through a reviewed pull
+# request (one branch = one issue = one PR). This is the local rail; the
+# server-side twin is scripts/setup-branch-protection.sh.
+# symbolic-ref instead of rev-parse: it reads .git/HEAD directly, so it also
+# guards a freshly-initialized repo where main has no commits yet (rev-parse
+# fails there and would silently skip the check). On detached HEAD it prints
+# nothing -- which is fine: detached HEAD is not a protected branch.
+branch="$(git symbolic-ref --short -q HEAD || true)"
+case "$branch" in
+  main | master | production)
+    echo "Commit blocked: '$branch' is a protected branch." >&2
+    echo "Create a feature branch (git switch -c feat/<issue-slug>) and open a pull request." >&2
+    exit 1
+    ;;
+esac
+
+# Rail 2: format/lint only the staged files (fast feedback, full checks run on pre-push and CI).
 npx lint-staged

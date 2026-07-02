@@ -8,4 +8,13 @@ export default [
     // avoids a parse error without affecting the lint of the product code.
     ignores: ['dist/', 'node_modules/', 'coverage/', 'vitest.config.ts'],
   },
+  {
+    files: ['**/*.test.ts', '**/__tests__/**'],
+    rules: {
+      // Why: literal ports, timestamps, and counts ARE the fixtures in a test —
+      // extracting each to a named constant hides the scenario instead of
+      // documenting a decision. Product code keeps the rule.
+      'no-magic-numbers': 'off',
+    },
+  },
 ]

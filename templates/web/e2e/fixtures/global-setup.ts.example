@@ -5,7 +5,7 @@ import path from 'node:path'
 /**
  * Global setup — logs in once before the whole suite and saves the storage state.
  *
- * Why: logging in through the UI on every test is expensive (2-5s × N tests) and
+ * Why: logging in through the UI on every test is expensive (2-5s x N tests) and
  * flaky (every time the login UI changes, the suite breaks). Reusing the storage
  * state solves both.
  *

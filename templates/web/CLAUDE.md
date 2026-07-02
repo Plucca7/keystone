@@ -12,14 +12,14 @@
 This project is born with a harness for the AI that builds it. Full map in
 [docs/agent-harness.md](docs/agent-harness.md).
 
-- **Ritual (B2):** every feature opens with `specs/<slug>/spec.md` — the request restated
+- **Spec workflow (B2):** every feature opens with `specs/<slug>/spec.md` — the request restated
   plus a **verifiable "done" target**, approved before any code. On completion the work is
   checked against that target point by point; a gap is declared, not hidden. When code and
   spec diverge, the spec wins.
 - **Reviewers (B3):** `.claude/agents/` — spec reviewer, code reviewer, security auditor,
   each in its own isolated context.
 - **Guardrails (B4):** `.claude/hooks/` blocks committing a secret and touching a protected
-  branch. Real rails, not warnings.
+  branch. Hard blocks, not warnings.
 
 ## Stack
 
@@ -42,11 +42,73 @@ Do not add a dependency without checking the stack does not already cover it.
 src/
 ├── app/            # App Router (routes, layouts)
 ├── components/ui/  # Reusable UI components
+├── features/       # Domain logic per feature (pure business rules + UI)
 ├── hooks/          # Custom hooks
-├── lib/            # Utilities, fetch, query config
+├── lib/            # Utilities, fetch, logger, query registry
 ├── types/          # Shared types
 └── styles/         # Global CSS and design tokens
+db/migrations/      # Ordered SQL migrations (NNNN_description.sql)
+scripts/            # db-migrate.sh, setup-branch-protection.sh
+docs/               # deploy.md and project docs
 ```
+
+## Branching and delivery
+
+Three branch levels, each mapped to an environment:
+
+| Level      | Branch                                  | Environment               | Moves by              |
+| ---------- | --------------------------------------- | ------------------------- | --------------------- |
+| Work       | `feat/<issue-slug>`, `fix/<issue-slug>` | local                     | commits               |
+| Staging    | `develop`                               | staging deploy on push    | PR from a work branch |
+| Production | `main`                                  | production deploy on push | PR from `develop`     |
+
+- **One branch = one issue = one PR.** Every piece of work starts as an issue,
+  lives on its own branch, and lands through exactly one PR that declares
+  `Closes #<issue>`. Traceable forward and revertible alone.
+- Direct commits/pushes to `main`/`master`/`production` are blocked locally by
+  the husky hooks and server-side by `scripts/setup-branch-protection.sh`.
+- Deploy pipeline (gates -> migrate -> deploy -> smoke): see `docs/deploy.md`.
+
+## Test pyramid — the suite only grows
+
+Four layers, most tests at the bottom:
+
+1. **Fast unit** — utilities and isolated pieces (`src/__tests__/lib/`).
+2. **Business rule** — domain decisions as PURE functions: no mocks, no I/O,
+   time injected as data. Model to imitate: `src/features/items/archive-policy.ts`
+   and its test `src/__tests__/features/items/archive-policy.test.ts`.
+3. **Integration** — data access against a **real database** (mocks lie:
+   they encode beliefs, not behavior). Use a disposable local PostgreSQL with
+   the real migrations applied via `scripts/db-migrate.sh`.
+4. **E2E** — few, only critical journeys (`e2e/`, see its README).
+
+**The suite never stabilizes, it only grows.** Every feature ships with its
+test; every bug fix ships with the test that would have caught it. Never
+delete a test to get green.
+
+## React Query discipline
+
+Three central registries in `src/lib/` are the ONLY entry points for query
+concerns — never inline any of this at a call site:
+
+- `query-keys.ts` — every query key is declared here (typed key factories).
+- `query-config.ts` — staleTime/gcTime presets per data volatility class;
+  feeds the QueryClient in `app/providers.tsx`.
+- `query-invalidation.ts` — mutations invalidate through these helpers;
+  optimistic updates follow the rollback pattern documented there.
+
+## Database conventions
+
+- Migrations live in `db/migrations/` as `NNNN_short_description.sql` —
+  ordered, append-only, applied by `scripts/db-migrate.sh` (tracked in
+  `schema_migrations`). **Migration before code**: schema deploys before the
+  code that needs it; old code must keep working (additive first).
+- Every business table: `uuid` PK (`gen_random_uuid()`), `tenant_id` owner
+  tag, `created_at`/`updated_at` (trigger-maintained), `deleted_at` soft
+  delete, ROW LEVEL SECURITY with a tenant-isolation policy.
+- **snake_case in the database, camelCase in TypeScript.** The mapping happens
+  once, at the data-access layer — and that boundary is commented where it
+  happens, so nobody hunts for where names change shape.
 
 ## Code conventions
 

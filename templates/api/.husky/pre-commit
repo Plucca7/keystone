@@ -1,1 +1,15 @@
+# Guard first, checks second: refuse to commit directly to a protected branch.
+# Why at git level: CI protection only catches the mistake after the push;
+# this stops it before a commit even exists. Protected branches move only
+# through pull requests (one branch = one issue = one PR).
+branch="$(git rev-parse --abbrev-ref HEAD)"
+case "$branch" in
+  main | master | production)
+    echo "Blocked: direct commits to '$branch' are not allowed." >&2
+    echo "Create a working branch first, e.g.:" >&2
+    echo "  git switch -c feat/short-description" >&2
+    exit 1
+    ;;
+esac
+
 npx lint-staged

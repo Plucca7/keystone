@@ -4,8 +4,8 @@ import nextPlugin from '@next/eslint-plugin-next'
 export default [
   ...react,
   {
-    // Why: the shared @repo/eslint-config serves both the web and the api mould,
-    // so the Next-only plugin is registered here, at the web mould's own config,
+    // Why: the shared @repo/eslint-config serves both the web and the api template,
+    // so the Next-only plugin is registered here, at the web template's own config,
     // instead of polluting the shared package. Registering it removes Next's
     // build warning ("plugin not detected") and turns on Next's own checks
     // (no-img-element, no-sync-scripts, core web vitals) for generated web apps.

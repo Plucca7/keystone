@@ -1,0 +1,140 @@
+# Deploy: STAGING
+#
+# Trigger: every push to develop (the staging branch). Pipeline order is a
+# deliberate contract:
+#
+#   gates -> migrate -> deploy -> smoke
+#
+#   1. gates   -- the same CI quality bar as pull requests; nothing broken deploys.
+#   2. migrate -- database first (MIGRATION BEFORE CODE): the schema the new
+#                 code needs must exist before that code serves traffic.
+#   3. deploy  -- the single host-specific step (see the marked TODO below).
+#   4. smoke   -- an HTTP 200 from the health endpoint or the run fails loudly.
+#
+# Environment: jobs bind to the GitHub Environment "staging", which owns the
+# environment-specific secrets (DATABASE_URL) and variables (HEALTH_URL).
+# Production has its own environment with its OWN database and secrets --
+# environments never share credentials. Full guide: docs/deploy.md.
+
+name: Deploy Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+# One deploy at a time, never cancelled mid-flight: interrupting a deploy (or
+# a migration) can leave the environment half-updated.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  gates:
+    name: Quality gates
+    # Reuses the existing CI workflow instead of duplicating its steps -- one
+    # definition of "green" for PRs and deploys.
+    uses: ./.github/workflows/_ci-reusable.yml
+    with:
+      node-version: '20'
+      package-manager: 'pnpm'
+      run-e2e: false
+
+  migrate:
+    name: Database migrations
+    needs: gates
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      # psql ships preinstalled on ubuntu-latest runners, so the migration
+      # script needs no extra setup step.
+      - name: Apply pending migrations
+        env:
+          # Comes from the "staging" GitHub Environment secrets -- the script
+          # fails fast if it is missing, so a misconfigured environment stops
+          # the pipeline here instead of deploying code against a missing schema.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: sh scripts/db-migrate.sh
+
+  deploy:
+    name: Deploy app
+    needs: migrate
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      # Surfaced in the GitHub UI next to the environment; set APP_URL in the
+      # environment variables (optional, cosmetic only).
+      url: ${{ vars.APP_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # =====================================================================
+      # TODO(owner): the ONE host-specific step. Everything else in this
+      # pipeline is host-agnostic; fill in how YOUR host receives a Next.js
+      # build. Examples (pick one, delete the others):
+      #
+      #   # Vercel (typical managed host for Next.js):
+      #   # - run: pnpm dlx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+      #
+      #   # Netlify:
+      #   # - run: pnpm dlx netlify-cli deploy --build --context deploy-preview
+      #
+      #   # Container host (Docker registry + your orchestrator):
+      #   # - run: |
+      #   #     docker build -t registry.example.com/app:${{ github.sha }} .
+      #   #     docker push registry.example.com/app:${{ github.sha }}
+      #
+      #   # Self-managed VPS over SSH (rsync + process manager restart):
+      #   # - run: |
+      #   #     pnpm build
+      #   #     rsync -az --delete .next/ deploy@staging-host:/srv/app/.next/
+      #   #     ssh deploy@staging-host 'systemctl restart app'
+      # =====================================================================
+      - name: Deploy to host
+        run: |
+          echo "TODO(owner): replace this step with your host's deploy command (see examples above)."
+          echo "Failing on purpose so an unconfigured pipeline cannot pretend it deployed."
+          exit 1
+
+  smoke:
+    name: Smoke check
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      # The deploy is not "done" when the host accepts it -- it is done when
+      # the app answers. HEALTH_URL comes from the environment's variables
+      # (e.g. https://staging.example.com/api/v1/health).
+      - name: Health endpoint returns 200
+        env:
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: |
+          if [ -z "$HEALTH_URL" ]; then
+            echo "HEALTH_URL is not set on the staging environment." >&2
+            exit 1
+          fi
+          # A few retries absorb cold starts and DNS/CDN propagation right
+          # after a deploy; a real outage still fails within ~1 minute.
+          for attempt in 1 2 3 4 5; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
+            echo "attempt $attempt: HTTP $status"
+            if [ "$status" = "200" ]; then
+              echo "Smoke check passed."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Smoke check FAILED: $HEALTH_URL did not return 200." >&2
+          exit 1

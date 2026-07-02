@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Guardrail (B4): blocks a commit or push straight onto a protected branch
-// (main/master/production). Distilled from the house branch-flow rule: nothing lands on
-// a protected branch unreviewed — work goes through a feature branch and a pull request.
+// (main/master/production). Distilled from the standard branch-flow rule: nothing lands on
+// a protected branch unreviewed -- work goes through a feature branch and a pull request.
 // Deterministic. Registered as a PreToolUse hook on Bash in settings.json.
 //
 // Hook protocol: exit 2 blocks and sends stderr to the agent; exit 0 allows.
@@ -24,7 +24,7 @@ let branch = ''
 try {
   branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim()
 } catch {
-  // Not a git repo, or a detached HEAD — nothing to protect.
+  // Not a git repo, or a detached HEAD -- nothing to protect.
   process.exit(0)
 }
 
@@ -32,7 +32,7 @@ const PROTECTED = new Set(['main', 'master', 'production'])
 if (PROTECTED.has(branch)) {
   console.error(
     `BLOCKED: "${branch}" is a protected branch. Work on a feature branch and open a ` +
-      `reviewed pull request — nothing lands on ${branch} unreviewed.`,
+      `reviewed pull request -- nothing lands on ${branch} unreviewed.`,
   )
   process.exit(2)
 }

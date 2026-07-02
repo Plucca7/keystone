@@ -9,7 +9,7 @@
 > patterns — plus the project's own gates: format, lint, types, tests, and a **dependency audit**),
 > and `analyze` (read-only, reports only: six presence checks — exposed secrets, .gitignore
 > completeness, presence of tests, presence of a README, basic database-convention text checks,
-> oversized files). Everything else in this document — owner-filter query checks, edge enforcement, a
+> oversized files). Everything else in this document — tenant-filter query checks, edge enforcement, a
 > pre-publish gate, and the AI vulnerability hunt — is the **target**, not built. The security-relevant
 > checks that run today are the exposed-secret scan, the dangerous-pattern scan, and the dependency
 > audit (all marked 🔧 below). Grounded in the references chosen for relevance to typical web-app
@@ -33,11 +33,12 @@ developer already uses — optional and off by default. That deeper hunt is plan
 ## How a project is born secure — three layers (zero cost)
 
 1. **Written rules** — this document.
-2. **Automatic checks** — they read the code. Two security-relevant checks run today via the
-   `run the automatic checks` command: 🔧 exposed-secret scanning and 🔧 dangerous-pattern scanning
-   (injection/XSS sinks). Deterministic, no AI. _Planned:_ a dependency-list scan is the target, not
-   built; and wiring the checks to run again automatically before publishing (a second net at the
-   gate) is the standard the scaffold aims for, not built.
+2. **Automatic checks** — they read the code or run the project's own tooling. Three
+   security-relevant checks run today via the `check` command: 🔧 exposed-secret scanning,
+   🔧 dangerous-pattern scanning (injection/XSS sinks), and 🔧 the package manager's dependency
+   audit as a blocking gate. Deterministic, no AI. _Planned:_ wiring the checks to run again
+   automatically before publishing (a second net at the gate) is the standard the scaffold aims
+   for, not built.
 3. **Protection configuration** — sensible protection settings, on by default. _Planned:_ pre-tuned edge
    protection switched on by default is designed, not delivered.
 
@@ -49,12 +50,12 @@ developer already uses — optional and off by default. That deeper hunt is plan
 
 The single most important rule in any multi-tenant system.
 
-- Every record carries the **owner tag** (tenant isolation).
-- Every database query **filters by the owner tag automatically** — the protection lives **in the
+- Every record carries the **tenant id** (tenant isolation).
+- Every database query **filters by the tenant id automatically** — the protection lives **in the
   database**, not only in the screen-facing code (which can have gaps). Never trust the application
   layer alone.
-- A user with no owner assigned is **blocked**, never allowed to "see everything".
-- _Planned:_ a check that flags any database query missing the owner filter is the target, not built.
+- A user with no tenant assigned is **blocked**, never allowed to "see everything".
+- _Planned:_ a check that flags any database query missing the tenant filter is the target, not built.
 
 ### 1.2 Firm login
 
@@ -155,7 +156,7 @@ default, and a project is meant to be secure without it.
 - **OWASP Cheat Sheet Series** — the "how to" for each item.
 - **OWASP Web Security Testing Guide** — how to test.
 - Automatic checks (built today): exposed-secret scanning + oversized-file scanning + dangerous-pattern
-  scanning (injection/XSS sinks). _Planned:_ deeper taint analysis + dependency-list scanning; edge
+  scanning (injection/XSS sinks) + the dependency audit gate. _Planned:_ deeper taint analysis; edge
   rate limiting.
 
 > Note: each item must be confirmed against the current ASVS version at the implementation phase.

@@ -29,7 +29,7 @@ You report by severity; you do not fix.
    internal data. Detail goes to the internal log.
 8. **A trail of what happened.** Important actions leave a record of who did what and when
    -- holding no sensitive data.
-9. **Born hardened.** No open door in the defaults. The connection is always encrypted.
+9. **Secure by default.** No open door in the defaults. The connection is always encrypted.
 
 ## The wall and gate -- the edge
 

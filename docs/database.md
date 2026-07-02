@@ -15,13 +15,13 @@
 
 ## Principle
 
-The data store is born organized, traceable, and secure by default. Structural
+The data store starts organized, traceable, and secure by default. Structural
 changes are always recorded; nothing is truly lost.
 
 ## 1. Timestamp everything
 
-- Every record is born with a **created and last-updated timestamp**. This makes it possible to
-  audit, sort, and answer "when did this change?".
+- Every record carries a **created and last-updated timestamp** from the moment it exists. This
+  makes it possible to audit, sort, and answer "when did this change?".
 
 ## 2. Delete means hide, not disappear
 

@@ -31,10 +31,16 @@ Both locations are picked up by `pnpm run test` (see `vitest.config.ts`).
    happily "passes" against a query the real Postgres would reject, and no
    mock exercises an RLS policy. Anything that owns SQL or a policy gets
    verified against a real database (a throwaway local Postgres, migrated by
-   `scripts/db-migrate.sh`).
+   `scripts/db-migrate.sh`). Example: `tests/integration/tenant-isolation.test.ts`
+   runs the real `0001_initial_schema.sql` migration and proves the RLS
+   policy blocks cross-tenant reads and writes — it skips cleanly
+   (`describe.skipIf`) when `DATABASE_URL` is not set, so `pnpm run test`
+   stays green with no database wired in.
 4. **End-to-end (the top — few tests).** The whole service, boot to response.
    Expensive and slower, so they cover the critical paths only; everything
-   else is already proven by the layers below.
+   else is already proven by the layers below. Example: `src/__tests__/app.test.ts`
+   boots the real Fastify app via `buildApp()` and drives it end to end with
+   `inject()` — no mocked layers, no sockets.
 
 App-level tests via Fastify's `inject()` (`src/__tests__/app.test.ts`) sit
 between 2 and 3: full HTTP lifecycle — routing, hooks, error handler — with

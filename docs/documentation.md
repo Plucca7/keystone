@@ -18,8 +18,8 @@
 
 ## Principle
 
-Documentation is born with the project, written as the work happens, and kept alive without drifting
-into fiction. It records the _why_ behind decisions, not only the _what_.
+Documentation ships with the project from day one, written as the work happens, and kept alive
+without drifting into fiction. It records the _why_ behind decisions, not only the _what_.
 
 ## 1. Decisions become permanent records
 
@@ -33,7 +33,7 @@ into fiction. It records the _why_ behind decisions, not only the _what_.
   possible. It travels with the code and never ages into a lie.
 - _Planned:_ automatic generation is the target, not a delivered feature.
 
-## 3. Born with the project
+## 3. Written from the start
 
 - Written **while the system is being built**, not at the end. The project starts with its
   presentation (what it is for) and accumulates records as decisions are made.

@@ -6,6 +6,12 @@
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git config user.name)",
+      "Bash(git config user.name:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(date:*)",
       "Read(./**)",
       "Edit(./**)",
       "Write(./**)"

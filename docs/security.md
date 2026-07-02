@@ -2,7 +2,7 @@
 
 > **What this is:** the Security pillar spelled out in full. It takes the skeleton
 > ([pillars.md](pillars.md)) into an actionable rule. Baseline **essential** level (what every
-> project is born with); the reinforced level kicks in when the project is sensitive.
+> project ships with); the reinforced level kicks in when the project is sensitive.
 >
 > **Status — what is actually built today:** only three commands exist — `new` (scaffolds a
 > project), `check` (three text guards over files — exposed secrets, oversized files, dangerous
@@ -30,7 +30,7 @@ dependency on a paid AI service. Two fronts, weighted differently:
 When AI enters the picture (deeper vulnerability hunting), the intent is for it to be the assistant the
 developer already uses — optional and off by default. That deeper hunt is planned, not built.
 
-## How a project is born secure — three layers (zero cost)
+## How a project starts secure — three layers (zero cost)
 
 1. **Written rules** — this document.
 2. **Automatic checks** — they read the code or run the project's own tooling. Three
@@ -108,7 +108,7 @@ The single most important rule in any multi-tenant system.
 - The record **holds no sensitive data** (password, card number).
 - It serves later auditing and investigation (ties into the timestamps from the Database pillar).
 
-### 1.9 Born already hardened
+### 1.9 Hardened by default from the start
 
 - No open door in the factory defaults.
 - The connection is **always encrypted** (TLS), never in the clear.
@@ -132,7 +132,7 @@ enforcement today.
 
 | Level          | When                                                    | What changes                                                                                   |
 | -------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Essential**  | Every project, from birth                               | Items 1.1 to 1.9 + the basic edge                                                              |
+| **Essential**  | Every project, from day one                             | Items 1.1 to 1.9 + the basic edge                                                              |
 | **Reinforced** | Sensitive project (personal data, money, health, legal) | Mandatory second factor, extra encryption, stricter logging, human review of sensitive changes |
 
 The level is **derived** from the sensitivity question in the setup wizard

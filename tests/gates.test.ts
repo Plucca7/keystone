@@ -79,19 +79,22 @@ test('runProjectGates: a failing tool becomes a failed gate that blocks', async 
   }
 })
 
-test('runProjectGates: no package.json skips the script gates but still audits', async () => {
+test('runProjectGates: a directory that is not a project skips everything, including audit', async () => {
+  // A bare folder is not a project. The audit must skip too — otherwise `npm audit`
+  // reports "0 vulnerabilities" and the gate stamps a hollow green security pass.
   const dir = await mkdtemp(join(tmpdir(), 'keystone-gate-empty-'))
   await writeFile(join(dir, 'pnpm-lock.yaml'), '')
   const runner = new RecordingRunner()
   try {
     const results = await runProjectGates(dir, runner)
-    const scriptGates = results.filter((r) => r.name !== 'dependency audit')
-    assert.ok(scriptGates.every((r) => r.status === 'skipped'))
-    // Only the audit actually ran.
-    assert.deepEqual(
-      runner.calls.map((c) => c.args.join(' ')),
-      ['audit'],
+    assert.ok(
+      results.every((r) => r.status === 'skipped'),
+      'every gate skips',
     )
+    const audit = results.find((r) => r.name === 'dependency audit')
+    assert.equal(audit?.status, 'skipped')
+    // Nothing actually ran.
+    assert.deepEqual(runner.calls, [])
   } finally {
     await rm(dir, { recursive: true, force: true })
   }

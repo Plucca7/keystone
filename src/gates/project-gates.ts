@@ -27,10 +27,18 @@ export interface GateResult {
 /** A gate either runs a command, or reports why it was skipped. */
 type GatePlan = { run: { command: string; args: string[] } } | { skip: string }
 
+/** What a gate needs to decide whether and how to run. */
+interface GateContext {
+  scripts: Record<string, string>
+  pm: PackageManager
+  /** Whether the directory is actually a project (has a readable package.json). */
+  hasManifest: boolean
+}
+
 interface GateSpec {
   name: string
   pillar: string
-  plan(scripts: Record<string, string>, pm: PackageManager): GatePlan
+  plan(ctx: GateContext): GatePlan
 }
 
 /** A gate backed by an npm script: runs `<pm> run <script>`, or skips if the project has no such script. */
@@ -38,7 +46,7 @@ function scriptGate(name: string, pillar: string, script: string): GateSpec {
   return {
     name,
     pillar,
-    plan(scripts, pm) {
+    plan({ scripts, pm }) {
       if (!scripts[script]) {
         return { skip: `no "${script}" script in package.json` }
       }
@@ -59,7 +67,10 @@ const GATES: GateSpec[] = [
     // Not a project script — the package manager's own audit of the dependency list.
     name: 'dependency audit',
     pillar: 'Security',
-    plan(_scripts, pm) {
+    plan({ pm, hasManifest }) {
+      // Skip when the directory is not a project: a bare folder makes `npm audit` report
+      // "0 vulnerabilities" and the gate would stamp a green security pass on a non-project.
+      if (!hasManifest) return { skip: 'no package.json — not a project' }
       return { run: { command: pm, args: ['audit'] } }
     },
   },
@@ -67,6 +78,8 @@ const GATES: GateSpec[] = [
 
 interface ProjectManifest {
   scripts: Record<string, string>
+  /** False when the directory has no readable package.json — i.e. it is not a project. */
+  hasManifest: boolean
 }
 
 /** Read the project's package.json scripts; a missing or unreadable manifest means "no scripts". */
@@ -74,10 +87,10 @@ async function readManifest(dir: string): Promise<ProjectManifest> {
   try {
     const raw = await readFile(join(dir, 'package.json'), 'utf8')
     const parsed = JSON.parse(raw) as { scripts?: Record<string, string> }
-    return { scripts: parsed.scripts ?? {} }
+    return { scripts: parsed.scripts ?? {}, hasManifest: true }
   } catch {
-    // No manifest, or malformed: every script-based gate will skip, the audit still runs.
-    return { scripts: {} }
+    // No manifest, or malformed: every script-based gate skips, and the audit skips too.
+    return { scripts: {}, hasManifest: false }
   }
 }
 
@@ -102,12 +115,12 @@ function firstLine(output: string): string {
  * a failure is a `failed` result, which is the gate doing its job.
  */
 export async function runProjectGates(dir: string, runner: CommandRunner): Promise<GateResult[]> {
-  const { scripts } = await readManifest(dir)
+  const { scripts, hasManifest } = await readManifest(dir)
   const pm = await detectPackageManager(dir)
 
   const results: GateResult[] = []
   for (const gate of GATES) {
-    const plan = gate.plan(scripts, pm)
+    const plan = gate.plan({ scripts, pm, hasManifest })
     if ('skip' in plan) {
       results.push({ name: gate.name, pillar: gate.pillar, status: 'skipped', detail: plan.skip })
       continue

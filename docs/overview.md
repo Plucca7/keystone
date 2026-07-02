@@ -26,7 +26,7 @@ but stays welcoming to those just starting out.
 **Start a project whose folder already carries a high-standard foundation — without assembling it by
 hand.** The standard lives inside the template (the `web` and `api` templates): the quality configs,
 git hooks, CI workflow files, example tests and project structure are all part of the template. The
-`new` command copies that template into place, so a fresh project is born with those files present —
+`new` command copies that template into place, so a fresh project starts with those files present —
 then starts version control, installs dependencies, and switches on the git hooks. Running the
 tests and wiring up CI remain steps the developer takes afterward.
 
@@ -62,8 +62,8 @@ Planned (in development, not yet built):
   without re-explaining context).
 - **Ship-it assistance** — help getting a project live once the developer chooses the hosting.
 
-The distinction that holds this together: the **quality files are born inside the project and stand
-on their own** — once the developer installs dependencies and uses git, the deterministic checks and
+The distinction that holds this together: the **quality files are scaffolded inside the project and
+stand on their own** — once the developer installs dependencies and uses git, the deterministic checks and
 tests run from the project itself, with no command present. The **command family acts again when
 called**, to do new work. One is not the other.
 

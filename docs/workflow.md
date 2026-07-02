@@ -11,7 +11,7 @@
 
 ## Principle
 
-The "how work happens" is meant to come pre-assembled, so a project would be born organized and never
+The "how work happens" is meant to come pre-assembled, so a project would start organized and never
 lose the thread between sessions. The same structure is what would let a project open up to a
 community without turning into chaos.
 
@@ -36,10 +36,15 @@ community without turning into chaos.
   filter — see the contribution flow in [README.md](README.md) — but that intake is likewise part of
   the planned design, not something that receives contributions today.
 
-## 3. Task board (planned)
+## 3. Task board (planned, opt-in)
 
-- The design is for a project to be born with a **board** (to do / doing / done) already set up, so
-  progress is visible from day one. This is planned, not yet part of what the scaffold produces.
+- The design is for a project to come with a **board** (to do / doing / done) already set up, so
+  progress is visible from day one. A zero-setup, wired-by-default board is not built: creating and
+  wiring a real GitHub Project board is host-specific and easy to break for everyone the moment an
+  issue or PR opens, so it is deliberately left as a manual step instead of a bundled workflow. Both
+  templates document that setup end to end (`docs/project-board.md` in the generated project),
+  including the built-in, no-code project automations GitHub itself offers and where to add a
+  repository-specific workflow if those are not enough.
 
 ## 4. Session hand-off — _built (as a Layer B rule)_
 

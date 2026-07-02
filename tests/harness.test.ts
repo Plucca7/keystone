@@ -25,24 +25,25 @@ function answers(type: ProjectType, parentDir: string): KeystoneAnswers {
   }
 }
 
-test('harness: every generated project is born with the six-part harness', async () => {
+test('harness: every generated project ships with the seven-part harness', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
   try {
     const { projectDir } = await createProject(answers('site', parent))
     for (const f of [
-      '.claude/agents/spec-reviewer.md', // B3
+      '.claude/rules/example-rule.md', // B1 — layered context
+      'specs/000-example-feature/spec.md', // B2 — spec workflow
+      '.claude/agents/spec-reviewer.md', // B3 — subagents
       '.claude/agents/code-reviewer.md', // B3
       '.claude/agents/security-auditor.md', // B3
-      '.claude/hooks/block-secret.mjs', // B4
+      '.claude/hooks/block-secret.mjs', // B4 — guardrails
       '.claude/hooks/block-protected-branch.mjs', // B4
       '.claude/settings.json', // B4 wiring
-      '.claude/rules/example-rule.md', // B1
-      'specs/000-example-feature/spec.md', // B2
-      '.claude/rules/session-lifecycle.md', // B5 — session continuity (hand-off ritual)
-      '.claude/rules/long-term-memory.md', // B6 — the agent's long-term memory
-      'memory/MEMORY.md', // B6 — the memory index, born in place
+      '.claude/rules/session-lifecycle.md', // B5 — session continuity (hand-off flow)
       'knowledge/project-journal/briefings/README.md', // B5 — briefing structure
       'knowledge/project-journal/daily-log/README.md', // B5 — per-coder daily log
+      '.claude/rules/long-term-memory.md', // B6 — long-term memory
+      'memory/MEMORY.md', // B6 — the memory index, in place from the start
+      '.claude/rules/work-tracking.md', // B7 — one branch = one issue = one PR
       'docs/agent-harness.md', // the map
     ]) {
       assert.ok((await stat(join(projectDir, f))).isFile(), `expected ${f} in the project`)

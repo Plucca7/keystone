@@ -34,6 +34,7 @@
     "@repo/eslint-config": "file:./config/eslint-config",
     "@repo/prettier-config": "file:./config/prettier-config",
     "@repo/tsconfig": "file:./config/tsconfig",
+    "@types/pg": "^8.11.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-v8": "^3.2.6",
@@ -42,6 +43,7 @@
     "globals": "^15.0.0",
     "husky": "^9.0.0",
     "lint-staged": "^16.0.0",
+    "pg": "^8.13.0",
     "prettier": "^3.3.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
@@ -65,7 +67,7 @@
       "esbuild"
     ],
     "overrides": {
-      "vite": ">=6.4.3",
+      "vite": ">=6.4.3 <7",
       "esbuild": ">=0.28.1",
       "brace-expansion@>=5.0.0 <5.0.6": ">=5.0.6",
       "js-yaml@>=4.0.0 <=4.1.1": ">=4.2.0"

@@ -9,7 +9,7 @@
 
 ## Agent harness (Layer B)
 
-This project is born with a harness for the AI that builds it. Full map in
+This project ships with a harness for the AI that builds it. Full map in
 [docs/agent-harness.md](docs/agent-harness.md).
 
 - **Spec workflow (B2):** every feature opens with `specs/<slug>/spec.md` — the request restated
@@ -20,6 +20,16 @@ This project is born with a harness for the AI that builds it. Full map in
   each in its own isolated context.
 - **Guardrails (B4):** `.claude/hooks/` blocks committing a secret and touching a protected
   branch. Hard blocks, not warnings.
+- **Session continuity (B5):** an agent session forgets everything when it ends, so hand-off
+  runs on two explicit commands — **"resume session"** (or "continue") to start, **"close
+  session"** (or "wrap up") to end. Resume reads long-term memory and the newest briefing,
+  surveys the real codebase, then opens a timed daily-log entry. Close writes the next
+  briefing, stamps the daily log, and saves durable decisions to memory. Full sequence in
+  `.claude/rules/session-lifecycle.md`.
+- **Long-term memory (B6):** durable facts (decisions, preferences, project state) live one
+  per file under `memory/`, indexed by `memory/MEMORY.md`. Briefings carry in-flight state
+  for one hand-off and are deleted after being read; memory carries what stays true beyond
+  that. Discipline in `.claude/rules/long-term-memory.md`.
 
 ## Stack
 
@@ -73,13 +83,19 @@ Three branch levels, each mapped to an environment:
 
 Four layers, most tests at the bottom:
 
-1. **Fast unit** — utilities and isolated pieces (`src/__tests__/lib/`).
+1. **Fast unit** — utilities and isolated pieces. Model to imitate:
+   `src/lib/events.ts` and its test `src/__tests__/lib/events.test.ts`.
 2. **Business rule** — domain decisions as PURE functions: no mocks, no I/O,
    time injected as data. Model to imitate: `src/features/items/archive-policy.ts`
    and its test `src/__tests__/features/items/archive-policy.test.ts`.
 3. **Integration** — data access against a **real database** (mocks lie:
-   they encode beliefs, not behavior). Use a disposable local PostgreSQL with
-   the real migrations applied via `scripts/db-migrate.sh`.
+   they encode beliefs, not behavior). Runs against a disposable local
+   PostgreSQL with the real migrations applied via `scripts/db-migrate.sh`,
+   and skips cleanly (`describe.skipIf`) when `DATABASE_URL` is unset, so
+   `pnpm test` stays green with no database wired in. Model to imitate:
+   `src/__tests__/integration/tenant-isolation.test.ts`, which proves the
+   row-level-security policy in `db/migrations/0001_initial_schema.sql`
+   actually blocks cross-tenant reads and writes.
 4. **E2E** — few, only critical journeys (`e2e/`, see its README).
 
 **The suite never stabilizes, it only grows.** Every feature ships with its

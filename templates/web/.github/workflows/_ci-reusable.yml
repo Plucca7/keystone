@@ -58,8 +58,13 @@ jobs:
       - name: Lint
         run: ${{ inputs.package-manager }} run lint
 
-      - name: Unit tests
-        run: ${{ inputs.package-manager }} run test -- --coverage --reporter=verbose
+      # A dedicated script (not "test -- --coverage") because pnpm does not
+      # forward args past "--" to the underlying script the way npm/yarn do --
+      # "pnpm run test -- --coverage" silently drops "--coverage" and runs
+      # the suite without instrumentation. test:coverage bakes the flag into
+      # the script itself, so it works identically under every package manager.
+      - name: Unit tests with coverage
+        run: ${{ inputs.package-manager }} run test:coverage
 
       - name: Build
         run: ${{ inputs.package-manager }} run build

@@ -1,6 +1,6 @@
 # Keystone
 
-> Start a project born to professional standards — built by a well-harnessed AI agent, without building the foundation by hand.
+> Start a project that ships to professional standards — built by a well-harnessed AI agent, without building the foundation by hand.
 
 _Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
 
@@ -33,7 +33,7 @@ The full rationale, the **8 quality pillars**, the product design, and the build
 
 Keystone is two complementary layers — one for _what_ gets built, one for _who_ builds it.
 
-- **Layer A — Product Foundation** _(deterministic, zero-cost)_. The product is born solid without
+- **Layer A — Product Foundation** _(deterministic, zero-cost)_. The product starts solid without
   depending on AI. What ships today: the generated project carries formatter, linter, type-checker,
   test setup with examples, database migrations embodying the data conventions, git hooks, CI and
   per-environment deploy workflows — and `check` runs the text guards plus the project's own gates
@@ -64,26 +64,39 @@ _building_ the code, not to _guaranteeing_ its quality.
 
 ## Usage
 
-Installed as a package:
+Not yet published to a registry. The public npm package name is not settled either — `keystone` is
+already taken by another package, so the published name will differ. Until it ships, run Keystone
+one of two ways:
+
+**From the repo (no build):**
 
 ```bash
-keystone new my-app     # create a new project (asks a few questions)
-keystone check .        # text guards + the project's own gates (block on failure)
-keystone analyze .      # measure an existing project against the standard (read-only)
-```
-
-From the repo (no install, no build), swap `keystone` for `node src/index.ts`:
-
-```bash
+git clone <this-repo-url>
+cd keystone
+npm install
 node src/index.ts new my-app
+node src/index.ts check .        # text guards + the project's own gates (block on failure)
+node src/index.ts analyze .      # measure an existing project against the standard (read-only)
 ```
+
+**From a local tarball (closer to the real install experience):**
+
+```bash
+npm run build      # compile src/ → dist/ (what the package ships)
+npm pack           # produces a .tgz in the repo root
+npm i -g ./keystone-*.tgz
+keystone new my-app
+```
+
+Once published, the commands above will read `keystone new my-app`, `keystone check .`, and
+`keystone analyze .` under whatever public package name is chosen.
 
 ## Development
 
 ```bash
 npm run build                 # compile src/ → dist/ (what the package ships)
 node --test tests/*.test.ts   # run the test suite
-node src/index.ts check src   # Keystone runs its own checks and passes
+node src/index.ts check .     # Keystone runs its own checks and passes
 ```
 
 ## Layer A — the 8 pillars

@@ -6,7 +6,7 @@
 > entirely on your own AI, with no external paid service. Everything here is deterministic
 > configuration and written rules -- it costs nothing until you invoke the agent.
 
-The harness has six parts. Each is distilled from a working practice, not invented.
+The harness has seven parts. Each is distilled from a working practice, not invented.
 
 Two enforcement levels run through everything below, and knowing which is which matters.
 **Hooks** are hard guarantees: scripts the harness executes on the agent's tool
@@ -24,7 +24,7 @@ What loads always must be small; what is detailed loads on demand.
 - **Nested `CLAUDE.md`** -- a folder's own conventions, loaded only when the agent works there.
 - **`.claude/rules/`** -- conventions scoped by path (a database rule under database
   files), or unscoped for rules that govern the session itself rather than a file type
-  (session lifecycle, memory discipline -- B5 and B6).
+  (session lifecycle, memory discipline, work tracking -- B5, B6, and B7).
 - **`docs/`** and **`.claude/`** -- consulted on demand, never auto-loaded.
 
 The point: the agent works with the right context and its working memory stays focused.
@@ -78,8 +78,28 @@ lives in the B2 workflow (the point-by-point check against the done-target), not
 that would give false confidence. Being honest about which guarantees are hard and which
 are judgment is itself part of the standard.
 
-Enforcement: **hooks** -- the hard tier. Everything here is executed by the harness, not
-promised by the agent.
+**Honest limits of these two hooks specifically.** Both are pattern matches against the
+literal shell command the agent is about to run, so both have known holes: `block-secret`
+matches a command that names `.env` explicitly, so a broad `git add -A` or `git add .`
+that happens to sweep up an untracked `.env` file is not caught by name -- nothing in the
+command text says `.env`. `block-protected-branch` matches `git commit` and `git push`,
+so a `git merge <branch> && git push` sequence lands the merge before the push is even
+inspected, and a merge performed through a different tool than the shell is invisible to
+it entirely. These are **conveniences that catch the common, careless case** -- typing
+`cat .env`, committing straight onto `main` -- not an exhaustive guarantee against a
+determined or unusual command shape. Treat them as a second net, not the primary one.
+
+The primary net for protecting humans is unchanged by anything an agent's hooks can do:
+the project's own pre-commit hooks (running on every contributor's machine, agent or
+not) and server-side branch protection on the hosting platform (rejecting a direct push
+to a protected branch regardless of what produced it). Those layers do not trust the
+command text; they inspect the actual result. An agent's `PreToolUse` hook is a fast,
+local, best-effort check that reduces how often the slower, authoritative layers have
+to say no -- it is not a substitute for having those layers.
+
+Enforcement: **hooks** -- the hard tier for the commands they do match. Everything here
+is executed by the harness, not promised by the agent; the honest caveat above is about
+coverage (which commands get inspected), not about whether a match is enforced.
 
 ## B5 -- Session continuity
 
@@ -88,17 +108,27 @@ of a loss. The user drives it with two explicit commands -- **"resume session"**
 "continue") to start, **"close session"** (or "wrap up") to end -- and the agent runs a
 fixed sequence around each (rule: `.claude/rules/session-lifecycle.md`).
 
-- **On resume:** identify the coder from the version-control user name; read the newest
-  briefing under `knowledge/project-journal/briefings/<coder>/`; survey the actual
-  codebase beyond the briefing (version-control state, README, structure, every file the
-  briefing mentions) before acting; open a timed, numbered entry in the coder's daily
-  log; then delete the absorbed briefing -- briefings are disposable by design.
+- **On resume:** identify the coder from the version-control user name; read
+  `memory/MEMORY.md` (B6's index) and open whichever memories look relevant to today's
+  work -- this is what makes B6 a round trip instead of a write-only log; read the
+  newest briefing under `knowledge/project-journal/briefings/<coder>/`; survey the
+  actual codebase beyond the briefing (version-control state, README, structure, every
+  file the briefing mentions) before acting; open a timed, numbered entry in the
+  coder's daily log, getting the real wall-clock time from a date/time command rather
+  than leaving it blank; then delete the absorbed briefing -- briefings are disposable
+  by design. A session found still open from earlier the same day (the common
+  crash-or-restart case) is closed first, marked as recovered, before a new one opens.
 - **On close:** write the next briefing from the embedded template; stamp end time and
-  total duration in the daily log with a summary of what was done and what is open; and
-  move durable decisions into long-term memory (B6).
+  total duration in the daily log with a summary of what was done and what is open;
+  move durable decisions into long-term memory (B6); and commit the daily log, the
+  briefing, and any memory changes so they travel with the repository to the next
+  machine or coder.
 - **Context budget:** at roughly 60% of the context window, wind down -- finish the
   current step, close, and hand off. Reasoning degrades as the window fills; a clean
-  hand-off beats a degraded marathon.
+  hand-off beats a degraded marathon. No tool here reports an exact percentage, so this
+  is an approximate self-check: use the coding environment's own context indicator when
+  it exposes one, and otherwise a cluster of proxies (a long tool-call stretch, a
+  transcript that has grown hard to hold in mind) rather than any single weak signal.
 
 The supporting structure ships with the project so the rule has real ground to act on:
 `knowledge/project-journal/briefings/` (disposable per-coder hand-offs) and
@@ -113,9 +143,11 @@ pretending it could would be the theater B4 refuses.
 Briefings carry in-flight state for exactly one hand-off; permanent facts need a home
 that outlives both sessions and briefings. That home is `memory/` at the project root:
 one fact per file, typed (`decision`, `preference`, `project-state`, `reference`), with
-`memory/MEMORY.md` as the index -- one line per memory, a link plus a hook. The index is
-what loads; full files open on demand, so the always-on cost stays proportional to the
-number of memories, not their size.
+`memory/MEMORY.md` as the index -- one line per memory, a link plus a hook. The resume
+sequence (B5) opens this index every session and opens only the full files it points to
+that look relevant, so the always-on cost stays proportional to the number of memories,
+not their size -- and, unlike an auto-loaded context file, the read is an explicit step
+the agent runs, not something the environment does on its own.
 
 The discipline (rule: `.claude/rules/long-term-memory.md`): save durable decisions the
 moment they happen, not at session close; check the index before creating so facts are
@@ -127,3 +159,19 @@ what belongs in the other.
 
 Enforcement: a **rule**, like B5 -- whether a fact is durable is a judgment no
 deterministic hook can make.
+
+## B7 -- Work tracking: one branch, one issue, one pull request
+
+Every unit of work is traceable end to end, not reconstructed after the fact from
+commit messages. Before starting new work, the agent opens an issue describing it,
+branches from that issue, and opens one pull request that closes it on merge (rule:
+`.claude/rules/work-tracking.md`). A batch of small, related fixes may share one
+umbrella issue with a checklist rather than one issue per item, but the branch and PR
+still trace back to a single issue either way.
+
+If the environment has no configured access to the project's issue tracker, the agent
+says so plainly and proceeds with just the branch and PR, noting in the PR description
+that no issue was opened -- a degraded mode called out explicitly, not a silent skip.
+
+Enforcement: a **rule** -- opening the issue is a step in the agent's own workflow, not
+something a hook can force before a commit exists to intercept.

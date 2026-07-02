@@ -20,7 +20,7 @@ The safety net that makes everything else enforceable: without tests, Code quali
 and Ship it's "ships itself" would have nothing to stand on. It is an adversarial verifier that runs
 at zero cost.
 
-## 1. A test is born with the feature
+## 1. A test ships with the feature
 
 - Every new feature **comes with its test**, from day one. The net grows with the project.
 - No "test it later" (which turns into "later, never").

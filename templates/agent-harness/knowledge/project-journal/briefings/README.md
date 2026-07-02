@@ -7,7 +7,8 @@ by the resume sequence. The full lifecycle and the briefing template live in
 
 ## Layout
 
-One subfolder per coder, keyed by the version-control user name (lowercased, no spaces):
+One subfolder per coder, keyed by the version-control user name (lowercase, spaces
+replaced with hyphens -- see the exact rule in `.claude/rules/session-lifecycle.md`):
 
 ```
 briefings/

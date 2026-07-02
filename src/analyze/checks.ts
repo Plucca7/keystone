@@ -60,7 +60,10 @@ const checkGitignore: Check = (s) => {
 }
 
 const checkTests: Check = (s) => {
-  const hasTests = s.paths.some((p) => /\.test\.|(?:^|\/)tests?\//.test(p))
+  // Require an actual test FILE, not merely a tests/ folder. A bare tests/README.md used
+  // to satisfy this (the folder matched), so a project with every test deleted still
+  // passed — a hollow green. Match named test/spec files and e2e specs instead.
+  const hasTests = s.paths.some((p) => /\.(?:test|spec)\.[cm]?[jt]sx?$/.test(p))
   return {
     pillar: 'Tests',
     title: 'Has tests',

@@ -8,7 +8,8 @@ control. Nothing lands unreviewed, and the automated guards filter most issues b
 1. Work on a **separate branch** — never on the official one.
 2. Run the checks **locally** before proposing:
    - `node --test tests/*.test.ts` — every test must pass.
-   - `node src/index.ts check src` — the guards must be clean (no exposed secrets, no oversized files).
+   - `node src/index.ts check .` — the guards and the project's own gates (format, lint, types,
+     dependency audit) must be clean.
 3. Open a **proposal** (pull request). The same checks run again on the way in.
 4. A **maintainer reviews** and has the final say: approve, request changes, or decline.
 
@@ -16,7 +17,7 @@ control. Nothing lands unreviewed, and the automated guards filter most issues b
 
 - **Runs on its own, zero AI cost.** Anything deterministic stays deterministic.
 - **Resolve problems at the root** — never silence a check with a reactive exception.
-- **Tests are born with each feature** and cover the failures, not only the happy path.
+- **Tests ship with each feature** and cover the failures, not only the happy path.
 - **Comments explain the "why"**, not the obvious.
 - **Secrets never live in the code.**
 

@@ -9,7 +9,7 @@
 
 ## Agent harness (Layer B)
 
-This project is born with a harness for the AI that builds it. Full map in
+This project ships with a harness for the AI that builds it. Full map in
 [docs/agent-harness.md](docs/agent-harness.md).
 
 - **Spec workflow (B2):** every feature opens with `specs/<slug>/spec.md` — the request restated
@@ -20,6 +20,13 @@ This project is born with a harness for the AI that builds it. Full map in
   each in its own isolated context.
 - **Guardrails (B4):** `.claude/hooks/` blocks committing a secret and touching a protected
   branch. Hard blocks, not warnings.
+- **Session continuity (B5):** say **"resume session"** (or "continue") to start a session and
+  **"close session"** (or "wrap up") to end one. The agent reads the newest briefing, surveys
+  the codebase, and on close writes the next briefing plus a dated entry in the coder's daily
+  log. Rule-level, not a hook — a script cannot judge whether a hand-off summary is truthful.
+- **Long-term memory (B6):** durable decisions (not in-flight state) live in `memory/`, one
+  fact per file, indexed by `memory/MEMORY.md`. Saved the moment a decision happens, checked
+  before creating a new file so facts are updated rather than duplicated.
 
 ## Stack
 

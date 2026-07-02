@@ -32,7 +32,7 @@ and its base structure. This is the spine; everything else hangs off it. See
 
 ### Stage 2 — The base project template — planned
 
-The mold meant to serve as the starting point, intended to carry the standard internal organization
+The template meant to serve as the starting point, intended to carry the standard internal organization
 and the locale behavior (dates, money, languages, responsiveness, accessibility). This is a design
 target, not yet built. See [foundation.md](foundation.md).
 

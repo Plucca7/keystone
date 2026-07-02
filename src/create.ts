@@ -1,9 +1,9 @@
-// Creating a project: copy the real template (web or api) into place, then adjust
-// the few variable points (the name). No more hand-made scaffold — the project
-// is born as the actual template, byte-for-byte, only renamed.
+// Creating a project: copy the real template (web or api) into place, then adjust the
+// few variable points — the package name, and the dotfiles npm strips on publish. The
+// project is the actual template, only renamed and with its stripped dotfiles restored.
 // See docs/build-plan.md and docs/commands.md.
 
-import { cp, readFile, writeFile } from 'node:fs/promises'
+import { cp, readdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { KeystoneAnswers, ProjectType } from './types.ts'
@@ -76,6 +76,38 @@ export function copyFilterFor(sourceRoot: string): (source: string) => boolean {
   }
 }
 
+/** Dotfiles npm strips from a package, mapped from their shipped name to their real name. */
+const DOTFILES_TO_RESTORE: Record<string, string> = { gitignore: '.gitignore' }
+
+/** Throw a clear error if the destination exists and is not empty — never overwrite. */
+async function assertEmptyDestination(projectDir: string): Promise<void> {
+  try {
+    const entries = await readdir(projectDir)
+    if (entries.length > 0) {
+      throw new Error(
+        `Destination "${projectDir}" already exists and is not empty. ` +
+          `Choose a different name or remove the folder first.`,
+      )
+    }
+  } catch (error) {
+    // ENOENT means the folder does not exist yet — the good case. Re-throw anything else.
+    if ((error as { code?: string }).code !== 'ENOENT') throw error
+  }
+}
+
+/** Rename shipped dotfiles (e.g. `gitignore` -> `.gitignore`) inside the new project. */
+async function restoreDotfiles(projectDir: string): Promise<void> {
+  for (const [shipped, real] of Object.entries(DOTFILES_TO_RESTORE)) {
+    const from = join(projectDir, shipped)
+    try {
+      await rename(from, join(projectDir, real))
+    } catch (error) {
+      // A template without that dotfile is fine — nothing to restore.
+      if ((error as { code?: string }).code !== 'ENOENT') throw error
+    }
+  }
+}
+
 /** Create the project by copying the real template and renaming it. */
 export async function createProject(answers: KeystoneAnswers): Promise<CreateResult> {
   const template = TEMPLATE_BY_TYPE[answers.product.type]
@@ -89,15 +121,28 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
   const projectDir = resolve(answers.setup.parentDir, answers.product.name)
   const source = join(TEMPLATES_DIR, template)
 
+  // Refuse a non-empty destination. Without this, scaffolding over an existing folder
+  // silently overwrites the user's files (a typo'd name = data loss) and still exits 0.
+  // A missing folder is fine — cp creates it.
+  await assertEmptyDestination(projectDir)
+
   // Copy the actual template, skipping installed dependencies. The filter is anchored to
   // each source root so it works whether Keystone runs from the repo or from an install
   // under node_modules.
   await cp(source, projectDir, { recursive: true, filter: copyFilterFor(source) })
 
-  // Layer B — lay the agent harness on top of the template, so every project is born with
-  // its reviewers, guardrails, spec workflow, and layered context. Copied after the template
-  // (never overwrites a template file: the harness only adds .claude/, specs/, and docs/).
+  // Layer B — lay the agent harness on top of the template, so every project starts with
+  // its reviewers, guardrails, spec workflow, layered context, session continuity, and
+  // long-term memory. Copied after the template (adds only new trees: .claude/, specs/,
+  // memory/, knowledge/, and docs/agent-harness.md — never overwrites a template file).
   await cp(HARNESS_DIR, projectDir, { recursive: true, filter: copyFilterFor(HARNESS_DIR) })
+
+  // Restore the dotfiles that npm strips from a published package. npm refuses to ship a
+  // file literally named `.gitignore`, so templates carry it as `gitignore` (no dot) and
+  // we rename it back here — otherwise a project created from the INSTALLED package would
+  // be born with no .gitignore, and its first `git add -A` would swallow node_modules and
+  // even commit a .env. (From the repo the file is already `gitignore` too, kept uniform.)
+  await restoreDotfiles(projectDir)
 
   // Change only the name, by text substitution, so the rest of the manifest
   // keeps the template's exact formatting (no JSON reflow).

@@ -78,9 +78,16 @@ alter table items force row level security;
 -- NULL comparison makes the policy match ZERO rows — a session with no
 -- tenant is blocked, it never "sees everything". That failure direction is
 -- deliberate: forgetting the tenant must fail closed, not open.
+--
+-- nullif(..., '') guards the OTHER empty case: a session that explicitly set
+-- app.tenant_id to '' (rather than leaving it unset) would otherwise hit a
+-- hard cast error ('' does not become a valid uuid) instead of the same
+-- fail-closed "zero rows" behavior. nullif turns '' into NULL first, so both
+-- "unset" and "set to empty" collapse to the same safe, silent, zero-row
+-- outcome — fail closed without an exception leaking policy internals.
 -- (On a managed auth platform, swap the right-hand side for the platform's
 -- JWT claim accessor; the policy shape stays the same.)
 drop policy if exists items_tenant_isolation on items;
 create policy items_tenant_isolation on items
-  using (tenant_id = current_setting('app.tenant_id', true)::uuid)
-  with check (tenant_id = current_setting('app.tenant_id', true)::uuid);
+  using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid)
+  with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);

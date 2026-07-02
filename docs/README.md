@@ -16,7 +16,7 @@
 Keystone is built as **two complementary layers**:
 
 - **Layer A — Product Foundation.** Deterministic, zero AI cost: the eight quality pillars a
-  scaffolded project is born with, plus the checks that hold them. This is where the three
+  scaffolded project ships with, plus the checks that hold them. This is where the three
   implemented commands live.
 - **Layer B — Agent Harness.** Built: `new` lays it into every project (reviewers, guardrail hooks,
   the spec workflow, layered context — distilled from real working practice). It runs on the
@@ -55,16 +55,16 @@ where a rule describes something not yet wired in, the document says so inline.
   warning, oversized-file flags, comments that explain the _why_.
 - **[database.md](database.md)** — Database: timestamps on everything, soft delete, versioned and
   repeatable migrations, unguessable identifiers.
-- **[tests.md](tests.md)** — Tests: born with each feature, covering the happy path and the failures,
+- **[tests.md](tests.md)** — Tests: ships with each feature, covering the happy path and the failures,
   a failing test blocking a ship.
 - **[workflow.md](workflow.md)** — Workflow: three branch levels, a review gate, a task board, and
   session hand-off. _(Parts are planned — see the document.)_
 - **[ship-it.md](ship-it.md)** — Ship it: the delivery pipeline, a staging copy before production,
   rollback, secrets kept out of the code. _(Parts are planned — see the document.)_
-- **[security.md](security.md)** — Security: essential at birth, reinforced when needed, checks on
+- **[security.md](security.md)** — Security: essential from day one, reinforced when needed, checks on
   the machine and before shipping, abuse protection on by default.
 - **[documentation.md](documentation.md)** — Documentation: decisions become short records, docs
-  generated from code where possible, born with the project.
+  generated from code where possible, ready from the start of the project.
 
 ## Planning
 

@@ -31,10 +31,13 @@
     a hard-won gotcha)
 
 - **`memory/MEMORY.md` is the index**: one line per memory -- a link plus a hook, the one
-  phrase that tells a future session whether the memory is worth opening. The index is
-  what gets loaded; full memory files are opened on demand only. This keeps the
-  always-on context cost proportional to the number of memories, not to their total
-  size -- never load full contents wholesale.
+  phrase that tells a future session whether the memory is worth opening. This project's
+  tooling does not auto-inject `memory/` into context the way it does `.claude/rules/`,
+  so the read side is a step in the resume sequence, not automatic: the agent opens the
+  index at the start of every session (`.claude/rules/session-lifecycle.md`, resume step
+  2) and only opens the full memory files whose hook looks relevant that day. This keeps
+  the always-on context cost proportional to the number of memories, not to their total
+  size -- never load full contents wholesale, and never skip opening the index itself.
 
 ## Discipline
 

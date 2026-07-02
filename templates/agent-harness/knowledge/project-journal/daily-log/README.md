@@ -1,7 +1,8 @@
 # Daily log -- the permanent per-coder session record
 
-One markdown file per coder, keyed by the version-control user name (lowercased, no
-spaces): `daily-log/<coder>.md`. Unlike briefings -- which are disposable -- the daily log
+One markdown file per coder, keyed by the version-control user name (lowercase, spaces
+replaced with hyphens -- see the exact rule in `.claude/rules/session-lifecycle.md`):
+`daily-log/<coder>.md`. Unlike briefings -- which are disposable -- the daily log
 lives for the life of the project: it is the auditable history of who worked when, for
 how long, and what came out of it.
 

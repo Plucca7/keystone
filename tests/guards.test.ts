@@ -36,6 +36,15 @@ test('scanSecrets: flags a private key block', () => {
   assert.equal(scanSecrets('a.ts', PRIVATE_KEY_SAMPLE).length, 1)
 })
 
+test('scanSecrets: flags a provider key by its shape, not the variable name', () => {
+  // The worst real-world leak: a live key hardcoded with an innocent name. Assembled
+  // from parts so this test file does not trip the scanner scanning its own project.
+  const stripe = `const k = "${'sk_' + 'live_51Habcdefghijklmnop'}";`
+  const [finding] = scanSecrets('a.ts', stripe)
+  assert.ok(finding)
+  assert.match(finding.message, /Stripe/)
+})
+
 test('scanSecrets: no false positive on clean code', () => {
   assert.deepEqual(scanSecrets('a.ts', 'const total = price * quantity;'), [])
 })

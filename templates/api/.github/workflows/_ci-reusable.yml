@@ -58,12 +58,22 @@ jobs:
       - name: Lint
         run: ${{ inputs.package-manager }} run lint
 
-      - name: Unit tests
-        run: ${{ inputs.package-manager }} run test -- --coverage --reporter=verbose
+      # Decision: call the dedicated coverage script instead of
+      # "test -- --coverage". With pnpm, a "--" in "pnpm run test -- --flag"
+      # is not stripped before forwarding, so vitest never sees --coverage
+      # and the step silently runs plain tests with no report. test:coverage
+      # already wires --coverage in package.json, so this works the same
+      # across npm/pnpm/yarn and cannot regress into that footgun.
+      - name: Unit tests with coverage
+        run: ${{ inputs.package-manager }} run test:coverage
 
       - name: Build
         run: ${{ inputs.package-manager }} run build
 
+      # if-no-files-found: error turns a missing coverage/ folder into a
+      # failed step instead of the default silent warning -- a green
+      # "Upload coverage" must mean coverage genuinely ran, never that the
+      # folder was absent.
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,6 +81,7 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 7
+          if-no-files-found: error
 
   e2e:
     name: E2E Tests

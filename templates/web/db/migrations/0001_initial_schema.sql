@@ -104,10 +104,19 @@ ALTER TABLE items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE items FORCE ROW LEVEL SECURITY;
 
 -- The application sets the current tenant per connection/transaction:
---   SET LOCAL app.current_tenant_id = '<uuid>';
+--   SET LOCAL app.tenant_id = '<uuid>';
+-- (app.tenant_id is the same GUC name the api template's migration uses, so both
+-- templates speak one convention and a shared auth/session layer sets one variable
+-- name for either stack.)
 -- current_setting(..., true) returns NULL instead of erroring when the
 -- setting is absent, and NULL never equals tenant_id -- so an unconfigured
 -- connection sees ZERO rows (fail closed, never fail open).
+--
+-- nullif(..., '') guards the OTHER empty case: a session that explicitly set
+-- app.tenant_id to '' (rather than leaving it unset) would otherwise hit a
+-- hard cast error ('' is not a valid uuid) instead of the same fail-closed
+-- "zero rows" behavior. nullif turns '' into NULL first, so both "unset" and
+-- "set to empty" collapse to the same safe, silent, zero-row outcome.
 --
 -- If this project adopts an auth provider that stores the tenant in a JWT
 -- claim, replace the expression accordingly (e.g. a claim-reading function);
@@ -117,5 +126,5 @@ CREATE POLICY items_tenant_isolation ON items
   -- USING gates reads/updates/deletes; WITH CHECK gates inserts and the new
   -- version of updated rows. Both are required: USING alone would still let
   -- an insert plant a row into another tenant.
-  USING (tenant_id = current_setting('app.current_tenant_id', true)::uuid)
-  WITH CHECK (tenant_id = current_setting('app.current_tenant_id', true)::uuid);
+  USING (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid)
+  WITH CHECK (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);

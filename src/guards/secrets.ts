@@ -13,11 +13,20 @@ const API_ASSIGNMENT = new RegExp(
   'i',
 )
 const PRIVATE_KEY = new RegExp('-----BEGIN (?:RSA |EC )?PRIVATE ' + 'KEY-----')
+// Provider key formats caught by their own shape, not by the variable name — the most
+// common real-world leak (a live Stripe key hardcoded as `const k = "sk_live_..."`)
+// carries no telltale name, so name-based matching misses exactly the worst case.
+const STRIPE_KEY = new RegExp('sk_' + 'live_[0-9a-zA-Z]{16,}')
+const GITHUB_TOKEN = new RegExp('gh[pousr]_' + '[0-9A-Za-z]{20,}')
+const SLACK_TOKEN = new RegExp('xox[baprs]-' + '[0-9A-Za-z-]{10,}')
 
 const SECRET_PATTERNS: { name: string; re: RegExp }[] = [
   { name: 'AWS access key', re: AWS_KEY },
   { name: 'API key / token assignment', re: API_ASSIGNMENT },
   { name: 'Private key block', re: PRIVATE_KEY },
+  { name: 'Stripe live key', re: STRIPE_KEY },
+  { name: 'GitHub token', re: GITHUB_TOKEN },
+  { name: 'Slack token', re: SLACK_TOKEN },
 ]
 
 export const scanSecrets: Guard = (file, content) => {

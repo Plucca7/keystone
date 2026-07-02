@@ -2,12 +2,20 @@
   "extends": "@repo/tsconfig/tsconfig.node.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    // Decision: rootDir is "." (project root), overriding the "./src" the
+    // shared @repo/tsconfig sets. This config is typecheck-only (tsc
+    // --noEmit, see package.json) and intentionally spans two top-level
+    // folders (src and tests) that share no root narrower than the project
+    // itself -- a "./src" rootDir would reject every file under tests/ with
+    // TS6059. tsconfig.build.json (which extends this file) sets its own
+    // narrower rootDir: "./src" for the real emit, where that constraint is
+    // correct because it excludes "tests" entirely.
+    "rootDir": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
     "verbatimModuleSyntax": false
   },
-  "include": ["src"],
+  "include": ["src", "tests"],
   "exclude": ["node_modules", "dist"]
 }

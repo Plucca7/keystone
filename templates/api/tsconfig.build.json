@@ -3,6 +3,14 @@
   // are excluded so `dist/` ships product code only. Typecheck (tsc --noEmit)
   // keeps using tsconfig.json, which DOES include tests — they are typed code
   // and must pass the same strictness as the product.
+  //
+  // rootDir is set HERE (not in the shared tsconfig.json base) because this
+  // config excludes "tests", leaving "src" as the only remaining root — the
+  // single-root constraint tsc enforces for rootDir. The base config spans
+  // both "src" and "tests" for typecheck, so it cannot declare a rootDir.
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/__tests__/**"]
+  "compilerOptions": {
+    "rootDir": "./src"
+  },
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/__tests__/**", "tests"]
 }

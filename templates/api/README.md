@@ -141,6 +141,14 @@ Two GitHub Actions pipelines ship the service: `develop` -> staging and
 deploy, then a smoke test. Hosting is your choice — one marked step per
 workflow is all you fill in. Full guide: [docs/deploy.md](docs/deploy.md).
 
+## Working with the agent
+
+This project ships with a harness for an AI coding agent (see
+[CLAUDE.md](CLAUDE.md)). Two commands drive a session's hand-off: say
+**"resume session"** to pick up where the last session left off, and
+**"close session"** to write a hand-off briefing before you stop. Full
+details: [docs/agent-harness.md](docs/agent-harness.md).
+
 ## Reference
 
 - [Fastify](https://fastify.dev/)

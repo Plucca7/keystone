@@ -28,7 +28,7 @@
 ## Three kinds of decision (the golden rule)
 
 1. **Platform decision** (fixed, already settled) → decided by the standard, NOT asked and NOT inferred.
-   E.g. errors block shipping, a test is born with the feature, nothing truly disappears from the database.
+   E.g. errors block shipping, a test ships with the feature, nothing truly disappears from the database.
 2. **Inferred decision** (derived from what the user already said) → NOT asked.
    E.g. **does it need a database?** — inferred from project type + data sensitivity.
 3. **Project decision** (a matter of the user's taste, only they know) → becomes a question.
@@ -66,7 +66,7 @@ The essential minimum. Six questions; the fifth is optional and branches.
   because the template already ships that look)
 
 > Today, the visual-identity answer is only recorded in `keystone.json`. No design step runs — a new
-> project is born with whatever look the copied template already contains.
+> project starts with whatever look the copied template already contains.
 
 ### 6. Handles sensitive data or money? · _yes · no_ → feeds the security and database inference
 

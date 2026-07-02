@@ -2,7 +2,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { deduce, createProject, copyFilterFor } from '../src/create.ts'
@@ -57,6 +57,29 @@ test('createProject: a service is born from the real api template, renamed', asy
     const record = JSON.parse(await readFile(join(projectDir, 'keystone.json'), 'utf8'))
     assert.equal(record.template, 'api')
     assert.equal(record.deduced.securityLevel, 'reinforced')
+
+    // the .gitignore is restored (templates ship it as `gitignore` because npm strips
+    // the dotted name from a package; without the restore the project could not commit).
+    assert.ok((await stat(join(projectDir, '.gitignore'))).isFile(), 'expected .gitignore restored')
+    await assert.rejects(stat(join(projectDir, 'gitignore')), 'the un-dotted name is gone')
+  } finally {
+    await rm(parent, { recursive: true, force: true })
+  }
+})
+
+test('createProject: refuses to scaffold over a non-empty destination', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+  try {
+    // A folder the user already has files in — scaffolding over it would destroy them.
+    const victim = join(parent, 'demo-app')
+    await mkdir(victim, { recursive: true })
+    await writeFile(join(victim, 'README.md'), '# my irreplaceable readme\n')
+    await assert.rejects(
+      () => createProject(answers('service', false, parent)),
+      /already exists and is not empty/,
+    )
+    // The user's file is untouched.
+    assert.match(await readFile(join(victim, 'README.md'), 'utf8'), /irreplaceable/)
   } finally {
     await rm(parent, { recursive: true, force: true })
   }

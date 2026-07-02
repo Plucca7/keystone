@@ -1,5 +1,10 @@
 #!/bin/sh
-# db-migrate.sh - applies db/migrations/*.sql in filename order via psql.
+# db-migrate.sh - applies db/migrations/NNNN_*.sql in filename order via psql.
+#
+# The glob below only matches the documented NNNN_short_description.sql
+# convention (db/migrations/README.md) - a stray non-migration file dropped
+# in the folder (README.md, a .sql scratch file without the numeric prefix)
+# is silently skipped instead of being picked up and "applied" by accident.
 #
 # Idempotent: applied filenames are recorded in a schema_migrations table and
 # skipped on subsequent runs, so this script is safe to run on every deploy.
@@ -49,8 +54,10 @@ applied_count=0
 skipped_count=0
 
 # POSIX glob expansion sorts lexicographically, which is exactly the NNNN_
-# ordering convention - no extra sort needed.
-for file in "$MIGRATIONS_DIR"/*.sql; do
+# ordering convention - no extra sort needed. The [0-9][0-9][0-9][0-9]_
+# prefix restricts the match to the documented naming convention (see the
+# header comment above and db/migrations/README.md).
+for file in "$MIGRATIONS_DIR"/[0-9][0-9][0-9][0-9]_*.sql; do
   # When the glob matches nothing, sh leaves the pattern literal.
   if [ ! -e "$file" ]; then
     echo "No migration files found in $MIGRATIONS_DIR - nothing to do."

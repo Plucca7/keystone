@@ -19,7 +19,7 @@
 
 ## Principle
 
-Any good standard needs two things: to **be born right** (the `new` command) and to **measure what
+Any good standard needs two things: to **start right** (the `new` command) and to **measure what
 already exists** (this command). `analyze` **only observes and reports** — it touches nothing.
 Actually applying the changes is a separate decision you make later.
 

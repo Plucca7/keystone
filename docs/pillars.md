@@ -1,19 +1,23 @@
 # Keystone — Two Layers, Eight Pillars
 
 > **What this document is:** the blueprint that defines what every project scaffolded by Keystone is
-> meant to be born with. An open, unbranded standard any team can adopt as a common foundation.
+> meant to ship with. An open, unbranded standard any team can adopt as a common foundation.
 >
 > **Status — what is actually built today:** three commands exist. `new` scaffolds a new project
 > (asks setup questions, then copies a template). `check` runs **three** deterministic file
 > guards: an exposed-secret scan, an oversized-file check, and a dangerous-pattern scan
 > (injection/XSS vectors: dynamic code execution, raw HTML injection, shell commands built with
-> interpolation) — nothing else. `analyze` is read-only
+> interpolation) — plus the **project's own gates** (formatter, linter, type-checker, tests, and a
+> dependency-vulnerability audit), blocking when any fails. `analyze` is read-only
 > (reports only) and runs exactly **six** checks: exposed secrets, `.gitignore` completeness,
 > presence of tests, presence of a README, basic database-convention text checks (plain string
 > matching over `.sql` files), and oversized files. **Layer B — the agent harness — is built and ships
-> in every scaffolded project (see below).** Everything else in this document — every other pillar
-> behavior, the whole publish/CI gate, and the edge protection — is the target, not yet delivered.
-> Where a capability is planned, this document says so; it is never described as running today.
+> in every scaffolded project (see below).** The **two-environment deploy pipeline** (staging from
+> `develop`, production from `main`) also ships in both templates today — see the Ship it pillar
+> below and [ship-it.md](ship-it.md) for the exact status. Everything else in this document — every
+> other pillar behavior, the automatic before-going-live gate, and the edge protection — is the
+> target, not yet delivered. Where a capability is planned, this document says so; it is never
+> described as running today.
 
 ---
 
@@ -31,7 +35,7 @@ the rest is the target.
 developer already uses — and Layer B is that agent's harness: what shapes its context, the spec it
 follows, the specialists it consults, and the guardrails that stop it from going wrong. It runs
 entirely on the developer's own AI, with no external paid service required. **Layer B ships today:
-every scaffolded project is born with it** (see the six parts below), distilled from real, production
+every scaffolded project ships with it** (see the seven parts below), distilled from real, production
 working practice rather than invented on a whiteboard.
 
 The two layers keep AI in its place: Layer A's quality guarantees are deterministic and run at zero
@@ -71,11 +75,15 @@ _Target — not yet enforced by any command._
 
 ### 2. Code quality
 
-_Target — not yet built. `check` today only scans for exposed secrets and oversized files._
+_Partially built. `check` runs the oversized-file guard plus the project's own gates (formatter,
+linter, type-checker, tests, dependency audit), blocking on failure — see the status line at the
+top of this document. Auto-format-on-save and a template-embedded "zero errors, zero warnings"
+publish gate remain the target._
 
 - A single format that fixes itself on save (no manual style decisions) — **planned**.
-- Any error or warning should **block shipping** — a "zero errors, zero warnings" rule — **planned**;
-  no publish/ship gate is built today.
+- Any error or warning should **block shipping** — a "zero errors, zero warnings" rule. 🔧 `check`
+  already blocks on a formatter, linter, or type-checker failure today; wiring that same rule into
+  an automatic before-going-live/CI gate is still the target.
 - An automatic warning when a file/section grew too large. The oversized-file check exists today in
   both `check` 🔧 and `analyze` 🔧; wiring it into a shipping gate is the target.
 - Comment only where it isn't obvious: explain the _why_ (a decision, a business rule), never the
@@ -95,34 +103,49 @@ string matching) 🔧; none of the guarantees below are implemented._
 
 ### 4. Tests
 
-_Target — not yet enforced. `analyze` today only checks that tests are **present** 🔧; it does not
-run them, measure them, or block anything._
+_Partially built. `analyze` only checks that tests are **present** 🔧 (read-only, no run). `check`
+goes further: it runs the project's own test command as one of its gates and blocks when a test
+fails 🔧. Wiring that block into a before-going-live/CI gate remains the target._
 
-- A test is born with the feature, from day one (the suite grows with the project).
+- A test ships with the feature, from day one (the suite grows with the project).
 - Covers the happy path **and** the unhappy paths (invalid input, abuse, no permission).
-- A failing test should **block shipping** — **planned**; no shipping gate exists today.
+- A failing test should **block shipping** — 🔧 `check` already blocks locally on a failing test;
+  wiring the same block into an automatic before-going-live/CI gate is still **planned**.
 - Measured by focus on the critical (money, login, customer data), not by a coverage percentage.
 
 ### 5. Workflow
 
-_Target — none of the workflow machinery below is built._
+_Partially built. The three branch levels and the session hand-off ship today (see below); the
+review gate and the task-board automation remain the target._
 
-- Three levels: official → staging → daily work, with tests on every delivery.
-- Every change passes a review gate before entering the official branch.
-- A task board (to do / doing / done).
-- Session hand-off: a way to close a work session (recording what was done and where things stand)
-  and resume it later without re-explaining context, so context survives from one session to the
-  next.
-- Every delivery records its author (person or AI agent).
+- 🔧 Three levels: official (`main`) → staging (`develop`) → daily work, with the official branch
+  protected by the project's git hooks and a bundled protection-setup script. Shipped.
+- Every change passes a review gate before entering the official branch — **planned**.
+- A task board (to do / doing / done) — an opt-in, documented manual setup, not a shipped wired
+  board (see [workflow.md](workflow.md)).
+- 🔧 Session hand-off: close a work session and resume it later without re-explaining context, so
+  context survives from one session to the next — shipped as a Layer B rule (B5).
+- Every delivery records its author (person or AI agent) — carried by the work-tracking rule (B7).
 
 ### 6. Ship it
 
-_Target — no auto-deploy, staging, or rollback is built._
+> Full rule in [ship-it.md](ship-it.md).
 
-- Ships itself once it passes the gates (tests + checks).
-- A staging environment (an identical copy) before production.
-- Fast rollback if something breaks in production.
-- Each environment's secrets and keys always kept out of the code.
+_What ships today:_ both templates carry a **two-environment deploy pipeline** — staging deploys
+from `develop`, production deploys from `main`. Each run goes gates -> migrate-before-code ->
+deploy -> smoke check, in that order, failing loudly at any step. Per-environment secrets are held
+by the hosting service's environment feature, including a separate database connection string per
+environment. The pipeline leaves exactly **one line** for the owner to fill with their host's
+deploy command (hosting is the developer's choice, never assumed); until filled, that step fails
+with instructions rather than a fake green. Still the **target**: the automatic before-going-live
+gate that wires this pipeline to the review gate, and one-step rollback.
+
+- Ships itself once it passes the gates (tests + checks) — built up to the host line.
+- A staging environment (an identical copy) before production — the pipeline and per-environment
+  secrets ship; standing up the actual staging host/database is the owner's one-time setup.
+- Fast rollback if something breaks in production — **planned**, not yet built.
+- Each environment's secrets and keys always kept out of the code — built, via the hosting
+  service's environment feature.
 
 ### 7. Security
 
@@ -144,7 +167,7 @@ dangerous-pattern scan in `check` 🔧 (injection/XSS vectors). Everything else 
   - _Wall and gate_ (the smaller front) — block abuse / excess access at the edge. **Planned**; no
     edge/abuse/rate-limit protection is wired up today.
 - **Closed decisions (design intent):**
-  - Essential at birth; reinforced as the project grows.
+  - Essential from day one; reinforced as the project grows.
   - The aim is that automatic checks block on the dev machine **and** again before going live (a
     double net) — the automatic before-going-live/CI gate is **planned**; today the local `check`
     runs the text guards and the project's own gates, on demand.
@@ -158,7 +181,7 @@ _Target — not enforced by any command. `analyze` today only checks that a READ
 
 - Every important architectural decision becomes a short permanent record (the _why_).
 - Documentation of how the system works is generated from the code itself whenever possible.
-- Born with the project, in the moment — not at the end.
+- Created alongside the project, in the moment — not at the end.
 - Any interface exposed to other systems (an API) comes with a clear usage guide.
 - Technical documentation in English; the front-end in the product's language.
 
@@ -168,11 +191,11 @@ _Target — not enforced by any command. `analyze` today only checks that a READ
 
 The project is built by an AI coding agent, with Layer B as the scaffolding around that agent — six
 parts. Like Layer A, it runs on the developer's own AI, with no external paid service required. **All
-six parts ship today**, copied into every scaffolded project (`templates/agent-harness/`, laid on
+seven parts ship today**, copied into every scaffolded project (`templates/agent-harness/`, laid on
 top of the template by `new`), and each is distilled from real working practice, not invented.
 
-> How it lands: `new` copies the shared harness on top of the chosen template, so a fresh project is
-> born with `.claude/` (agents, hooks, settings, rules), `specs/` (the spec workflow), `memory/`
+> How it lands: `new` copies the shared harness on top of the chosen template, so a fresh project
+> ships with `.claude/` (agents, hooks, settings, rules), `specs/` (the spec workflow), `memory/`
 > (the long-term memory index), `knowledge/project-journal/` (briefings and the per-coder daily
 > log), and `docs/agent-harness.md` (the map). The guardrail hooks are proven to block by an automated test.
 
@@ -252,6 +275,16 @@ Permanent facts outlive sessions. Rule: `.claude/rules/long-term-memory.md`.
 - The boundary with B5: briefings carry **in-flight state** (disposable), memory carries
   **permanent facts** (rules, decisions, invariants).
 - Same enforcement tier as B5: a followed rule, honestly declared as such.
+
+### B7. Work tracking — _built_
+
+Every unit of work is traceable. Rule: `.claude/rules/work-tracking.md`.
+
+- One branch = one issue = one pull request: the agent opens an issue before starting a unit of
+  work, so nothing lands untracked.
+- Distilled from the multi-contributor discipline (each unit of work has a home and an author),
+  stated generically — no dependency on any one tracker.
+- Enforcement tier: a followed rule, with an honest degraded-mode note when no tracker is reachable.
 
 ---
 

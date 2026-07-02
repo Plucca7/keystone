@@ -4,16 +4,29 @@
   "description": "Start a project that is born to professional standards — without building the foundation by hand.",
   "type": "module",
   "bin": {
-    "keystone": "./src/index.ts"
+    "keystone": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "docs"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "start": "node src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
     "test": "node --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
+    "prepack": "npm run build"
   },
   "keywords": [
     "scaffold",

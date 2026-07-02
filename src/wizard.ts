@@ -1,7 +1,7 @@
 // The wizard: it conducts the briefing, one question at a time, through a Prompter.
 // Plain-text mode runs in any terminal with zero AI cost — faithful to the DNA.
 // The content of the questions is the same whether asked as text or as cards.
-// See docs/wizard-inicial.md.
+// See docs/setup-wizard.md.
 
 import type { Prompter } from './prompter.ts'
 import type {

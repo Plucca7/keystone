@@ -3,8 +3,9 @@
 > The Documentation pillar of Keystone, in full. Overview in [pillars.md](pillars.md).
 >
 > **Status:** three commands are built today — create a new project (`new`), run the automatic
-> checks (`check`), and analyze an existing project (`analyze`, read-only). `check` runs exactly two
-> deterministic guards: an exposed-secret scan and an oversized-file check. `analyze` runs six
+> checks (`check`), and analyze an existing project (`analyze`, read-only). `check` runs three text
+> guards (exposed secrets, oversized files, dangerous patterns) plus the project's own gates (format,
+> lint, types, tests, dependency audit). `analyze` runs six
 > presence checks (exposed secrets, `.gitignore` completeness, presence of tests, presence of a
 > README, a basic text scan of database conventions, and oversized files). Everything else on this
 > page — decision records, docs generated from the code, the API usage guide, the honesty of a

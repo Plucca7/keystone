@@ -1,7 +1,7 @@
 // The answers Keystone collects before creating a project.
 // Only "type 3" decisions (the user's taste) live here; what the skill deduces
 // (need for a database, security level, visual foundation) is derived later,
-// never asked. See docs/wizard-inicial.md.
+// never asked. See docs/setup-wizard.md.
 
 /** What kind of project is being created. Drives deduced choices downstream. */
 export type ProjectType = 'site' | 'system' | 'service' | 'mobile'

@@ -1,7 +1,7 @@
 // The wizard talks to a Prompter, not to the terminal directly.
 // Why: this keeps the question flow testable (a scripted prompter feeds answers
 // in tests, with no flaky piping), and lets a richer UI — cards inside an AI
-// assistant — plug in later without touching the wizard. See docs/wizard-inicial.md.
+// assistant — plug in later without touching the wizard. See docs/setup-wizard.md.
 
 import * as readline from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'

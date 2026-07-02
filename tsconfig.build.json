@@ -1,0 +1,21 @@
+{
+  // Publish build: the base config type-checks with noEmit; this one emits the runnable
+  // JavaScript that ships in the package. Node refuses to strip types from files under
+  // node_modules (ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING), so an installed package
+  // must carry compiled .js — the source-only model only works from the repo.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "src",
+    "outDir": "dist",
+    // The sources import with explicit .ts extensions. allowImportingTsExtensions needs
+    // noEmit, so it is turned off here; rewriteRelativeImportExtensions instead rewrites
+    // each ./x.ts import to ./x.js in the emitted output (TypeScript 5.7+).
+    "allowImportingTsExtensions": false,
+    "rewriteRelativeImportExtensions": true,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["tests", "templates", "node_modules", "dist"]
+}

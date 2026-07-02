@@ -26,9 +26,9 @@ but stays welcoming to those just starting out.
 **Start a project whose folder already carries a high-standard foundation — without assembling it by
 hand.** The standard lives inside the mould (the `web` and `api` templates): the quality configs,
 git hooks, CI workflow files, example tests and project structure are all part of the template. The
-`new` command copies that mould into place, so a fresh project is born with those files present. It
-does not run any of them — installing dependencies, running the tests, and switching on the git
-hooks and CI are steps the developer takes afterward.
+`new` command copies that mould into place, so a fresh project is born with those files present —
+then starts version control, installs dependencies, and switches on the git hooks. Running the
+tests and wiring up CI remain steps the developer takes afterward.
 
 ## How far it reaches
 
@@ -39,12 +39,14 @@ Implemented today:
 
 - **`new`** — copies the standard mould into a new folder and adjusts the few variable points: it
   renames the package, records how the project was created (`keystone.json`), and deduces two
-  choices from what the user already said (whether it needs a database, and its security level).
-  That is all it does. It does **not** create a git repository, commit or push, install
-  dependencies, provision or connect a database, run migrations, run the tests, run CI, or activate
-  the git hooks — those files ship inside the mould and run only once the developer installs and
-  uses git.
-- **`check`** — scans a project for exposed secrets and oversized files (zero AI cost).
+  choices from what the user already said (whether it needs a database, and its security level). It
+  then starts version control with a first commit, installs dependencies, and — through that
+  install — activates the git hooks (both steps skippable with `--no-git` / `--no-install`). It does
+  **not** create a _remote_ repository, push, provision or connect a database, or run migrations —
+  those stay the developer's to set up.
+- **`check`** — the fast text guards (exposed secrets, oversized files, dangerous patterns) plus the
+  project's own gates: its formatter, linter, type-checker, tests, and a dependency audit, run and
+  blocking on failure (`--no-gates` runs only the guards). Zero AI cost.
 - **`analyze`** — read-only analysis of an existing project: six presence checks that report which
   parts of the standard are and aren't there.
 

@@ -5,8 +5,9 @@
 > gap, the plan, and the cost/risk. See [pillars.md](pillars.md).
 >
 > **Status — what is built today:** only three commands exist: `new` (scaffolds a project), `check`
-> (two deterministic guards over files: the exposed-secret scan and the oversized-file check), and
-> `analyze` (this command). `analyze` today runs **exactly six presence/convention checks** — exposed
+> (three text guards over files — exposed secrets, oversized files, dangerous patterns — plus the
+> project's own gates: format, lint, types, tests, and a dependency audit), and `analyze` (this
+> command). `analyze` today runs **exactly six presence/convention checks** — exposed
 > secrets, a `.gitignore` rule for `.env`, presence of tests, presence of a README, a plain-text
 > database-convention check over `.sql` files, and oversized files — and produces a report. It only
 > reads and reports — it changes nothing. Acting on anything it recommends is a separate decision you

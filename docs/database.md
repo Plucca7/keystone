@@ -5,8 +5,10 @@
 > runs today.
 >
 > **Build status:** Only three commands exist today — `new` (scaffolds a project), `check`, and
-> `analyze`. `check` runs exactly two automated checks: an exposed-secret scan and an oversized-file
-> check. `analyze` is read-only and runs exactly six presence checks (exposed secrets, .gitignore
+> `analyze`. `check` runs three text guards (exposed secrets, oversized files, dangerous patterns)
+> plus the project's own gates (format, lint, types, tests, dependency audit); the database-specific
+> checks named on this page are still the target, not built. `analyze` is read-only and runs exactly
+> six presence checks (exposed secrets, .gitignore
 > completeness, presence of tests, presence of a README, basic text checks over `.sql` files, and
 > oversized files). Everything else on this page — including the owner-filter query check — is the
 > **target**, not yet built. Planned items are marked "planned" below and never carry the 🔧 symbol.

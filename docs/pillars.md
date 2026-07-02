@@ -146,8 +146,8 @@ dangerous-pattern scan in `check` 🔧 (injection/XSS vectors). Everything else 
 - **Closed decisions (design intent):**
   - Essential at birth; reinforced as the project grows.
   - The aim is that automatic checks block on the dev machine **and** again before going live (a
-    double net) — **planned**; today no before-going-live/CI gate exists, only the local `check`
-    with its two guards.
+    double net) — the automatic before-going-live/CI gate is **planned**; today the local `check`
+    runs the text guards and the project's own gates, on demand.
   - Abuse protection (edge) on by default — **planned**, not built.
   - AI-driven vulnerability hunting — a **planned** integration point, off by default, zero cost
     until someone turns it on. Not built.
@@ -238,8 +238,8 @@ target._
 - The _"ships itself"_ of _Ship it_ is meant to be safe only because of the _Code quality_ and
   _Tests_ gates.
 - The **same automatic-check mechanism is meant to recur across three pillars** — Code quality,
-  Tests, and Security — as the deterministic teeth of Layer A. Today that mechanism exists only as
-  the secret scan and the size check.
+  Tests, and Security — as the deterministic teeth of Layer A. Today that mechanism runs as the text
+  guards (secret, size, dangerous) plus the project's own gates (format, lint, types, tests, audit).
 - **Layer A's deterministic checks and Layer B's guardrails are the same idea at two levels:** A
   guards the code, B guards the agent that writes it. Both ship today — A's secret/size/dangerous
   scans, B's block-secret and block-protected-branch hooks.

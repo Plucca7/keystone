@@ -5,17 +5,15 @@
 > and the many pieces that are still the standard the scaffold aims for, not delivered behavior.
 > See [pillars.md](pillars.md) and [setup-wizard.md](setup-wizard.md).
 >
-> **Status:** the `create a new project` command is implemented, but narrowly. What it actually
-> does is: copy the official mould (web or api) into a new folder, rename the package, write a
-> `keystone.json` record, and deduce two settings (whether a database is needed, and the security
-> level) from the answers. **That is the whole command.** The mould it copies already _contains_ the
-> quality setup — the delivery-pipeline files, the git hooks, the lint/format/type configs, and
-> example end-to-end tests — so a new project is **born with those files present**, but the command
-> **does not run, install, or switch on any of them**. Those only take effect once the developer
-> installs dependencies and starts using git. Everything else this document references — creating a
-> repository, the first commit and push, provisioning and connecting a database, the stored service
-> key, migrations, and the guided design step — is **planned, not built**. Each is flagged inline
-> below.
+> **Status:** the `create a new project` command copies the official mould (web or api) into a new
+> folder, lays the agent harness on top, renames the package, writes a `keystone.json` record, and
+> deduces two settings (whether a database is needed, and the security level) from the answers. It
+> then takes the project the last mile: it **starts version control with a first commit, installs
+> dependencies, and — through that install — switches on the git hooks** (`--no-git` / `--no-install`
+> skip these). It still **does not** create a remote repository, push, provision or connect a
+> database, store a service key, run migrations, or run the guided design step — those remain
+> **planned** and are flagged inline below. Creating a remote repo or a hosting account stays the
+> owner's, by design.
 
 ---
 
@@ -51,18 +49,24 @@ Questions, one at a time:
 
 ## Step 4 — Creation (what the command actually does)
 
-The command does exactly four things:
+The command:
 
 1. **Copies the project folder** into the parent folder — a byte-for-byte copy of the official
    mould (web or api), skipping installed dependencies.
 2. **Renames the package** — changes only the `name` in `package.json` to the project name.
 3. **Writes a record** (`keystone.json`) noting the mould used, the answers, and the deductions.
 4. **Deduces two settings** (database needed?, security level) and stores them in that record.
+5. **Starts version control** — `git init`, stages the files, and makes a first conventional commit.
+   The commit happens _before_ install, so the baseline is never blocked by hooks that install has
+   not switched on yet. Skipped by `--no-git`.
+6. **Installs dependencies** with the mould's package manager (detected from its lockfile), which
+   runs the `prepare` script and thereby **switches on the git hooks**. Skipped by `--no-install`.
 
-Nothing else runs. In particular:
+Beyond that, in particular:
 
-- **Repository.** _Planned._ The command does **not** create a repository, initialize git, make a
-  commit, or push anywhere. The "where to version" answer is only recorded.
+- **Remote repository.** _Planned / by design left to the owner._ The command initializes git
+  locally and commits, but does **not** create a remote repository or push anywhere — and it never
+  creates a third-party account. The "where to version" answer is recorded for that later step.
 - **Three version levels** (official / staging / working), the review gate, and the protection
   rules on the official branch. _Planned._ These are the standard the scaffold aims for — not built.
 - **Standard organization** — the task board and session hand-off (close a session / resume it, plus
@@ -81,17 +85,19 @@ Nothing else runs. In particular:
 - **Automatic checks** (quality, tests, security). The mould **contains** them: the git hooks
   (a pre-commit that runs the staged-file linter, a commit-msg check, and a pre-push that runs the
   type-check and the tests), the lint / format / type configs, and example end-to-end tests are all
-  present in the copied folder. But the command does **not** install dependencies or activate the
-  hooks. They start working only after the developer installs dependencies and uses git — that is
-  when the checks run on the machine. _Planned:_ re-running the same checks as a blocking gate at
-  publish time is the standard the scaffold aims for — not built.
+  present in the copied folder. The install step (step 6) now **activates the git hooks** via the
+  `prepare` script, so they guard every commit from the first one after creation. Separately, the
+  `check` command runs those same tools on demand as blocking project gates (see
+  [code-quality.md](code-quality.md), [tests.md](tests.md), [security.md](security.md)). _Planned:_
+  wiring that gate to run automatically at publish time remains the standard the scaffold aims for.
 
 ## Step 5 — Final confirmation
 
 A summary of what was created: the local folder (a renamed copy of the mould), the recorded
-answers and deductions, and whether a database was inferred as needed — plus the developer's next
-steps (install dependencies, initialize git, and so on). No repository, database, or deploy exists
-yet; those are the developer's to set up.
+answers and deductions, whether a database was inferred as needed, and the outcome of each
+post-create step (version control, install) — reported honestly, so a step that failed is never
+silent. No **remote** repository, database, or deploy exists yet; those are the developer's to set
+up.
 
 ---
 

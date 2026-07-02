@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { deduce, createProject } from '../src/create.ts'
+import { deduce, createProject, copyFilterFor } from '../src/create.ts'
 import type { KeystoneAnswers, ProjectType } from '../src/types.ts'
 
 function answers(type: ProjectType, sensitive: boolean, parentDir = '.'): KeystoneAnswers {
@@ -74,4 +74,17 @@ test('createProject: a site is born from the web mould', async () => {
 
 test('createProject: mobile has no mould yet', async () => {
   await assert.rejects(() => createProject(answers('mobile', false, '.')), /No mould yet/)
+})
+
+test('copyFilterFor: keeps mould files even when the mould lives under node_modules', () => {
+  // The regression that broke installed use: an absolute-path check saw "node_modules"
+  // in the install path and copied nothing. The filter must judge by the path relative
+  // to the mould root, so a package installed under node_modules still copies its files.
+  const root = '/app/node_modules/keystone/templates/api'
+  const keep = copyFilterFor(root)
+  assert.equal(keep(root), true, 'the mould root itself is copyable')
+  assert.equal(keep(`${root}/package.json`), true, 'a mould file is copyable')
+  assert.equal(keep(`${root}/src/index.ts`), true, 'a nested mould file is copyable')
+  // A real nested dependencies folder inside the mould is still skipped.
+  assert.equal(keep(`${root}/node_modules/left-pad/index.js`), false, 'nested deps are skipped')
 })

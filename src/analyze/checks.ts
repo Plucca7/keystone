@@ -1,7 +1,7 @@
 // The deterministic part of analyzing an existing project: measure it against
 // the pillars with no AI, zero cost. The deeper judgement (severity nuance, the
 // full upgrade plan) is left to the assistant the dev already uses.
-// The command only reads — it never changes the project. See docs/analyze-project.md.
+// The command only reads — it never changes the project. See docs/analyze.md.
 
 import { readFile } from 'node:fs/promises'
 import { basename, relative, sep } from 'node:path'

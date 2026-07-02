@@ -4,13 +4,15 @@
 > Essential level. 🔧 = backed by an automatic check that runs today.
 >
 > **Status:** only three commands are built — `new` (scaffold a project), `check`, and `analyze`.
-> `check` runs exactly two deterministic guards over files: an exposed-secret scan and an
-> oversized-file check. `analyze` is read-only and runs six presence checks — exposed secrets,
+> `check` runs three text guards over files (exposed secrets, oversized files, dangerous patterns)
+> plus the project's own gates, including running its `test` script and blocking on failure.
+> `analyze` is read-only and runs six presence checks — exposed secrets,
 > `.gitignore` completeness, presence of tests, presence of a README, basic database-convention text
-> checks, and oversized files. Nothing else is built. In particular, **no command runs the test
-> suite**: `analyze` only checks whether test files _exist_, and there is no runner and no
-> publish-time gate. Everything below about running the suite, blocking on failures, or re-running
-> before publishing is the **target** this pillar aims for, not a delivered pipeline.
+> checks, and oversized files. **`check` runs the project's own `test` script as a blocking gate**
+> (a failing suite fails `check`); `analyze`, separately, only checks whether test files _exist_.
+> What is **not** built is the automatic **publish-time** gate — re-running the suite before a project
+> ships. Everything below about that automatic pre-publish re-run is the **target** this pillar aims
+> for, not a delivered pipeline.
 
 ## Principle
 
@@ -31,9 +33,11 @@ at zero cost.
 ## 3. If it fails, it doesn't ship
 
 - A failing test should **block shipping**, automatically. The net has teeth.
-- **Planned:** an automatic check that runs the suite on the machine and re-runs it before
-  publishing. Today no command runs the suite — `analyze` only reports whether test files exist. The
-  runner and the publish-time gate are the **target**, not built yet.
+- 🔧 The `check` command runs the project's own `test` script as a blocking gate: a failing suite
+  makes `check` fail. (`analyze` still only reports whether test files exist — a separate, read-only
+  presence check.)
+- **Planned:** re-running that gate automatically before publishing (a publish-time gate) is the
+  target, not built yet.
 
 ## 4. Focus on what matters, not on a number
 
@@ -48,5 +52,5 @@ at zero cost.
 ## References
 
 Established testing guides. The **planned** automatic suite runner would grow the net with every
-delivery. Today the only test-related check that runs is `analyze`'s presence check — it reports
-whether the project has any test files, and does **not** run them.
+delivery. Today `check` runs the project's `test` script as a blocking gate; `analyze`'s presence
+check, separately, only reports whether the project has any test files.

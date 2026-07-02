@@ -4,11 +4,17 @@
 
 _Keystone — the stone that holds the whole arch together. A project's foundation, in place from day one._
 
-**Status: in development.** Three commands work today: `new` scaffolds a project (and lays the
-**Layer B agent harness** into it), `check` runs the automated checks over a project (three
-deterministic guards: exposed secrets, oversized files, dangerous patterns), and `analyze` measures
-an existing project against the standard (read-only). Most of Layer A's pillars are still the target;
-this document says which.
+**Status: in development.** Three commands work today:
+
+- **`new`** scaffolds a project, lays the **Layer B agent harness** into it, then takes it the last
+  mile — starts version control with a first commit, installs dependencies, and (through that
+  install) switches on the git hooks. `--no-git` / `--no-install` skip those steps.
+- **`check`** runs three deterministic text guards (exposed secrets, oversized files, dangerous
+  patterns) **plus the project's own gates** — its formatter, linter, type-checker, tests, and a
+  dependency-vulnerability audit — blocking when any fails. `--no-gates` runs only the fast guards.
+- **`analyze`** measures an existing project against the standard (read-only).
+
+Most of Layer A's pillars are still the target; this document says which.
 
 ## What it is
 
@@ -43,26 +49,31 @@ _building_ the code, not to _guaranteeing_ its quality.
 
 ## Requirements
 
-- **Node.js 24+** — it runs the TypeScript sources directly. No build step, no dependencies.
+- **Node.js 24+**, and no runtime dependencies either way. From the repo, Keystone runs its
+  TypeScript sources directly, with no build. Installed as a package, it runs compiled JavaScript:
+  Node refuses to run TypeScript from under `node_modules`, so the published package ships a built
+  `dist/` (produced by `npm run build`, which `prepack` runs automatically before packing).
 
 ## Usage
 
+Installed as a package:
+
 ```bash
-# create a new project (asks a few questions)
-node src/index.ts new my-app
-
-# run the automated checks over a project (exposed secrets, oversized files)
-node src/index.ts check .
-
-# measure an existing project against the standard (read-only)
-node src/index.ts analyze .
+keystone new my-app     # create a new project (asks a few questions)
+keystone check .        # text guards + the project's own gates (block on failure)
+keystone analyze .      # measure an existing project against the standard (read-only)
 ```
 
-Once published, these become `keystone new`, `keystone check`, `keystone analyze`.
+From the repo (no install, no build), swap `keystone` for `node src/index.ts`:
+
+```bash
+node src/index.ts new my-app
+```
 
 ## Development
 
 ```bash
+npm run build                 # compile src/ → dist/ (what the package ships)
 node --test tests/*.test.ts   # run the test suite
 node src/index.ts check src   # Keystone runs its own checks and passes
 ```

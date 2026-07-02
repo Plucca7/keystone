@@ -4,14 +4,15 @@
 > Essential level. 🔧 = backed by an automatic check that runs today.
 
 > **Status — what is built today:** only three commands exist. `new` scaffolds a new project.
-> `check` runs exactly two deterministic checks over files: an exposed-secret scan and an
-> oversized-file check — nothing else. `analyze` is read-only (reports only) and runs exactly six
+> `check` runs three text guards over files (exposed secrets, oversized files, dangerous patterns)
+> plus the project's own gates (format, lint, types, tests, dependency audit). `analyze` is
+> read-only (reports only) and runs exactly six
 > presence checks: exposed secrets, `.gitignore` completeness, presence of tests, presence of a
 > README, basic database-convention text checks, and oversized files. Everything else in this
 > pillar — including the structure-verification and accessibility checks below — is the **standard
 > the scaffold aims for**, not behavior already delivered. The 🔧 symbol marks only what runs today
-> (the secret scan and the size check in `check`, plus the six `analyze` checks); treat every
-> non-🔧 point as the target, not as something implemented.
+> (in `check`: the text guards and the project's own gates, plus the six `analyze` checks); treat
+> every non-🔧 point as the target, not as something implemented.
 
 ## Principle
 

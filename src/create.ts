@@ -1,10 +1,10 @@
 // Creating a project: copy the real mould (web or api) into place, then adjust
 // the few variable points (the name). No more hand-made scaffold — the project
 // is born as the actual template, byte-for-byte, only renamed.
-// See docs/plano-construcao.md and docs/fluxo-skill.md.
+// See docs/build-plan.md and docs/commands.md.
 
 import { cp, readFile, writeFile } from 'node:fs/promises'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { KeystoneAnswers, ProjectType } from './types.ts'
 
@@ -31,7 +31,7 @@ export interface DeducedChoices {
 /**
  * Decide what the skill can figure out from what the user already said —
  * never asked. Recorded in keystone.json so the choice is visible.
- * See docs/wizard-inicial.md ("type 2" decisions) and docs/banco-dados.md.
+ * See docs/setup-wizard.md ("type 2" decisions) and docs/database.md.
  */
 export function deduce(answers: KeystoneAnswers): DeducedChoices {
   const { type, sensitive } = answers.product
@@ -49,10 +49,18 @@ export interface CreateResult {
   deduced: DeducedChoices
 }
 
-/** True when this path segment is build noise that must never be copied. */
-function isCopyableSegment(source: string): boolean {
-  const segments = source.split(/[\\/]/)
-  return !segments.includes('node_modules')
+/**
+ * Build a copy filter that skips build noise (node_modules) INSIDE a mould, judged by
+ * the path relative to the mould root — never the absolute path. This matters when
+ * Keystone itself is installed: the mould then lives under `.../node_modules/keystone/
+ * templates/...`, so an absolute-path check would see "node_modules" in every path and
+ * copy nothing. Relative to the mould root, only a real nested node_modules is skipped.
+ */
+export function copyFilterFor(sourceRoot: string): (source: string) => boolean {
+  return (source: string) => {
+    const rel = relative(sourceRoot, source)
+    return !rel.split(/[\\/]/).includes('node_modules')
+  }
 }
 
 /** Create the project by copying the real mould and renaming it. */
@@ -68,13 +76,15 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
   const projectDir = resolve(answers.setup.parentDir, answers.product.name)
   const source = join(TEMPLATES_DIR, mould)
 
-  // Copy the actual mould, skipping installed dependencies.
-  await cp(source, projectDir, { recursive: true, filter: isCopyableSegment })
+  // Copy the actual mould, skipping installed dependencies. The filter is anchored to
+  // each source root so it works whether Keystone runs from the repo or from an install
+  // under node_modules.
+  await cp(source, projectDir, { recursive: true, filter: copyFilterFor(source) })
 
   // Layer B — lay the agent harness on top of the mould, so every project is born with
   // its reviewers, guardrails, spec ritual, and layered context. Copied after the mould
   // (never overwrites a mould file: the harness only adds .claude/, specs/, and docs/).
-  await cp(HARNESS_DIR, projectDir, { recursive: true, filter: isCopyableSegment })
+  await cp(HARNESS_DIR, projectDir, { recursive: true, filter: copyFilterFor(HARNESS_DIR) })
 
   // Change only the name, by text substitution, so the rest of the manifest
   // keeps the mould's exact formatting (no JSON reflow).

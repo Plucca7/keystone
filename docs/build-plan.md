@@ -5,8 +5,9 @@
 > finished product behaves for its users. See [pillars.md](pillars.md).
 >
 > **Status:** only three commands are built today — `new` (scaffolds a new project), `check`, and
-> `analyze` (read-only). `check` runs exactly two guards: the exposed-secret scan and the
-> oversized-file check. `analyze` runs exactly six read-only checks: exposed secrets, `.gitignore`
+> `analyze` (read-only). `check` runs three text guards (exposed secrets,
+> oversized files, dangerous patterns) plus the project's own gates (format, lint, types, tests, and a
+> dependency audit), blocking on failure. `analyze` runs exactly six read-only checks: exposed secrets, `.gitignore`
 > completeness, presence of tests, presence of a README, basic database-convention text checks, and
 > oversized files. Everything else named below — the rest of the automatic checks, the full template,
 > the database/workflow/ship pillars, the publish-time gate, and the final proof — is a roadmap

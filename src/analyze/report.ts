@@ -1,6 +1,6 @@
 // Turns the check results into the three-part report the user reads:
 // 1) where the project stands, 2) a prioritized plan, 3) cost and risk per item.
-// See docs/analyze-project.md.
+// See docs/analyze.md.
 
 import type { CheckResult, Severity } from './checks.ts'
 

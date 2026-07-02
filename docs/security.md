@@ -5,14 +5,15 @@
 > project is born with); the reinforced level kicks in when the project is sensitive.
 >
 > **Status — what is actually built today:** only three commands exist — `new` (scaffolds a
-> project), `check` (runs exactly two deterministic guards over files: an exposed-secret scan and an
-> oversized-file check, and a dangerous-pattern scan), and `analyze` (read-only, reports only: six
-> presence checks — exposed secrets, .gitignore completeness, presence of tests, presence of a README,
-> basic database-convention text checks, oversized files). Everything else in this document —
-> dependency-vulnerability scanning, owner-filter query checks, edge enforcement, a pre-publish gate,
-> and the AI vulnerability hunt — is the **target**, not built. The security-relevant checks that run
-> today are the exposed-secret scan and the dangerous-pattern scan (both marked 🔧 below). Grounded in
-> the references chosen for relevance to typical web-app projects (listed at the end).
+> project), `check` (three text guards over files — exposed secrets, oversized files, dangerous
+> patterns — plus the project's own gates: format, lint, types, tests, and a **dependency audit**),
+> and `analyze` (read-only, reports only: six presence checks — exposed secrets, .gitignore
+> completeness, presence of tests, presence of a README, basic database-convention text checks,
+> oversized files). Everything else in this document — owner-filter query checks, edge enforcement, a
+> pre-publish gate, and the AI vulnerability hunt — is the **target**, not built. The security-relevant
+> checks that run today are the exposed-secret scan, the dangerous-pattern scan, and the dependency
+> audit (all marked 🔧 below). Grounded in the references chosen for relevance to typical web-app
+> projects (listed at the end).
 
 ---
 
@@ -90,7 +91,9 @@ The single most important rule in any multi-tenant system.
 - The list of third-party components should be **checked**; it should warn when one has a **known
   vulnerability**.
 - Don't use an abandoned (unmaintained) component.
-- _Planned:_ an automatic check over the dependency list is the target, not built.
+- 🔧 The `check` command runs the package manager's own **dependency audit** as a blocking gate, so a
+  known-vulnerable dependency makes `check` fail. Deeper policy (flagging unmaintained components) is
+  the target, not built.
 
 ### 1.7 Errors leak no clues
 

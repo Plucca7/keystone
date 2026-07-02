@@ -5,6 +5,9 @@ import { join } from 'node:path'
 
 const IGNORED_DIRS = new Set(['node_modules', '.git', 'dist', 'docs'])
 const ALWAYS_IGNORED = new Set(['node_modules', '.git', 'dist'])
+// Generated lockfiles are machine output, not code to review — a linter/size guard has
+// nothing to say about them, and flagging one is a false positive. Skip them everywhere.
+const IGNORED_FILES = new Set(['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'])
 const SOURCE_EXTENSIONS = /\.(?:ts|tsx|js|jsx|json)$/
 
 /** Walk a directory and return source files worth guarding (env files included). */
@@ -13,6 +16,7 @@ export async function listSourceFiles(dir: string): Promise<string[]> {
   const files: string[] = []
   for (const entry of entries) {
     if (IGNORED_DIRS.has(entry.name)) continue
+    if (IGNORED_FILES.has(entry.name)) continue
     const full = join(dir, entry.name)
     if (entry.isDirectory()) {
       files.push(...(await listSourceFiles(full)))
@@ -29,6 +33,7 @@ export async function listAllFiles(dir: string): Promise<string[]> {
   const files: string[] = []
   for (const entry of entries) {
     if (ALWAYS_IGNORED.has(entry.name)) continue
+    if (IGNORED_FILES.has(entry.name)) continue
     const full = join(dir, entry.name)
     if (entry.isDirectory()) {
       files.push(...(await listAllFiles(full)))

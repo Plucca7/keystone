@@ -1,0 +1,28 @@
+name: PR issue link
+# Every pull request must reference an issue (one branch = one issue = one PR). This is the
+# server-side twin of the work-tracking rule: a PR with no "#<number>" anywhere in its title
+# or body fails here, so untracked work cannot merge. To make it BLOCK the merge (not just show
+# red), its check name ("Linked issue required") is listed in scripts/setup-branch-protection.sh.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  issue-link:
+    name: Linked issue required
+    runs-on: ubuntu-latest
+    steps:
+      # Read title/body from the environment, never interpolated into the script. A PR title or
+      # body is attacker-controllable (especially from a fork), so inlining ${{ ... }} into a
+      # run: block would be a shell-injection hole; as env vars the shell sees plain data, not code.
+      - name: Require an issue reference
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if printf '%s\n%s' "$PR_TITLE" "$PR_BODY" | grep -Eq '#[0-9]+'; then
+            echo "Linked issue reference found."
+          else
+            echo "::error::This pull request must reference an issue (e.g. 'Closes #123'). One branch = one issue = one PR." >&2
+            exit 1
+          fi

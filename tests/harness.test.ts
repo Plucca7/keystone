@@ -73,6 +73,42 @@ test('guardrail: a generated project pushes only through the full gate (both tem
   }
 })
 
+test('guardrail: generated projects ship the hard server-side rails (both templates)', async () => {
+  // A PR with no linked issue is failed by a CI workflow; CODEOWNERS mandates owner review on
+  // migrations; and setup-branch-protection.sh requires code-owner review plus the issue-link
+  // check. All ship in every project. Honest limit: GitHub enforces them once the owner runs the
+  // script — Keystone guarantees they are present with the right content, not that a live repo
+  // has them switched on.
+  for (const type of ['service', 'site'] as const) {
+    const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+    try {
+      const { projectDir } = await createProject(answers(type, parent))
+      assert.ok(
+        (await stat(join(projectDir, '.github/workflows/pr-issue-link.yml'))).isFile(),
+        `${type}: the PR-issue-link workflow ships`,
+      )
+      const codeowners = await readFile(join(projectDir, '.github/CODEOWNERS'), 'utf8')
+      assert.match(codeowners, /db\/migrations\//, `${type}: CODEOWNERS covers migrations`)
+      const protection = await readFile(
+        join(projectDir, 'scripts/setup-branch-protection.sh'),
+        'utf8',
+      )
+      assert.match(
+        protection,
+        /require_code_owner_reviews/,
+        `${type}: branch protection requires code-owner review`,
+      )
+      assert.match(
+        protection,
+        /Linked issue required/,
+        `${type}: the issue-link check is a required status check`,
+      )
+    } finally {
+      await rm(parent, { recursive: true, force: true })
+    }
+  }
+})
+
 // Run a guardrail hook exactly as Claude Code would: JSON tool call on stdin, read the
 // exit code (2 = blocked, 0 = allowed).
 const SECRET_HOOK = resolve(

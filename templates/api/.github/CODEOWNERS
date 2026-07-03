@@ -1,3 +1,10 @@
+# Code owners: a change under a listed path needs the owner's review before it can merge.
+# Enforced server-side by required_pull_request_reviews.require_code_owner_reviews in
+# scripts/setup-branch-protection.sh — without that flag this file is only advisory.
 * @your-team
 .github/ @your-team
+# Security-critical paths get mandatory owner review, called out explicitly so they survive
+# even if the catch-all above is ever narrowed: database migrations (schema + RLS policies)
+# and the shared middleware (auth, rate limiting, request validation).
 db/migrations/ @your-team
+src/shared/middleware/ @your-team

@@ -29,6 +29,14 @@ test('deduce: sensitive raises security to reinforced', () => {
   assert.equal(deduce(answers('site', true)).securityLevel, 'reinforced')
 })
 
+test('deduce: a fresh non-sensitive project is born a new-product', () => {
+  assert.equal(deduce(answers('site', false)).birthLevel, 'new-product')
+})
+
+test('deduce: a sensitive project is born a critical-system', () => {
+  assert.equal(deduce(answers('service', true)).birthLevel, 'critical-system')
+})
+
 test('createProject: a service is born from the real api template, renamed', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
   try {
@@ -57,6 +65,9 @@ test('createProject: a service is born from the real api template, renamed', asy
     const record = JSON.parse(await readFile(join(projectDir, 'keystone.json'), 'utf8'))
     assert.equal(record.template, 'api')
     assert.equal(record.deduced.securityLevel, 'reinforced')
+    // The birth level is deduced from the sensitive flag and recorded in keystone.json:
+    // a sensitive service is born a critical-system (see src/levels.ts).
+    assert.equal(record.deduced.birthLevel, 'critical-system')
 
     // the recorded keystoneVersion is read from the tool's own package.json, not hardcoded —
     // so it stays in sync with the real version on every bump.

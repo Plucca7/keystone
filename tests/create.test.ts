@@ -114,15 +114,23 @@ test('createProject: single-tenant swaps in the simple schema and drops the isol
     assert.doesNotMatch(schema, /create policy/i, 'single-tenant schema has no RLS policy')
     assert.match(schema, /create table if not exists items/i, 'still ships the items example table')
 
-    // Nothing to isolate, so the tenant-isolation test is gone — and its now-empty
-    // integration folder is cleaned up rather than left dangling.
-    await assert.rejects(
-      stat(join(projectDir, 'tests/integration/tenant-isolation.test.ts')),
-      'isolation test dropped',
-    )
-    await assert.rejects(
-      stat(join(projectDir, 'tests/integration')),
-      'empty integration folder removed',
+    // Nothing to isolate, so the multi-tenant-only integration files are gone: the isolation,
+    // super-admin, and audit tests, plus their shared migration harness.
+    for (const gone of [
+      'tenant-isolation.test.ts',
+      'super-admin.test.ts',
+      'audit-log.test.ts',
+      '_migrations-harness.ts',
+    ]) {
+      await assert.rejects(
+        stat(join(projectDir, 'tests/integration', gone)),
+        `${gone} dropped for single-tenant`,
+      )
+    }
+    // But the universal transaction test stays — atomic transactions apply to every project.
+    assert.ok(
+      (await stat(join(projectDir, 'tests/integration/transaction.test.ts'))).isFile(),
+      'transaction test kept for single-tenant',
     )
     // The variant source is a build input and must never ship in the project.
     await assert.rejects(

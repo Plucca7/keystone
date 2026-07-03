@@ -191,6 +191,16 @@ const OPTIONAL_DB_FEATURES: OptionalDbFeature[] = [
   },
 ]
 
+// Integration files that only make sense with multiple tenants (the isolation/super-admin/audit
+// tests and the shared migration harness they use). A single-tenant project drops all of them; the
+// transaction test is universal (it stands up its own tiny database) and is always kept.
+const MULTI_TENANT_ONLY_FILES = [
+  'tenant-isolation.test.ts',
+  'super-admin.test.ts',
+  'audit-log.test.ts',
+  '_migrations-harness.ts',
+]
+
 /**
  * Tailor the freshly copied project's database to the answers — "ask, don't impose". The template
  * ships the fullest shape (multi-tenant + super-admin + audit log); this removes whatever the user
@@ -224,11 +234,14 @@ async function applyDatabaseChoices(
   }
 
   if (product.multiTenant === false) {
-    // Single-tenant: the simple schema and NONE of the multi-tenant machinery. Drop the whole
-    // integration-test folder (isolation, super-admin, audit, and their shared harness — none of
-    // it applies without tenants) and the optional-feature migrations.
+    // Single-tenant: the simple schema and none of the multi-tenant machinery. Drop the
+    // multi-tenant-only integration files (isolation, super-admin, audit, and their shared
+    // harness) and the optional-feature migrations — but KEEP the universal transaction test,
+    // which stands up its own database and applies to every project.
     await writeFile(join(projectDir, ACTIVE_SCHEMA), singleVariant)
-    await rm(integrationDir, { recursive: true, force: true })
+    for (const file of MULTI_TENANT_ONLY_FILES) {
+      await rm(join(integrationDir, file), { force: true })
+    }
     for (const feature of OPTIONAL_DB_FEATURES) {
       await rm(join(projectDir, feature.migration), { force: true })
     }

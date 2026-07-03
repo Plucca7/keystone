@@ -3,7 +3,7 @@
 // project is the actual template, only renamed and with its stripped dotfiles restored.
 // See docs/build-plan.md and docs/commands.md.
 
-import { cp, readdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { cp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { KeystoneAnswers, ProjectType } from './types.ts'
@@ -157,6 +157,58 @@ async function assertEmptyDestination(projectDir: string): Promise<void> {
   }
 }
 
+// Where the tenancy variant and the tenant-isolation test live inside each template. The
+// multi-tenant schema is the template's active migration; the single-tenant variant sits
+// beside it as a build input (db/single-tenant.schema.sql) that never ships to the project.
+const ACTIVE_SCHEMA = join('db', 'migrations', '0001_initial_schema.sql')
+const SINGLE_TENANT_VARIANT = join('db', 'single-tenant.schema.sql')
+const ISOLATION_TEST_BY_TEMPLATE: Record<'web' | 'api', string> = {
+  web: join('src', '__tests__', 'integration', 'tenant-isolation.test.ts'),
+  api: join('tests', 'integration', 'tenant-isolation.test.ts'),
+}
+
+/**
+ * Apply the multi-tenant choice to the freshly copied project. "Ask, don't impose": the
+ * template ships multi-tenant (tenant_id + row-level security), and when the user explicitly
+ * chose single-tenant we swap in the simpler single-owner schema and drop the tenant-isolation
+ * test (there is nothing to isolate). Either way the variant SOURCE file is removed — it is a
+ * Keystone build input, not part of the generated project. A template without the variant
+ * (no database) is a no-op.
+ */
+async function applyTenancyChoice(
+  projectDir: string,
+  template: 'web' | 'api',
+  multiTenant: boolean | undefined,
+): Promise<void> {
+  const variantPath = join(projectDir, SINGLE_TENANT_VARIANT)
+  let variant: string
+  try {
+    variant = await readFile(variantPath, 'utf8')
+  } catch (error) {
+    // No variant in this template (e.g. a future database-less template) — nothing to do.
+    if ((error as { code?: string }).code === 'ENOENT') return
+    throw error
+  }
+
+  // Only an EXPLICIT "no" switches to single-tenant. undefined (a plain site, never asked)
+  // keeps the template's default so behavior for those types is unchanged.
+  if (multiTenant === false) {
+    await writeFile(join(projectDir, ACTIVE_SCHEMA), variant)
+    const isolationTest = join(projectDir, ISOLATION_TEST_BY_TEMPLATE[template])
+    await rm(isolationTest, { force: true })
+    // Drop the integration folder too if the isolation test was its only occupant — a
+    // single-tenant project should have no empty leftover directory.
+    const testDir = dirname(isolationTest)
+    try {
+      if ((await readdir(testDir)).length === 0) await rm(testDir, { recursive: true, force: true })
+    } catch {
+      // Folder already gone or unreadable — nothing to clean up.
+    }
+  }
+
+  await rm(variantPath, { force: true })
+}
+
 /** Rename shipped dotfiles (e.g. `gitignore` -> `.gitignore`) inside the new project. */
 async function restoreDotfiles(projectDir: string): Promise<void> {
   for (const [shipped, real] of Object.entries(DOTFILES_TO_RESTORE)) {
@@ -210,6 +262,10 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
   // be born with no .gitignore, and its first `git add -A` would swallow node_modules and
   // even commit a .env. (From the repo the file is already `gitignore` too, kept uniform.)
   await restoreDotfiles(projectDir)
+
+  // Apply the multi-tenant choice: swap to the single-owner database (and drop the isolation
+  // test) when the user explicitly chose single-tenant, and always remove the variant source.
+  await applyTenancyChoice(projectDir, template, answers.product.multiTenant)
 
   // Change only the name, by text substitution, so the rest of the manifest
   // keeps the template's exact formatting (no JSON reflow).

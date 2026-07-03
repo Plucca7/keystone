@@ -100,6 +100,65 @@ test('createProject: a site is born from the web template', async () => {
   }
 })
 
+test('createProject: single-tenant swaps in the simple schema and drops the isolation test', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+  try {
+    const a = answers('service', false, parent)
+    a.product.multiTenant = false
+    const { projectDir } = await createProject(a)
+
+    const schema = await readFile(join(projectDir, 'db/migrations/0001_initial_schema.sql'), 'utf8')
+    // Check the actual column definition and the RLS policy — not the loose word "tenant_id",
+    // which the variant's own comments use to explain how to add multi-tenancy later.
+    assert.doesNotMatch(schema, /tenant_id uuid/i, 'single-tenant schema has no tenant_id column')
+    assert.doesNotMatch(schema, /create policy/i, 'single-tenant schema has no RLS policy')
+    assert.match(schema, /create table if not exists items/i, 'still ships the items example table')
+
+    // Nothing to isolate, so the tenant-isolation test is gone — and its now-empty
+    // integration folder is cleaned up rather than left dangling.
+    await assert.rejects(
+      stat(join(projectDir, 'tests/integration/tenant-isolation.test.ts')),
+      'isolation test dropped',
+    )
+    await assert.rejects(
+      stat(join(projectDir, 'tests/integration')),
+      'empty integration folder removed',
+    )
+    // The variant source is a build input and must never ship in the project.
+    await assert.rejects(
+      stat(join(projectDir, 'db/single-tenant.schema.sql')),
+      'variant source removed',
+    )
+  } finally {
+    await rm(parent, { recursive: true, force: true })
+  }
+})
+
+test('createProject: multi-tenant keeps tenant isolation and its test', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+  try {
+    const a = answers('service', false, parent)
+    a.product.multiTenant = true
+    const { projectDir } = await createProject(a)
+
+    const schema = await readFile(join(projectDir, 'db/migrations/0001_initial_schema.sql'), 'utf8')
+    assert.match(schema, /tenant_id uuid/i, 'multi-tenant schema keeps the tenant_id column')
+    assert.match(schema, /create policy/i, 'multi-tenant schema keeps the RLS policy')
+
+    assert.ok(
+      (await stat(join(projectDir, 'tests/integration/tenant-isolation.test.ts'))).isFile(),
+      'isolation test kept for multi-tenant',
+    )
+    // Even for multi-tenant, the variant source itself never ships.
+    await assert.rejects(
+      stat(join(projectDir, 'db/single-tenant.schema.sql')),
+      'variant source removed',
+    )
+  } finally {
+    await rm(parent, { recursive: true, force: true })
+  }
+})
+
 test('createProject: mobile has no template yet', async () => {
   await assert.rejects(() => createProject(answers('mobile', false, '.')), /No template yet/)
 })

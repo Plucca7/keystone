@@ -40,7 +40,8 @@
 
 ## Round A — Product briefing (the minimal wizard)
 
-The essential minimum. Six questions; the fifth is optional and branches.
+The essential minimum. Six always-asked questions (the fifth branches into a deeper briefing), plus
+a seventh that appears only for database-backed types.
 
 ### 1. Project name · _free text_
 
@@ -69,6 +70,20 @@ The essential minimum. Six questions; the fifth is optional and branches.
 > project starts with whatever look the copied template already contains.
 
 ### 6. Handles sensitive data or money? · _yes · no_ → feeds the security and database inference
+
+### 7. Serves multiple separate clients? · _yes · no_ → only for database-backed types (system/service)
+
+Asked, not assumed — the "ask, don't impose" principle. A template must not presume every project is
+a multi-client SaaS, so the question decides the shape of the generated database:
+
+- **Yes (multi-tenant)** → the example database ships with tenant isolation: a `tenant_id` on every
+  table and a row-level-security policy keyed on it, plus the tenant-isolation test.
+- **No (single-tenant)** → the example database is the simpler single-owner shape: the same table
+  without `tenant_id`, without row-level security, and without the isolation test.
+
+Skipped entirely for a plain site (no database), where the question would be noise. This is the one
+piece the template acts on immediately at creation — the single-tenant variant is applied by the
+create command, not merely recorded.
 
 ---
 

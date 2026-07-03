@@ -25,6 +25,13 @@ export interface ProductBriefing {
   look: LookChoice
   /** Whether the project handles sensitive data or money — feeds the security level. */
   sensitive: boolean
+  /**
+   * Whether the project serves multiple separate clients, each seeing only their own data.
+   * Only asked for database-backed types (system/service); undefined for a plain site.
+   * When explicitly false, the generated project gets the single-tenant database (no tenant_id,
+   * no row-level security) and no tenant-isolation test — Keystone asks instead of assuming.
+   */
+  multiTenant?: boolean
 }
 
 /** Round B — the technical setup (where the project lives). */

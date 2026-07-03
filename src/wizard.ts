@@ -66,6 +66,22 @@ export async function runWizard(prompter: Prompter, presetName?: string): Promis
     ],
   )
 
+  // Multi-tenancy is asked, not assumed — and only for database-backed types (system/service);
+  // a plain site has no database, so the question would be noise. The answer decides whether the
+  // generated project gets tenant isolation (tenant_id + row-level security) or the simpler
+  // single-owner database. This is the "ask, don't impose" principle: the template must not
+  // presume every project is a multi-client SaaS.
+  let multiTenant: boolean | undefined
+  if (type === 'system' || type === 'service') {
+    multiTenant = await prompter.choice<boolean>(
+      'Does it serve multiple separate clients, each seeing only their own data?',
+      [
+        { value: true, label: 'Yes — isolate each client’s data (multi-tenant)' },
+        { value: false, label: 'No — one owner or internal use (single-tenant)' },
+      ],
+    )
+  }
+
   // Round B — technical setup
   const versionTarget = await prompter.choice<VersionTarget>('Where to version the code?', [
     { value: 'github', label: 'GitHub' },
@@ -83,7 +99,7 @@ export async function runWizard(prompter: Prompter, presetName?: string): Promis
   )
 
   return {
-    product: { name, type, language, screen, look, sensitive },
+    product: { name, type, language, screen, look, sensitive, multiTenant },
     setup: { versionTarget, isPrivate, parentDir },
   }
 }

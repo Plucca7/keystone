@@ -7,6 +7,7 @@ import { cp, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { KeystoneAnswers, ProjectType } from './types.ts'
+import { deduceBirthLevel, type WorkLevel } from './levels.ts'
 
 // Keystone's own installation root — one level up from this module (src/ in the repo, or
 // dist/ in the published package). Both the templates and the tool's package.json live here.
@@ -81,6 +82,12 @@ export function assertValidProjectName(name: string): void {
 export interface DeducedChoices {
   needsDatabase: boolean
   securityLevel: 'essential' | 'reinforced'
+  /**
+   * The project's birth level on the work-level scale — deduced, never asked. A new project is
+   * at least a `new-product`; a sensitive one is a `critical-system`. Recorded in keystone.json
+   * as the baseline the harness router starts from. See src/levels.ts and spec 001.
+   */
+  birthLevel: WorkLevel
 }
 
 /**
@@ -95,6 +102,7 @@ export function deduce(answers: KeystoneAnswers): DeducedChoices {
   return {
     needsDatabase,
     securityLevel: sensitive ? 'reinforced' : 'essential',
+    birthLevel: deduceBirthLevel(sensitive),
   }
 }
 

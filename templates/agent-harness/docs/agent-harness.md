@@ -41,8 +41,12 @@ The spec is the source of truth; code derives from it.
 - On completion, the delivered work is checked against that target point by point, and any
   gap is reported explicitly rather than glossed over.
 - When code and spec diverge, the spec wins.
+- Above every individual spec sits the **constitution** (`specs/constitution.md`): the project's
+  non-negotiables. When a spec and the constitution disagree, the constitution wins and the spec
+  changes -- a feature spec cannot quietly override a project-wide rule.
 
-The template lives in `specs/000-example-feature/spec.md`.
+The feature-spec template lives in `specs/000-example-feature/spec.md`; the constitution ships
+beside it as `specs/constitution.md`, adapted per project.
 
 Enforcement: a **rule** -- whether the delivered work truly meets the done-target is a
 judgment, made in the open against the spec, not something a script can certify.

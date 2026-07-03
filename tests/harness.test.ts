@@ -109,6 +109,30 @@ test('guardrail: generated projects ship the hard server-side rails (both templa
   }
 })
 
+test('spec OS: every generated project ships the project constitution with real content', async () => {
+  // The constitution is the top authority above individual specs. It must ship with real
+  // non-negotiables (not an empty stub) in every project, both templates.
+  for (const type of ['service', 'site'] as const) {
+    const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+    try {
+      const { projectDir } = await createProject(answers(type, parent))
+      const constitution = await readFile(join(projectDir, 'specs/constitution.md'), 'utf8')
+      // Real sections, not a placeholder.
+      for (const section of ['## Security', '## Data', '## Testing and the definition of done']) {
+        assert.ok(constitution.includes(section), `${type}: constitution has "${section}"`)
+      }
+      // It declares itself the authority above specs.
+      assert.match(
+        constitution,
+        /the constitution wins/i,
+        `${type}: constitution states it wins on conflict`,
+      )
+    } finally {
+      await rm(parent, { recursive: true, force: true })
+    }
+  }
+})
+
 // Run a guardrail hook exactly as Claude Code would: JSON tool call on stdin, read the
 // exit code (2 = blocked, 0 = allowed).
 const SECRET_HOOK = resolve(

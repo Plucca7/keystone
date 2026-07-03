@@ -15,5 +15,11 @@ case "$branch" in
     ;;
 esac
 
-# Rail 2: format/lint only the staged files (fast feedback, full checks run on pre-push and CI).
+# Rail 2: reject a commit that introduces an obvious hard-coded secret. Runs
+# before lint-staged so a leaked key is caught before anything else touches the
+# staged content. Convenience net (known key shapes, bypassable with
+# --no-verify); the unskippable rail is server-side secret scanning in CI.
+sh scripts/scan-secrets.sh
+
+# Rail 3: format/lint only the staged files (fast feedback, full checks run on pre-push and CI).
 npx lint-staged

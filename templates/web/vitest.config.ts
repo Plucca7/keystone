@@ -43,38 +43,42 @@ export default defineConfig({
       // without a separate Istanbul-instrumented build.
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
-      // Scoped to the app's actual logic surface: business rules, hooks,
-      // utilities, the query registry, route handlers, and any component
-      // that renders a decision (not just static markup). Framework
-      // bootstrap glue is excluded below, by name, with its own comment --
-      // never by broadly excluding a whole directory "to be safe".
-      include: [
-        'src/lib/**',
-        'src/features/**',
-        'src/hooks/**',
-        'src/utils/**',
-        'src/app/api/**',
-        'src/components/**',
-      ],
+      // The whole source tree is the coverage surface. A narrow allow-list
+      // of directories was the old shape, and it had a silent hole: a file
+      // in a brand-new folder (e.g. src/services/) fell outside every listed
+      // path and so counted for nothing -- 100% green while shipping
+      // untested code. Covering src/** closes that hole: any new file is in
+      // the denominator the moment it exists, and the only way to green is a
+      // real test. Genuinely untestable files are removed below, by name,
+      // each with its own reason -- never by excluding a whole directory
+      // "to be safe".
+      include: ['src/**'],
       exclude: [
         ...(configDefaults.coverage.exclude ?? []),
         'e2e/**',
+        // Test files themselves are not part of the measured surface.
+        'src/__tests__/**',
+        // Framework bootstrap / pure presentation: these render static markup
+        // or wire up providers, hold no branching logic worth a unit test,
+        // and are exercised end-to-end by Playwright instead. Listed one by
+        // one so a NEW file here is never silently swept in.
+        'src/app/layout.tsx',
+        'src/app/page.tsx',
+        'src/app/providers.tsx',
         // Type-only modules: erased at compile time, so v8's runtime
         // instrumentation has nothing to record and would report a
         // permanent false 0%, skewing the aggregate.
         'src/lib/types.ts',
         'src/types/**',
       ],
-      // 100%: every included file is exercised on every line, branch,
-      // function, and statement. The only files excluded from the
-      // denominator are genuinely untestable framework glue / pure
-      // presentation / bootstrap (src/app/layout.tsx, src/app/page.tsx,
-      // src/app/providers.tsx -- excluded from `include` above, not listed
-      // under `exclude`, because they sit outside the included directories
-      // entirely) and type-only modules. Everything that ships inside the
-      // included directories -- hooks, features, api routes, the in-memory
-      // store, query-keys/config/invalidation, utilities, and any component
-      // with logic -- is tested to 100%, no broad carve-outs.
+      // 100%: every file under src/** is exercised on every line, branch,
+      // function, and statement. The only files kept out of the denominator
+      // are the ones named in `exclude` above, each with its own reason
+      // (framework bootstrap / pure presentation, test files, and type-only
+      // modules). Everything else that ships -- hooks, features, api routes,
+      // the in-memory store, query-keys/config/invalidation, utilities, any
+      // component with logic, and any file added under a new folder like
+      // src/services/ -- is tested to 100%, no broad carve-outs.
       thresholds: {
         lines: 100,
         statements: 100,

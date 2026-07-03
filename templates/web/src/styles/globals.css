@@ -138,9 +138,19 @@
 
 /* ===== SHARED TOKENS ===== */
 :root {
-  --font: 'Plus Jakarta Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
-  --display: 'Syne', sans-serif;
+  /*
+   * Neutral font stacks — no brand identity by default.
+   *
+   * This is a white-label template: it ships with a plain system-font stack
+   * so the owner can drop in their own typeface. --font resolves to Inter
+   * (loaded via next/font in app/layout.tsx, which sets this same variable),
+   * then falls back to the native UI font of each OS. --mono and --display
+   * use pure system stacks — no web font is loaded for them. To brand the
+   * app, replace these three values (and swap the next/font import).
+   */
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --display: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   --s1: 4px;
   --s2: 8px;

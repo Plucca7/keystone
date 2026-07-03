@@ -19,7 +19,11 @@ This project ships with a harness for the AI that builds it. Full map in
 - **Reviewers (B3):** `.claude/agents/` — spec reviewer, code reviewer, security auditor,
   each in its own isolated context.
 - **Guardrails (B4):** `.claude/hooks/` blocks committing a secret and touching a protected
-  branch. Hard blocks, not warnings.
+  branch. These are convenience checks with known gaps — a local hook is bypassable
+  (`git commit --no-verify`, a fresh clone with hooks uninstalled) and a secret scanner
+  matches known key shapes, not every secret. The real hard protection for humans is husky
+  (installed client-side) plus server-side enforcement: branch protection on GitHub
+  (`scripts/setup-branch-protection.sh`) and secret scanning in CI.
 - **Session continuity (B5):** an agent session forgets everything when it ends, so hand-off
   runs on two explicit commands — **"resume session"** (or "continue") to start, **"close
   session"** (or "wrap up") to end. Resume reads long-term memory and the newest briefing,
@@ -40,7 +44,7 @@ This project ships with a harness for the AI that builds it. Full map in
 | typescript            | Language (strict mode) |
 | tailwindcss           | Styling                |
 | @tanstack/react-query | Server state           |
-| react-hook-form + zod | Forms + validation     |
+| zod                   | Schema validation      |
 | vitest                | Unit tests             |
 | @playwright/test      | End-to-end tests       |
 

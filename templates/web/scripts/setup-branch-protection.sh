@@ -30,19 +30,22 @@ fi
 
 echo "setup-branch-protection: configuring $REPO"
 
-# NOTE on required status check contexts: for a job that calls a reusable
-# workflow, GitHub names the check "<caller job id> / <called job name>".
-# This template's CI (.github/workflows/ci.yml, job id "ci") calls
-# _ci-reusable.yml (job "Quality Check"), so the context below is
-# "ci / Quality Check". If you rename either job, update this list -- the
-# exact names are visible in any PR's checks tab.
-CHECKS='["ci / Quality Check"]'
+# NOTE on required status check contexts: the exact names are visible in any
+# PR's checks tab -- update this list if you rename a job.
+#   - "ci / Quality Check": ci.yml's job "ci" calls _ci-reusable.yml's job
+#     "Quality Check"; a job that calls a reusable workflow is named
+#     "<caller job id> / <called job name>".
+#   - "Linked issue required": the standalone pr-issue-link.yml job, named by
+#     its own job name. Listing it here is what turns a red PR into an
+#     unmergeable one -- a PR with no "#<issue>" reference cannot land.
+CHECKS='["ci / Quality Check", "Linked issue required"]'
 
 # --- main: the production branch -------------------------------------------
 # Strictest tier. A change reaches main only through a PR that is up to date
 # with the base (strict: true), reviewed by at least one human, green on CI,
-# and with every review conversation resolved. Admins included: a rail with a
-# VIP lane is not a rail.
+# and with every review conversation resolved. A change under a CODEOWNERS path
+# (migrations, security-critical dirs) additionally needs the code owner's
+# review. Admins included: a rail with a VIP lane is not a rail.
 gh api --method PUT "repos/$REPO/branches/main/protection" --input - <<EOF
 {
   "required_status_checks": {
@@ -52,7 +55,8 @@ gh api --method PUT "repos/$REPO/branches/main/protection" --input - <<EOF
   "enforce_admins": true,
   "required_pull_request_reviews": {
     "required_approving_review_count": 1,
-    "dismiss_stale_reviews": true
+    "dismiss_stale_reviews": true,
+    "require_code_owner_reviews": true
   },
   "restrictions": null,
   "allow_force_pushes": false,

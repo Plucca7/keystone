@@ -14,6 +14,7 @@ while read -r _local_ref _local_sha remote_ref _remote_sha; do
   esac
 done
 
-# Rail 2: the full fast suite before anything leaves the machine. Broken types
-# or tests stop here instead of burning a CI round-trip.
-pnpm run typecheck && pnpm test
+# Rail 2: the full gate before code leaves the machine — types, lint, formatting, and tests
+# over the whole project (not just staged files), so nothing incomplete is pushed even after
+# a --no-verify commit. Unit tests only; e2e stays in CI.
+pnpm run check

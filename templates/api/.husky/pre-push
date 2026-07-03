@@ -12,4 +12,7 @@ while read -r _local_ref _local_sha remote_ref _remote_sha; do
   esac
 done
 
-pnpm run typecheck && pnpm run test
+# The full gate before code leaves the machine: types, lint, formatting, and tests over the
+# whole project (not just staged files), so nothing incomplete is pushed even after a
+# --no-verify commit. Its server-side twin is scripts/setup-branch-protection.sh.
+pnpm run check

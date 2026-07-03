@@ -3,7 +3,7 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtemp, rm, stat } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve, dirname } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -50,6 +50,26 @@ test('harness: every generated project ships with the seven-part harness', async
     }
   } finally {
     await rm(parent, { recursive: true, force: true })
+  }
+})
+
+test('guardrail: a generated project pushes only through the full gate (both templates)', async () => {
+  // The pre-push hook must run the WHOLE gate — types, lint, formatting, tests — not a partial
+  // one, so a lint or formatting error cannot leave the machine. Proven by content: the hook
+  // calls `pnpm run check`, and the project's `check` script composes all four gates.
+  for (const type of ['service', 'site'] as const) {
+    const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+    try {
+      const { projectDir } = await createProject(answers(type, parent))
+      const prePush = await readFile(join(projectDir, '.husky/pre-push'), 'utf8')
+      assert.match(prePush, /pnpm run check/, `${type}: pre-push runs the full gate`)
+      const pkg = JSON.parse(await readFile(join(projectDir, 'package.json'), 'utf8'))
+      for (const gate of ['typecheck', 'lint', 'format:check', 'test']) {
+        assert.ok(String(pkg.scripts.check).includes(gate), `${type}: check must include ${gate}`)
+      }
+    } finally {
+      await rm(parent, { recursive: true, force: true })
+    }
   }
 })
 

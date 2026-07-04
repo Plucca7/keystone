@@ -201,6 +201,28 @@ test('spec OS: every generated project ships the verify-against-done-target rule
   }
 })
 
+test('spec OS: every generated project ships the test-first-by-risk rule with its real matrix', async () => {
+  // The matrix decides when a change is test-first vs regression vs risk-judged. It must ship with
+  // its real rows, not a stub, in every project.
+  for (const type of ['service', 'site'] as const) {
+    const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+    try {
+      const { projectDir } = await createProject(answers(type, parent))
+      const rule = await readFile(join(projectDir, '.claude/rules/test-first-by-risk.md'), 'utf8')
+      for (const row of [
+        'Test-first, always',
+        'Regression test, always',
+        'Test by risk',
+        'Automatic validation',
+      ]) {
+        assert.ok(rule.includes(row), `${type}: test-first matrix has "${row}"`)
+      }
+    } finally {
+      await rm(parent, { recursive: true, force: true })
+    }
+  }
+})
+
 // Run a guardrail hook exactly as Claude Code would: JSON tool call on stdin, read the
 // exit code (2 = blocked, 0 = allowed).
 const SECRET_HOOK = resolve(

@@ -214,3 +214,13 @@ that no issue was opened -- a degraded mode called out explicitly, not a silent 
 
 Enforcement: a **rule** -- opening the issue is a step in the agent's own workflow, not
 something a hook can force before a commit exists to intercept.
+
+---
+
+## Beyond the harness -- Layer C: experience quality
+
+The seven parts above are Layer B. A third layer, **experience quality**, makes a usable, consistent,
+accessible interface part of "done" -- the mandatory checklist rule
+(`.claude/rules/experience-quality.md`), the four state components in the web template, and, as they
+land, deterministic UI checks and experience reviewers. It enforces universal properties of a usable
+interface, never a specific visual taste. It is documented separately in `docs/experience-quality.md`.

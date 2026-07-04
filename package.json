@@ -51,12 +51,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Plucca7/keystone.git"
+    "url": "git+https://github.com/LZR-Technologies/keystone.git"
   },
   "bugs": {
-    "url": "https://github.com/Plucca7/keystone/issues"
+    "url": "https://github.com/LZR-Technologies/keystone/issues"
   },
-  "homepage": "https://github.com/Plucca7/keystone#readme",
+  "homepage": "https://github.com/LZR-Technologies/keystone#readme",
   "devDependencies": {
     "@eslint/js": "^9.10.0",
     "@types/node": "^20.11.0",

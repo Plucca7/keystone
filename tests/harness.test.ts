@@ -223,6 +223,31 @@ test('spec OS: every generated project ships the test-first-by-risk rule with it
   }
 })
 
+test('spec OS: every generated project ships the subagent-driven-development rule with its real loop', async () => {
+  // Substantial work is done by a fresh subagent per task, reviewed in two stages. The rule must
+  // ship with its real loop, not a stub, in every project.
+  for (const type of ['service', 'site'] as const) {
+    const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+    try {
+      const { projectDir } = await createProject(answers(type, parent))
+      const rule = await readFile(
+        join(projectDir, '.claude/rules/subagent-driven-development.md'),
+        'utf8',
+      )
+      for (const step of [
+        'Dispatch a fresh implementer',
+        'Spec compliance',
+        'Code quality',
+        'A critical issue blocks',
+      ]) {
+        assert.ok(rule.includes(step), `${type}: subagent loop has "${step}"`)
+      }
+    } finally {
+      await rm(parent, { recursive: true, force: true })
+    }
+  }
+})
+
 // Run a guardrail hook exactly as Claude Code would: JSON tool call on stdin, read the
 // exit code (2 = blocked, 0 = allowed).
 const SECRET_HOOK = resolve(

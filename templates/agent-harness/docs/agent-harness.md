@@ -70,6 +70,9 @@ main thread clean. Under `.claude/agents/`:
 
 A failed verdict is meant to be enforced by a guardrail (B4), not left to goodwill.
 
+The per-task loop that gives each task a fresh implementer and runs these reviews in sequence
+lives in `.claude/rules/subagent-driven-development.md` (used from work level 3 up).
+
 Enforcement: the reviewers themselves are **rule-level** (the agent invokes them as the
 workflow says); the consequence of a failed verdict is where **hooks** add enforcement.
 

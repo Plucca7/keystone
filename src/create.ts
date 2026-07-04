@@ -217,6 +217,10 @@ const MULTI_TENANT_ONLY_FILES = [
  *     optional multi-tenant feature (they are meaningless without tenants).
  *   - multi-tenant   → keep isolation; drop each optional feature (super-admin, audit log) that
  *     was not explicitly requested.
+ * A plain site never gets asked the multi-tenant question, so multiTenant is undefined here — it
+ * takes the single-owner path too: shipping the multi-tenant machinery (tenant_id, RLS, the
+ * isolation/super-admin/audit tests) would impose what the user never chose, breaking the product's
+ * "ask, don't impose" principle. Only an EXPLICIT "yes, multiple clients" gets multi-tenancy.
  * The single-tenant variant source is always removed (a build input, never shipped), and an
  * integration folder left empty is cleaned up. A template with no database variant is a no-op.
  */
@@ -241,9 +245,14 @@ async function applyDatabaseChoices(
     await rm(join(integrationDir, feature.test), { force: true })
   }
 
-  if (product.multiTenant === false) {
-    // Single-tenant: the simple schema and none of the multi-tenant machinery. Drop the
-    // multi-tenant-only integration files (isolation, super-admin, audit, and their shared
+  // A plain site never gets asked the multi-tenant question, so multiTenant is undefined; only an
+  // explicit `true` opts into multi-tenancy. Treating anything that is not an explicit `true` as
+  // single-owner means the site (undefined) gets the same simple example database as an explicit
+  // single-tenant choice — the template default is multi-tenant, so keeping that default for a site
+  // would ship tenant_id, RLS, and the isolation/super-admin/audit tests it never asked for.
+  if (product.multiTenant !== true) {
+    // Single-tenant (or a plain site): the simple schema and none of the multi-tenant machinery.
+    // Drop the multi-tenant-only integration files (isolation, super-admin, audit, and their shared
     // harness) and the optional-feature migrations — but KEEP the universal transaction test,
     // which stands up its own database and applies to every project.
     await writeFile(join(projectDir, ACTIVE_SCHEMA), singleVariant)
@@ -253,14 +262,13 @@ async function applyDatabaseChoices(
     for (const feature of OPTIONAL_DB_FEATURES) {
       await rm(join(projectDir, feature.migration), { force: true })
     }
-  } else if (product.multiTenant === true) {
+  } else {
     // Multi-tenant: keep isolation and the shared harness; add each optional feature only when
     // explicitly chosen, else drop its migration and its test.
     for (const feature of OPTIONAL_DB_FEATURES) {
       if (product[feature.flag] !== true) await dropFeature(feature)
     }
   }
-  // (multiTenant undefined — a plain site, never asked — keeps the template default untouched.)
 
   await rm(variantPath, { force: true })
 }

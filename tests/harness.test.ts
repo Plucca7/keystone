@@ -10,6 +10,7 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { createProject } from '../src/create.ts'
 import type { KeystoneAnswers, ProjectType } from '../src/types.ts'
+import { readJson } from './support.ts'
 
 function answers(type: ProjectType, parentDir: string): KeystoneAnswers {
   return {
@@ -63,9 +64,9 @@ test('guardrail: a generated project pushes only through the full gate (both tem
       const { projectDir } = await createProject(answers(type, parent))
       const prePush = await readFile(join(projectDir, '.husky/pre-push'), 'utf8')
       assert.match(prePush, /pnpm run check/, `${type}: pre-push runs the full gate`)
-      const pkg = JSON.parse(await readFile(join(projectDir, 'package.json'), 'utf8'))
+      const pkg = await readJson<{ scripts: { check: string } }>(join(projectDir, 'package.json'))
       for (const gate of ['typecheck', 'lint', 'format:check', 'test']) {
-        assert.ok(String(pkg.scripts.check).includes(gate), `${type}: check must include ${gate}`)
+        assert.ok(pkg.scripts.check.includes(gate), `${type}: check must include ${gate}`)
       }
     } finally {
       await rm(parent, { recursive: true, force: true })

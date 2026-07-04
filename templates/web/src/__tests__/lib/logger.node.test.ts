@@ -56,7 +56,7 @@ describe('createLogger (prod / no-window formatting)', () => {
     // Prod format is a single JSON object; dev format is not valid JSON
     // (it is a "[time] [module] message" string), which is the cleanest way
     // to prove the two branches produce genuinely different shapes.
-    expect(() => JSON.parse(line)).toThrow()
+    expect(() => void JSON.parse(line)).toThrow()
     expect(line).toContain('[svc]')
   })
 
@@ -74,6 +74,6 @@ describe('createLogger (prod / no-window formatting)', () => {
     createLogger('svc').info('started')
 
     const [line] = spy.mock.calls[0] as [string]
-    expect(() => JSON.parse(line)).not.toThrow()
+    expect(() => void JSON.parse(line)).not.toThrow()
   })
 })

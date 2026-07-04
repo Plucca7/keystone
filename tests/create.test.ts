@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { deduce, createProject, copyFilterFor, assertValidProjectName } from '../src/create.ts'
 import type { KeystoneAnswers, ProjectType } from '../src/types.ts'
+import { readJson } from './support.ts'
 
 function answers(type: ProjectType, sensitive: boolean, parentDir = '.'): KeystoneAnswers {
   return {
@@ -55,14 +56,18 @@ test('createProject: a service is born from the real api template, renamed', asy
     }
 
     // renamed to the project name
-    const pkg = JSON.parse(await readFile(join(projectDir, 'package.json'), 'utf8'))
+    const pkg = await readJson<{ name: string }>(join(projectDir, 'package.json'))
     assert.equal(pkg.name, 'demo-app')
 
     // build noise was not copied
     await assert.rejects(stat(join(projectDir, 'node_modules')))
 
     // the creation record is present
-    const record = JSON.parse(await readFile(join(projectDir, 'keystone.json'), 'utf8'))
+    const record = await readJson<{
+      template: string
+      deduced: { securityLevel: string; birthLevel: string }
+      keystoneVersion: string
+    }>(join(projectDir, 'keystone.json'))
     assert.equal(record.template, 'api')
     assert.equal(record.deduced.securityLevel, 'reinforced')
     // The birth level is deduced from the sensitive flag and recorded in keystone.json:
@@ -71,7 +76,7 @@ test('createProject: a service is born from the real api template, renamed', asy
 
     // the recorded keystoneVersion is read from the tool's own package.json, not hardcoded —
     // so it stays in sync with the real version on every bump.
-    const toolPkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'))
+    const toolPkg = await readJson<{ version: string }>(new URL('../package.json', import.meta.url))
     assert.equal(record.keystoneVersion, toolPkg.version)
 
     // the .gitignore is restored (templates ship it as `gitignore` because npm strips

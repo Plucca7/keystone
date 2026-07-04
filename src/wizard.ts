@@ -121,7 +121,21 @@ export async function runWizard(prompter: Prompter, presetName?: string): Promis
   )
 
   return {
-    product: { name, type, language, screen, look, sensitive, multiTenant, superAdmin, auditLog },
+    // Attach a tenancy flag only when it was actually asked. Under exactOptionalPropertyTypes an
+    // optional field must be absent — not present-but-undefined — when it has no answer, and
+    // create.ts depends on that absence as a distinct third state (a plain site, never asked)
+    // that it must not confuse with an explicit false (a database project chosen single-tenant).
+    product: {
+      name,
+      type,
+      language,
+      screen,
+      look,
+      sensitive,
+      ...(multiTenant !== undefined ? { multiTenant } : {}),
+      ...(superAdmin !== undefined ? { superAdmin } : {}),
+      ...(auditLog !== undefined ? { auditLog } : {}),
+    },
     setup: { versionTarget, isPrivate, parentDir },
   }
 }

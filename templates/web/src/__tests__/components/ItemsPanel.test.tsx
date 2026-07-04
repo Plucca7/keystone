@@ -118,6 +118,9 @@ describe('ItemsPanel', () => {
     await waitFor(() =>
       expect(mutate).toHaveBeenCalledWith(
         { id: '1', name: 'Alpha (renamed)' },
+        // vitest's expect.any() is typed as `any` by design — it is an assertion matcher,
+        // not an untyped value flowing into logic, so the unsafe-* guard is not meaningful here.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         expect.objectContaining({ onSettled: expect.any(Function) }),
       ),
     )

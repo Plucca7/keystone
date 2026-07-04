@@ -34,6 +34,17 @@ export default [
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@typescript-eslint/no-non-null-assertion': 'error',
 
+      // Catch the unwritten promise: `any` that slips in from outside (an untyped
+      // library return, JSON.parse, a network payload) and flows into typed code.
+      // no-explicit-any above only bans the `any` you write; these ban the `any`
+      // that arrives unnoticed and silently breaks the type contract at runtime.
+      // They need type-aware linting, already enabled via parserOptions.projectService.
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+
       // General code quality
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',

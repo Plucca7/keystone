@@ -36,6 +36,16 @@ export const base = [
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@typescript-eslint/no-non-null-assertion': 'error',
 
+      // Catch the `any` that slips in unnoticed — an untyped library return, JSON.parse,
+      // a network payload — and flows into typed code, breaking the type contract at
+      // runtime. no-explicit-any above bans the `any` you write; these ban the `any` that
+      // arrives silently. They need type-aware linting (parserOptions.projectService).
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+
       // === Code quality ===
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',

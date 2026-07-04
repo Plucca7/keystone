@@ -1,5 +1,5 @@
 {
-  "name": "lzr-keystone",
+  "name": "@lzr-technologies/keystone",
   "version": "0.1.0",
   "description": "Start a project that is born to professional standards — without building the foundation by hand.",
   "type": "module",

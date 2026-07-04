@@ -68,14 +68,15 @@ roadmap, tracked per pillar in [docs/pillars.md](docs/pillars.md).
 ## Quick start
 
 ```bash
-npm i -g lzr-keystone
+npm i -g @lzr-technologies/keystone
 keystone new my-app       # scaffold a project
 keystone check .          # text guards + the project's own gates (block on failure)
 keystone analyze .        # measure an existing project (read-only)
 ```
 
-The public package name is **`lzr-keystone`** (`keystone` alone is taken; the `lzr-` prefix names the
-product line); the command you type stays `keystone`.
+The package ships under the **`@lzr-technologies`** organization as **`@lzr-technologies/keystone`**
+(`keystone` alone is taken; publishing under the org scope keeps the whole product line clearly LZR's);
+the command you type stays `keystone`.
 
 **From source** — to run the latest or to contribute:
 

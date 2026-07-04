@@ -33,6 +33,12 @@ export default defineConfig({
     // environment is simpler than annotating files individually, and jsdom
     // has no meaningful runtime cost for logic-only tests.
     environment: 'jsdom',
+    // The integration suites each spin up an in-process Postgres (PGlite, a WASM build) in a
+    // beforeAll, and several run in parallel. The WASM init can exceed Vitest's default 10s hook
+    // timeout on a loaded CI runner or a slow machine — a flake that is pure resource contention,
+    // not a real fault (the same suite passes in isolation). A generous hook timeout removes the
+    // flake without masking a genuine hang. Matches the api template's 60s, which already did this.
+    hookTimeout: 60_000,
     exclude: [...configDefaults.exclude, 'e2e/**'],
     // Registers RTL's cleanup(afterEach) -- see vitest.setup.ts for why this
     // cannot rely on RTL's own auto-registration in this project.

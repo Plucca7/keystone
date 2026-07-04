@@ -116,6 +116,53 @@ test('createProject: a site is born from the web template', async () => {
   }
 })
 
+test('createProject: a site gets the single-owner example database, not multi-tenant machinery', async () => {
+  const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
+  try {
+    // A site never gets asked the multi-tenant question, so multiTenant stays undefined. It must
+    // fall into the single-owner path — never inherit the template's multi-tenant default, which
+    // would impose tenant isolation the user never chose ("ask, don't impose"). The web template
+    // nests its integration tests under src/__tests__/integration.
+    const { projectDir } = await createProject(answers('site', false, parent))
+
+    const schema = await readFile(join(projectDir, 'db/migrations/0001_initial_schema.sql'), 'utf8')
+    // Assert by the real column definition and the RLS policy, NOT the loose word "tenant_id" —
+    // the single-owner variant's own comments mention tenant_id to explain how to add it later.
+    assert.doesNotMatch(schema, /tenant_id uuid/i, 'a site has no tenant_id column')
+    assert.doesNotMatch(schema, /create policy/i, 'a site has no RLS policy')
+    assert.match(schema, /create table if not exists items/i, 'still ships the items example table')
+
+    // None of the multi-tenant-only integration files ship for a site.
+    for (const gone of [
+      'tenant-isolation.test.ts',
+      'super-admin.test.ts',
+      'audit-log.test.ts',
+      '_migrations-harness.ts',
+    ]) {
+      await assert.rejects(
+        stat(join(projectDir, 'src/__tests__/integration', gone)),
+        `${gone} dropped for a site`,
+      )
+    }
+    // The universal transaction test stays — it stands up its own database and applies everywhere.
+    assert.ok(
+      (await stat(join(projectDir, 'src/__tests__/integration/transaction.test.ts'))).isFile(),
+      'transaction test kept for a site',
+    )
+    // The optional multi-tenant feature migrations are gone too.
+    await assert.rejects(
+      stat(join(projectDir, 'db/migrations/0002_super_admin.sql')),
+      'super-admin migration dropped for a site',
+    )
+    await assert.rejects(
+      stat(join(projectDir, 'db/migrations/0003_audit_log.sql')),
+      'audit-log migration dropped for a site',
+    )
+  } finally {
+    await rm(parent, { recursive: true, force: true })
+  }
+})
+
 test('createProject: single-tenant swaps in the simple schema and drops the isolation test', async () => {
   const parent = await mkdtemp(join(tmpdir(), 'keystone-'))
   try {

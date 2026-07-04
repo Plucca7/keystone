@@ -81,9 +81,12 @@ a multi-client SaaS, so the question decides the shape of the generated database
 - **No (single-tenant)** → the example database is the simpler single-owner shape: the same table
   without `tenant_id`, without row-level security, and without the isolation test.
 
-Skipped entirely for a plain site (no database), where the question would be noise. This is the one
-piece the template acts on immediately at creation — the single-tenant variant is applied by the
-create command, not merely recorded.
+Skipped entirely for a plain site (no database), where the question would be noise. Because a site
+was never asked, it is treated as single-owner: it gets the same simple single-tenant example
+database as an explicit "No" — never the multi-tenant machinery it did not choose (that would break
+"ask, don't impose"). Only an explicit "Yes" ships tenant isolation. This is the one piece the
+template acts on immediately at creation — the single-tenant variant is applied by the create
+command, not merely recorded.
 
 ### 8 & 9. Super-admin? · Audit log? · _yes · no each_ → only inside the multi-tenant path
 

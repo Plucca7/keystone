@@ -18,11 +18,28 @@ its quality **never depends on paid AI** — the agent that builds on top runs o
 
 ```text
 $ keystone new my-app
-  ✓ Project created — professional foundation in place
-  ✓ Agent harness laid in (context, specs, reviewers, guardrails, memory)
-  ✓ Versioned, dependencies installed, git hooks live
+# (answers a few setup questions: type, language, screen, look, data sensitivity…)
+✓ Project created at ./my-app
+  From the web template
+  Database (recorded): needed
+  Security level (recorded): essential — noted in keystone.json for later
+
+Finishing setup…
+  ✓ initialize version control (main)
+  ✓ stage the initial files
+  ✓ record the first commit
+  ✓ create the develop branch (daily work happens here)
+  ✓ install dependencies (pnpm)
+
 $ keystone check .
-  ✓ Text guards · format · lint · types · tests · dependency audit — all green
+✓ Text guards passed — no issues found.
+
+Project gates:
+  ✓ [Code quality] formatting
+  ✓ [Code quality] lint (errors & warnings)
+  ✓ [Code quality] types
+  ✓ [Tests] tests
+  ✓ [Security] dependency audit
 ```
 
 ## Three layers
@@ -60,10 +77,18 @@ Keystone has three commands:
   fast guards.
 - **`analyze`** measures an existing project against the standard (read-only).
 
-What ships of Layer A today is what `check` enforces — the text guards plus the project's own
-gates (format, lint, types, tests, dependency audit) — and what the templates lay in: the example
-database, the deploy pipelines, and the git hooks. The remaining Layer A pillars are on the
-roadmap, tracked per pillar in [docs/pillars.md](docs/pillars.md).
+Layer A arrives on two levels, and it is worth being precise about which is which. **The templates
+lay in most of the foundation**, so every generated project is born with it: the fixed structure,
+an example database with the data conventions baked in (automatic timestamps, soft delete,
+non-sequential IDs, per-tenant isolation, an audit log), tests covering the happy and unhappy
+paths, the three working branches, per-environment deploy pipelines with secrets kept out of the
+code, the formatter and checkers, a token-based visual system, and responsiveness. **What a command
+enforces automatically today is narrower** — `check` runs the text guards plus the project's own
+gates (format, lint, types, tests, dependency audit), blocking on failure. What is genuinely still
+on the roadmap is the _automatic_ enforcement of the rest, plus a handful of capabilities not yet
+in the template — country-format dates and money, the translation layer, an API usage guide,
+one-step rollback, edge abuse-protection, and the pre-merge review gate. It is all tracked per
+pillar in [docs/pillars.md](docs/pillars.md).
 
 ## Quick start
 

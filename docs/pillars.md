@@ -31,8 +31,11 @@ one for _how good it is to use_.
 **Layer A — Product Foundation (deterministic, zero-cost).** The design goal is that none of the
 quality pillars depend on AI inference: the deterministic parts should work for free — checks,
 written rules, configuration. The aim is a project that is secure, tested, and well-built even
-without using any AI at all. Today only a small slice of Layer A exists (see the status line above);
-the rest is the target.
+without using any AI at all. Today the templates already lay most of this foundation into every
+generated project (the example database with its conventions, tests, the working branches, the
+deploy pipelines, the formatter and checkers); what is still the target is the _automatic,
+command-driven_ enforcement of these pillars, plus a few capabilities not yet in the template
+(country formatting, translation, an API guide, rollback, edge protection, and the review gate).
 
 **Layer B — Agent Harness (built).** The project is built by an AI coding agent — the assistant the
 developer already uses — and Layer B is that agent's harness: what shapes its context, the spec it

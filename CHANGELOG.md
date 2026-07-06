@@ -4,6 +4,28 @@ All notable changes to Keystone are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project aims to follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] — 2026-07-05
+
+A creation-experience pass, driven by a real first-run of the paste-to-Claude path.
+
+### Changed
+
+- **Project names are normalized, not rejected.** A human name like "Optograph" or "My App" is
+  lowercased and space-hyphenated to a valid package name (`optograph`, `my-app`) instead of being
+  turned away. A name still invalid after that (a leading dot, stray symbols) fails with a clear
+  message.
+- **The wizard no longer asks about visual identity.** Appearance belongs to the (still-planned)
+  design layer, not to creation — and the old "pick your look" question was ambiguous (it read as
+  light/dark to some). Creation stays about structure; a project starts with the template's neutral
+  default look. Docs reconciled.
+
+### Added
+
+- **The paste-to-Claude block asks the language first** (so it drives in the reader's own language
+  even when pasted in English), drops the removed look question, and asks the assistant to offer
+  folder suggestions and confirm the exact path before creating — never a silent location, never a
+  bare `y`.
+
 ## [0.1.3] — 2026-07-05
 
 ### Added
@@ -82,6 +104,7 @@ The first working release. Three commands are usable end to end.
 - `analyze` shows a project with no database as **not applicable**, not a green pass.
 - The tests gate runs `test:coverage` when a project defines it, falling back to `test` otherwise.
 
+[0.1.4]: https://github.com/LZR-Technologies/keystone/releases/tag/v0.1.4
 [0.1.3]: https://github.com/LZR-Technologies/keystone/releases/tag/v0.1.3
 [0.1.2]: https://github.com/LZR-Technologies/keystone/releases/tag/v0.1.2
 [0.1.1]: https://github.com/LZR-Technologies/keystone/releases/tag/v0.1.1

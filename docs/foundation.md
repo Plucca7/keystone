@@ -56,5 +56,5 @@ asked of the user at setup.
 
 ## Asked of the user at setup
 
-Name, project type, starting language, screen priority, look and feel. See
+Name, project type, starting language, screen priority. See
 [setup-wizard.md](setup-wizard.md).

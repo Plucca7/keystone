@@ -115,7 +115,6 @@ test('analyzeProject: a freshly created project meets the standard, example test
         type: 'system',
         language: 'pt',
         screen: 'both',
-        look: 'later',
         sensitive: true,
       },
       setup: { versionTarget: 'local', isPrivate: false, parentDir: parent },

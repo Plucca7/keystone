@@ -5,13 +5,19 @@ import assert from 'node:assert/strict'
 import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { deduce, createProject, copyFilterFor, assertValidProjectName } from '../src/create.ts'
+import {
+  deduce,
+  createProject,
+  copyFilterFor,
+  assertValidProjectName,
+  normalizeProjectName,
+} from '../src/create.ts'
 import type { KeystoneAnswers, ProjectType } from '../src/types.ts'
 import { readJson } from './support.ts'
 
 function answers(type: ProjectType, sensitive: boolean, parentDir = '.'): KeystoneAnswers {
   return {
-    product: { name: 'demo-app', type, language: 'pt', screen: 'both', look: 'later', sensitive },
+    product: { name: 'demo-app', type, language: 'pt', screen: 'both', sensitive },
     setup: { versionTarget: 'local', isPrivate: false, parentDir },
   }
 }
@@ -278,12 +284,25 @@ test('createProject: mobile has no template yet', async () => {
   await assert.rejects(() => createProject(answers('mobile', false, '.')), /No template yet/)
 })
 
-test('createProject: rejects an invalid project name before touching the filesystem', async () => {
-  // A name with a space + uppercase would produce an invalid npm manifest. createProject must
-  // refuse it up front (parentDir '.' is never written to, proving no folder was created).
+test('createProject: rejects a name that is still invalid after normalizing', async () => {
+  // Normalizing fixes case and spaces, not a leading dot or stray symbols. Such a name must be
+  // refused up front (parentDir '.' is never written to, proving no folder was created). A name
+  // that only needed case/space fixes (e.g. "My App") is instead accepted — see the wizard tests.
   const bad = answers('service', false, '.')
-  bad.product.name = 'My App'
+  bad.product.name = '.hidden'
   await assert.rejects(() => createProject(bad), /Invalid project name/)
+})
+
+test('normalizeProjectName: accepts human forms by lowercasing and hyphenating spaces', () => {
+  assert.equal(normalizeProjectName('Optograph'), 'optograph')
+  assert.equal(normalizeProjectName('My App'), 'my-app')
+  assert.equal(normalizeProjectName('  Spaced   Out  '), 'spaced-out')
+  assert.equal(normalizeProjectName('already-ok'), 'already-ok')
+  // Idempotent: normalizing a normalized name changes nothing.
+  assert.equal(normalizeProjectName(normalizeProjectName('My App')), 'my-app')
+  // The normalized human forms then pass validation.
+  assert.doesNotThrow(() => assertValidProjectName(normalizeProjectName('Optograph')))
+  assert.doesNotThrow(() => assertValidProjectName(normalizeProjectName('My App')))
 })
 
 test('assertValidProjectName: accepts valid names and rejects invalid ones', () => {

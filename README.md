@@ -102,22 +102,25 @@ agent create the project for you: you answer a few questions as clickable option
 the terminal. Paste this into your Claude Code chat:
 
 ```text
-Create a new project for me with Keystone — you drive it, I never touch the terminal, and you talk to
-me in the language I'm writing to you in:
+Create a new project for me with Keystone — you drive it, and I never touch the terminal:
 
-1. Ask me the setup questions a few at a time using your interactive option cards (not the
-   terminal): project type (site · system with login and data · integration service), starting
-   language, screen priority, look, and whether it handles sensitive data or money. For a system
-   or service, also ask whether it serves multiple separate clients — and if so, super-admin and
+1. First, ask me which language to continue in (Português · English · Español · …) as an option
+   card, and do everything after that in the language I pick.
+2. Then ask the setup questions a few at a time using your interactive option cards (not the
+   terminal): project type (site · system with login and data · integration service), the app's
+   starting language, screen priority, and whether it handles sensitive data or money. For a system or
+   service, also ask whether it serves multiple separate clients — and if so, super-admin and
    audit log. Then: where to host the code (GitHub · GitLab · local), visibility, the project
    name, and the destination folder.
-2. For the folder, require a real path — reject a bare "y" or anything that isn't a path — show me
-   exactly where the project will be created, and let me confirm.
-3. Then run Keystone yourself: install it on the fly with `npx @lzr-technologies/keystone` and
+3. For the name, anything is fine — Keystone lowercases it and turns spaces into hyphens. For the
+   folder, offer me a couple of likely paths plus "type another", require a real path (reject a
+   bare "y"), show me exactly where the project will be created, and let me confirm — never pick
+   the location silently.
+4. Then run Keystone yourself: install it on the fly with `npx @lzr-technologies/keystone` and
    create the project with my answers, feeding the wizard so I never type a command. Show a short
    "installing…" note while it works, and tell me the final path when it's done.
 
-Start with the first question.
+Start by asking the language.
 ```
 
 The agent asks the setup questions as option cards, then installs Keystone and creates the project on

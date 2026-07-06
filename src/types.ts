@@ -9,9 +9,6 @@ export type ProjectType = 'site' | 'system' | 'service' | 'mobile'
 /** Which screen the project should favor when nothing else is said. */
 export type ScreenPriority = 'mobile' | 'desktop' | 'both'
 
-/** How the project's visual identity is decided. */
-export type LookChoice = 'generate' | 'import' | 'later'
-
 /** Where the project's code will be versioned. */
 export type VersionTarget = 'github' | 'gitlab' | 'local'
 
@@ -22,7 +19,6 @@ export interface ProductBriefing {
   /** Starting language, e.g. 'pt', 'en', 'es'. */
   language: string
   screen: ScreenPriority
-  look: LookChoice
   /** Whether the project handles sensitive data or money — feeds the security level. */
   sensitive: boolean
   /**

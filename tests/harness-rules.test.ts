@@ -21,7 +21,6 @@ function answers(type: ProjectType, parentDir: string): KeystoneAnswers {
       type,
       language: 'pt',
       screen: 'both',
-      look: 'later',
       sensitive: false,
     },
     setup: { versionTarget: 'local', isPrivate: false, parentDir },

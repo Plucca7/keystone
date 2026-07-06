@@ -29,9 +29,7 @@ Questions, one at a time:
 2. Project type
 3. Starting language
 4. Screen priority (mobile / desktop / both)
-5. Visual identity → **guided design step** _(planned)_ · **import an existing design** _(planned)_ ·
-   **decide later**
-6. Does it handle sensitive data or money?
+5. Does it handle sensitive data or money?
 
 ## Step 2 — Round B: technical setup
 
@@ -78,9 +76,9 @@ Beyond that, in particular:
 - **Database.** _Planned._ The command does **not** provision a database, connect one, store or
   reuse a service key, or run migrations. When a database is inferred, that fact is only recorded in
   `keystone.json`; setting it up is left to the developer.
-- **Visual identity.** _Planned._ The guided design step and the import-an-existing-design path are
-  not built. Every project simply starts with the template's default look and its visual foundation
-  (fonts, spacing, accessibility, locale formatting), which ship inside the template.
+- **Visual identity.** _Planned._ A design step that personalizes the look is not built — and is not
+  asked at creation. Every project simply starts with the template's default look and its visual
+  foundation (fonts, spacing, accessibility, locale formatting), which ship inside the template.
 - **Deploy / hosting.** _Planned._ The delivery pipeline, the staging environment, and the automated
   deploy are the standard the scaffold aims for — not built. The template **contains** the
   delivery-pipeline files, but the command does not wire up or trigger any deploy. Deploy and hosting

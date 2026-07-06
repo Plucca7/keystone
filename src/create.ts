@@ -63,6 +63,18 @@ export function TEMPLATE_EXISTS_FOR(type: ProjectType): boolean {
 const VALID_PACKAGE_NAME = /^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$/
 const MAX_PACKAGE_NAME_LENGTH = 214
 
+/**
+ * Normalize a human-typed name into a valid package name where the fix is unambiguous: trim,
+ * lowercase, and collapse runs of whitespace into a single hyphen — so "My App" becomes "my-app"
+ * and "Optograph" becomes "optograph". These are the forms a person naturally types; rejecting them
+ * (as the raw npm rule does) is a papercut at the very first step. It deliberately does NOT strip
+ * other invalid characters: silently deleting them would change the name into something the user
+ * never chose, so those still fail validation with a clear error. Idempotent — safe to run twice.
+ */
+export function normalizeProjectName(raw: string): string {
+  return raw.trim().toLowerCase().replace(/\s+/g, '-')
+}
+
 /** Throw a clear, human error when a project name would produce an invalid npm manifest. */
 export function assertValidProjectName(name: string): void {
   if (name.length === 0 || name.length > MAX_PACKAGE_NAME_LENGTH) {
@@ -288,10 +300,12 @@ async function restoreDotfiles(projectDir: string): Promise<void> {
 
 /** Create the project by copying the real template and renaming it. */
 export async function createProject(answers: KeystoneAnswers): Promise<CreateResult> {
-  // Validate the name first, before any filesystem work: a bad name must fail up front,
-  // never after a folder has been created. This is the last line of defense even when the
-  // wizard already checked, so a non-interactive caller (a preset name) is guarded too.
-  assertValidProjectName(answers.product.name)
+  // Normalize the name to its valid form (lowercase, spaces to hyphens) first, so a human name like
+  // "Optograph" or "My App" is accepted rather than rejected. Then validate the normalized form
+  // before any filesystem work: a bad name must fail up front, never after a folder is created. Both
+  // steps run even for a non-interactive caller (a preset name), not only the wizard path.
+  const name = normalizeProjectName(answers.product.name)
+  assertValidProjectName(name)
 
   const template = TEMPLATE_BY_TYPE[answers.product.type]
   if (!template) {
@@ -301,7 +315,7 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
   }
 
   const deduced = deduce(answers)
-  const projectDir = resolve(answers.setup.parentDir, answers.product.name)
+  const projectDir = resolve(answers.setup.parentDir, name)
   const source = join(TEMPLATES_DIR, template)
 
   // Refuse a non-empty destination. Without this, scaffolding over an existing folder
@@ -338,19 +352,20 @@ export async function createProject(answers: KeystoneAnswers): Promise<CreateRes
   const manifest = await readFile(pkgPath, 'utf8')
   const renamed = manifest.replace(
     /("name"\s*:\s*)"[^"]*"/,
-    (_match, prefix: string) => `${prefix}"${answers.product.name}"`,
+    (_match, prefix: string) => `${prefix}"${name}"`,
   )
   await writeFile(pkgPath, renamed)
 
   // Record how this project was created, next to the template it came from. The product
-  // answers (language, screen priority, look) are stored here as recorded intent for a later
-  // step to act on — creation itself does not apply them — so the file is an honest log of
-  // what the user chose, not a claim that each choice was provisioned.
+  // answers (language, screen priority) are stored here as recorded intent for a later step to
+  // act on — creation itself does not apply them — so the file is an honest log of what the user
+  // chose, not a claim that each choice was provisioned. The name is stored in its normalized
+  // form (what the project was actually created as), not the raw text the user typed.
   const record = {
     // Read from the tool's own package.json so this never drifts from the real version.
     keystoneVersion: await readKeystoneVersion(),
     template,
-    product: answers.product,
+    product: { ...answers.product, name },
     setup: answers.setup,
     deduced,
   }

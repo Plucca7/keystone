@@ -4,23 +4,19 @@
 // See docs/setup-wizard.md.
 
 import type { Prompter } from './prompter.ts'
-import { assertValidProjectName, TEMPLATE_EXISTS_FOR } from './create.ts'
-import type {
-  KeystoneAnswers,
-  ProjectType,
-  ScreenPriority,
-  LookChoice,
-  VersionTarget,
-} from './types.ts'
+import { assertValidProjectName, normalizeProjectName, TEMPLATE_EXISTS_FOR } from './create.ts'
+import type { KeystoneAnswers, ProjectType, ScreenPriority, VersionTarget } from './types.ts'
 
 /** Run the full briefing (round A + round B) and return the collected answers. */
 export async function runWizard(prompter: Prompter, presetName?: string): Promise<KeystoneAnswers> {
-  // Round A — product briefing
-  const name = presetName ?? (await prompter.text('What is the project called?'))
-  // Validate the name the moment we have it, before asking the remaining questions: a bad
-  // name (space, uppercase) is a dead end, so surfacing it now spares the user the whole
-  // questionnaire only to be rejected at creation time. createProject re-checks as the real
-  // guard; this is the early, friendly failure. See docs/setup-wizard.md.
+  // Round A — product briefing. Normalize the name (lowercase, spaces to hyphens) so a human form
+  // like "Optograph" or "My App" is accepted, then validate it the moment we have it, before asking
+  // the remaining questions: a name that is still invalid after normalizing is a dead end, so
+  // surfacing it now spares the user the whole questionnaire only to be rejected at creation time.
+  // createProject re-normalizes and re-checks as the real guard; this is the early, friendly failure.
+  const name = normalizeProjectName(
+    presetName ?? (await prompter.text('What is the project called?')),
+  )
   assertValidProjectName(name)
 
   const type = await prompter.choice<ProjectType>('What kind of project is it?', [
@@ -50,12 +46,6 @@ export async function runWizard(prompter: Prompter, presetName?: string): Promis
     { value: 'mobile', label: 'Mobile first' },
     { value: 'desktop', label: 'Desktop first' },
     { value: 'both', label: 'Both equally' },
-  ])
-
-  const look = await prompter.choice<LookChoice>('The project’s look?', [
-    { value: 'generate', label: 'Let the design step create it (from the product’s essence)' },
-    { value: 'import', label: 'Import my own (existing brand / design)' },
-    { value: 'later', label: 'Decide later (start with a neutral default)' },
   ])
 
   const sensitive = await prompter.choice<boolean>(
@@ -130,7 +120,6 @@ export async function runWizard(prompter: Prompter, presetName?: string): Promis
       type,
       language,
       screen,
-      look,
       sensitive,
       ...(multiTenant !== undefined ? { multiTenant } : {}),
       ...(superAdmin !== undefined ? { superAdmin } : {}),

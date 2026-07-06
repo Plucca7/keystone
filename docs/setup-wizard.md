@@ -32,7 +32,7 @@
 2. **Inferred decision** (derived from what the user already said) → NOT asked.
    E.g. **does it need a database?** — inferred from project type + data sensitivity.
 3. **Project decision** (a matter of the user's taste, only they know) → becomes a question.
-   E.g. name, language, screen priority, visual identity.
+   E.g. name, language, screen priority.
 
 > Principle: only ask type 3. The more the flow infers (type 2), the less it burdens the user.
 
@@ -40,8 +40,12 @@
 
 ## Round A — Product briefing (the minimal wizard)
 
-The essential minimum. Six always-asked questions (the fifth branches into a deeper briefing), plus
-a seventh that appears only for database-backed types.
+The essential minimum. A handful of always-asked questions, plus more that appear only for
+database-backed types.
+
+The project name is normalized to a valid package name where the fix is unambiguous — lowercased,
+with spaces turned into hyphens (so "My App" becomes "my-app") — instead of being rejected. A name
+that is still invalid after that (a leading dot, stray symbols) is refused with a clear message.
 
 ### 1. Project name · _free text_
 
@@ -56,22 +60,15 @@ a seventh that appears only for database-backed types.
 
 ### 4. Screen priority · _mobile · desktop · both_
 
-### 5. Visual identity · _pick a path_
+> **Visual identity is not asked at creation.** How a project looks belongs to the design layer,
+> applied as a separate (still-planned) step — not a taste forced at birth. Every new project starts
+> with the template's neutral default look, and a design skill personalizes it later. Keeping it out
+> of creation is deliberate: creation is about structure, not taste (an earlier "pick your look"
+> question was ambiguous — it read as light/dark to some — and was dropped).
 
-- **Generate a custom identity** (default) → triggers the **deep briefing** (below), whose answers are
-  recorded for a later, still-planned identity-generation step that would derive an identity from the
-  product's essence, avoiding a generic AI look
-- **Import my own** → the user brings a ready identity (existing brand, design done elsewhere); a
-  later, still-planned step would apply it
-- **Decide later** → starts with the template's neutral default look (the only path that acts today,
-  because the template already ships that look)
+### 5. Handles sensitive data or money? · _yes · no_ → feeds the security and database inference
 
-> Today, the visual-identity answer is only recorded in `keystone.json`. No design step runs — a new
-> project starts with whatever look the copied template already contains.
-
-### 6. Handles sensitive data or money? · _yes · no_ → feeds the security and database inference
-
-### 7. Serves multiple separate clients? · _yes · no_ → only for database-backed types (system/service)
+### 6. Serves multiple separate clients? · _yes · no_ → only for database-backed types (system/service)
 
 Asked, not assumed — the "ask, don't impose" principle. A template must not presume every project is
 a multi-client SaaS, so the question decides the shape of the generated database:
@@ -88,9 +85,9 @@ database as an explicit "No" — never the multi-tenant machinery it did not cho
 template acts on immediately at creation — the single-tenant variant is applied by the create
 command, not merely recorded.
 
-### 8 & 9. Super-admin? · Audit log? · _yes · no each_ → only inside the multi-tenant path
+### 7 & 8. Super-admin? · Audit log? · _yes · no each_ → only inside the multi-tenant path
 
-Two more asked-not-assumed questions, shown ONLY when question 7 = multi-tenant (a single-owner
+Two more asked-not-assumed questions, shown ONLY when question 6 = multi-tenant (a single-owner
 project has no other clients to administer and rarely needs a cross-client tamper-proof log). Each is
 independent — neither is bundled with the other or imposed by choosing multi-tenant:
 
@@ -102,16 +99,6 @@ independent — neither is bundled with the other or imposed by choosing multi-t
 
 Both are applied by the create command (the corresponding migration and its test ship only when
 chosen), not merely recorded.
-
----
-
-## Deep briefing (conditional — only on the "generate a custom identity" path)
-
-Fuel for a still-planned identity-generation step. Does NOT run if the user imports a design or
-decides later. Questions (one at a time): real purpose · who uses it (skill level / frequency / state
-of mind) · primary action · differentiator · desired feeling. Today these answers are only collected
-and recorded; when the identity-generation step is built, they are what would drive palette,
-typography, tone, and density derived from the product's essence.
 
 ---
 
@@ -144,8 +131,8 @@ Type-3 questions about infrastructure:
 - **Design-system application:** the visual foundation (fonts, spacing, accessibility, locale
   formatting) is fixed by the standard, and the template already ships it. There is no separate
   design step that "applies" it — a new project simply inherits the foundation the copied template
-  already contains. The personality (color / font) that would follow the path chosen in question 5
-  is planned, not built.
+  already contains. The personality (color / font) is not decided at creation; a separate,
+  still-planned design step handles it.
 
 ---
 
@@ -178,19 +165,6 @@ Type-3 questions about infrastructure:
 6. **AI-to-database bridge (an AI↔database shortcut):** the command does **NOT touch** it — and this
    is true today because the command touches nothing about the database at all. Anyone who wants the
    convenience of querying the database through AI turns it on themselves.
-
----
-
-## Visual-identity paths (summary)
-
-> Today all three paths only **record** the choice; the identity work described in the middle column is
-> planned. The one thing that actually happens is that a new project inherits the template's default look.
-
-| Path                                 | What is intended to happen (planned unless noted)                       | Deep briefing? |
-| ------------------------------------ | ----------------------------------------------------------------------- | -------------- |
-| Generate a custom identity (default) | Would derive identity from the essence; avoids a generic AI look        | Yes            |
-| Import my own                        | User brings a ready brand / design; a later step would apply it         | No             |
-| Decide later                         | Neutral default look from the template (acts today); personalized later | No             |
 
 ---
 

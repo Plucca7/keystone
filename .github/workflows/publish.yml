@@ -1,0 +1,51 @@
+# Publish the package to npm using trusted publishing (OIDC) — no NPM_TOKEN, and no manual
+# one-time code. The publish is authorized by THIS workflow's OIDC identity, which npm trusts
+# because a Trusted Publisher connection on the package (npm → Settings → Trusted Publisher)
+# points at this exact file. Without that connection configured on npm, a publish is refused —
+# so this workflow alone cannot publish until the npm side is set up.
+#
+# To release: bump the version + changelog, commit, then push a version tag (e.g. v0.1.5). The
+# tag push triggers this workflow, which builds and publishes on its own. workflow_dispatch is a
+# manual fallback from the Actions tab.
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+# id-token: write is the whole point — it lets npm exchange this workflow's GitHub OIDC token for
+# short-lived publish credentials, so no long-lived secret is stored anywhere. contents: read is
+# all the checkout needs.
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 24 matches the repo's CI and the "run from source" requirement; the build and publish
+      # themselves only need Node 20+, but keeping one version across workflows avoids surprises.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # Trusted publishing is a recent npm feature; the version bundled with Node can predate it.
+      # Upgrading guarantees the CLI knows how to authorize via OIDC instead of a token.
+      - name: Update npm to a version that supports trusted publishing
+        run: npm install -g npm@latest
+
+      # Reproducible install from the committed lockfile, so the build inputs match CI exactly.
+      - name: Install dependencies
+        run: npm ci
+
+      # No token is passed: with the Trusted Publisher connection set on npm, this workflow's OIDC
+      # identity is what authorizes the publish. `prepack` builds dist/ first; --provenance records
+      # where and how the package was built; --access public keeps the scoped package public.
+      - name: Publish to npm
+        run: npm publish --provenance --access public
